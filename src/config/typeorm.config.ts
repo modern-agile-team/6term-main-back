@@ -11,6 +11,6 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  entities: [],
-  synchronize: process.env.NODE_ENV === 'development', // 베포할 때는 false로 변경
+  entities: [], // 여기에 엔티티들을 추가해야 합니다.
+  synchronize: process.env.NODE_ENV === 'development', // 배포 시에는 false로 변경
 };
