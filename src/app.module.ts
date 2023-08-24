@@ -8,9 +8,10 @@ import { Test1Module } from './test1/test1.module';
 import { UploadsController } from './uploads/uploads.controller';
 import { UploadsService } from './uploads/uploads.service';
 import { UploadsModule } from './uploads/uploads.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(TypeORMconfig), Test1Module, UploadsModule],
+  imports: [TypeOrmModule.forRoot(TypeORMconfig), Test1Module, UploadsModule, ConfigModule.forRoot({ isGlobal: true})],
   controllers: [Test1Controller, UploadsController], 
   providers: [Test1Service, UploadsService], 
 })

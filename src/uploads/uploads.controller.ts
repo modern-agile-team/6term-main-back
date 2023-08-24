@@ -4,10 +4,11 @@ import { UploadsService } from './uploads.service';
 
 @Controller('uploads')
 export class UploadsController {
-    // constructor(private uploadService: UploadsService) {}
+    constructor(private uploadService: UploadsService) {}
+
     @Post()
     @UseInterceptors(FileInterceptor('file'))
-    uploadFile(@UploadedFile(
+    async uploadFile(@UploadedFile(
         new ParseFilePipe({
             validators: [
                 // new MaxFileSizeValidator({ maxSize: 1000 }), 
@@ -17,7 +18,6 @@ export class UploadsController {
     ) 
     file: Express.Multer.File,
     )   {
-        // return  this.uploadService.uploadFile(file);
-        console.log(file);
+        await this.uploadService.uploadFile(file);
     }
 }
