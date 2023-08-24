@@ -5,7 +5,7 @@ import { TypeORMconfig } from './config/typeorm.config';
 import { Test1Controller } from './test1/test1.controller';
 import { Test1Service } from './test1/test1.service';
 import { Test1Module } from './test1/test1.module';
-import UploadsController from './uploads/uploads.controller';
+import { UploadsController } from './uploads/uploads.controller';
 import { UploadsService } from './uploads/uploads.service';
 import { UploadsModule } from './uploads/uploads.module';
 
