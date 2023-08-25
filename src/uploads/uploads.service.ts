@@ -24,11 +24,9 @@ export class UploadsService {
   });
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
-    // 현재 이미지 개수를 가져옵니다.
-    const countImages = await this.imageRepository.count();
-
-    // 이미지 파일명을 순차적인 숫자로 생성합니다.
-    const fileName = `${countImages + 1}.jpeg`;
+    const countImages = await this.imageRepository.count(); // 현재 이미지 개수를 가져옵니다.
+    const currentTimestamp = new Date().getTime(); // 현재 시간을 받아옵니다
+    const fileName = `${currentTimestamp}_${countImages + 1}.jpeg`; //s3에 저장할 파일이름에 현재시간+이미지개수(+1씩증가)추가합니다
 
     const params = new PutObjectCommand({
       ACL: 'public-read',
