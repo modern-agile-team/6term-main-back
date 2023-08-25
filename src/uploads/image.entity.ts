@@ -7,4 +7,10 @@ export class Image {
 
   @Column({ name: 'image_url' })
   image_url: string;
+
+  @Column({ name: 'user_id' })
+  user_id: number;
+
+  @Column({ name: 'form' })
+  form: string;
 }
