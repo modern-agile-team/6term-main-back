@@ -5,6 +5,7 @@ import { Image } from './image.entity';
 import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
 import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -25,8 +26,8 @@ export class UploadsService {
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
     const countImages = await this.imageRepository.count(); // 현재 이미지 개수를 가져옵니다.
-    const currentTimestamp = new Date().getTime(); // 현재 시간을 받아옵니다
-    const fileName = `${currentTimestamp}_${countImages + 1}.jpeg`; //s3에 저장할 파일이름에 현재시간+이미지개수(+1씩증가)추가합니다
+    const uniqueId = uuidv4(); // UUID 생성
+    const fileName = `${uniqueId}_${countImages + 1}.jpeg`; //UUID + db저장되어있는 이미지개수+1씩증가
 
     const params = new PutObjectCommand({
       ACL: 'public-read',
@@ -48,5 +49,44 @@ export class UploadsService {
     await this.imageRepository.save(image);
 
     return fileUrl; // 업로드된 파일의 URL 반환
+  }
+
+  async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
+
+    const uploadedUrls: string[] = [];
+
+    try {
+
+      for (const file of files) {
+        const countImages = await this.imageRepository.count();
+        const uniqueId= uuidv4();
+        const fileName = `${uniqueId}_${countImages + 1}.jpeg`;
+
+        const params = new PutObjectCommand({
+          ACL: 'public-read',
+          Bucket: process.env.AWS_S3_BUCKET,
+          Key: fileName,
+          Body:file.buffer,
+          ContentType: 'image/jpeg',
+          ContentDisposition: 'inline',
+        });
+
+        
+        await this.s3.send(params);
+
+        const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${fileName}`;
+
+        const image = new Image();
+        image.image_url = fileUrl;
+        await this.imageRepository.save(image);
+
+        uploadedUrls.push(fileUrl);
+      }
+    return uploadedUrls;
+    }
+     
+    catch (err) {
+      throw new Error;
+    }
   }
 }
