@@ -10,7 +10,6 @@ import { UploadsController } from './uploads/uploads.controller';
 import { UploadsService } from './uploads/uploads.service';
 import { UploadsModule } from './uploads/uploads.module';
 import { ConfigModule } from '@nestjs/config';
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({

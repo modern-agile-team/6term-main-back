@@ -52,26 +52,23 @@ export class UploadsService {
   }
 
   async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
-
     const uploadedUrls: string[] = [];
 
     try {
-
       for (const file of files) {
         const countImages = await this.imageRepository.count();
-        const uniqueId= uuidv4();
+        const uniqueId = uuidv4();
         const fileName = `${uniqueId}_${countImages + 1}.jpeg`;
 
         const params = new PutObjectCommand({
           ACL: 'public-read',
           Bucket: process.env.AWS_S3_BUCKET,
           Key: fileName,
-          Body:file.buffer,
+          Body: file.buffer,
           ContentType: 'image/jpeg',
           ContentDisposition: 'inline',
         });
 
-        
         await this.s3.send(params);
 
         const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${fileName}`;
@@ -82,11 +79,9 @@ export class UploadsService {
 
         uploadedUrls.push(fileUrl);
       }
-    return uploadedUrls;
-    }
-     
-    catch (err) {
-      throw new Error;
+      return uploadedUrls;
+    } catch (err) {
+      throw new Error();
     }
   }
 }

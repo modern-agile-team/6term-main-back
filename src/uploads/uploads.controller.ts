@@ -19,13 +19,14 @@ export class UploadsController {
     return this.uploadService.uploadFile(file); // uploadService.uploadFile의 반환 값을 그대로 반환
   }
   @Post('/multi')
-  @UseInterceptors(FilesInterceptor('files', 3)) 
-  async uploadFiles(@UploadedFiles() files: Express.Multer.File[]): Promise<string[]> {
+  @UseInterceptors(FilesInterceptor('files', 3))
+  async uploadFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<string[]> {
     try {
       return await this.uploadService.uploadFiles(files);
-    }
-    catch (err) {
-      throw new Error;
+    } catch (err) {
+      throw new Error();
     }
   }
 }
