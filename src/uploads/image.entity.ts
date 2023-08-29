@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity({ name: 'Image' })
+@Entity({ name: 'UserImage' })
 export class Image {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,6 +11,6 @@ export class Image {
   @Column({ name: 'user_id' })
   user_id: number;
 
-  @Column({ name: 'form' })
-  form: string;
+  // @Column({ name: '' })
+  // form: string;
 }
