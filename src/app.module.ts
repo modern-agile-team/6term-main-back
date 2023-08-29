@@ -10,6 +10,7 @@ import { UploadsController } from './uploads/uploads.controller';
 import { UploadsService } from './uploads/uploads.service';
 import { UploadsModule } from './uploads/uploads.module';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
     }),
+    MongooseModule.forRoot(process.env.DB_URI),
   ],
   controllers: [Test1Controller, UploadsController],
   providers: [Test1Service, UploadsService],
