@@ -10,6 +10,7 @@ import { UploadsController } from './uploads/uploads.controller';
 import { UploadsService } from './uploads/uploads.service';
 import { UploadsModule } from './uploads/uploads.module';
 import { ConfigModule } from '@nestjs/config';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -23,6 +24,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
     }),
+    ChatModule,
   ],
   controllers: [Test1Controller, UploadsController],
   providers: [Test1Service, UploadsService],
