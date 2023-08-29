@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
-import { Image } from './uploads/image.entity';
+import { Image } from './uploads/entity/image.entity';
 
 import { Test1Controller } from './test1/test1.controller';
 import { Test1Service } from './test1/test1.service';

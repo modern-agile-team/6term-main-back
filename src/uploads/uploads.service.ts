@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Image } from './image.entity';
+import { Image } from './entity/image.entity';
 import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
 import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
