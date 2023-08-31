@@ -1,5 +1,5 @@
 name: ma6-main-back
-
+# 제발 좀..
 on:
   push:
     branches:
