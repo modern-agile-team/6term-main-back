@@ -27,7 +27,7 @@ import * as mongoose from 'mongoose';
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
     }),
-    MongooseModule.forRoot(process.env.DB_URI),
+    MongooseModule.forRoot(process.env.DB_URI), 
     ChatModule,
   ],
   controllers: [Test1Controller, UploadsController],
