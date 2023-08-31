@@ -42,7 +42,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    steps:
       - name: Update Docker image
         run: |
           docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
