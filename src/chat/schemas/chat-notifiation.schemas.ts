@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 import { Chat } from "./chat.schemas";
 
 const options: SchemaOptions = {
-    collection: 'ChatImage',
+    collection: 'ChatNotification',
     timestamps: true,
 };
 

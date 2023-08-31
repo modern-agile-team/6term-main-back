@@ -18,7 +18,7 @@ export class ChatController {
     async createChat(
         @Body() 
         chat
-    ): Promise<ChatImage> {
+    ): Promise<ChatNotification> {
         return this.chatService.create(chat);
     }
 }
