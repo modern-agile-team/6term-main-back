@@ -52,7 +52,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: $HOME/.ssh/ma6-main-back-key.pem
+          key: /github/home/.ssh/ma6-main-back-key.pem
           port: ${{ secrets.PORT }}
           script: |
             docker system prune -a --volumes -f
