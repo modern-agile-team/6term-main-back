@@ -29,7 +29,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push ma6-main-back:${{ github.sha }}
+        run: docker push 2swo/ma6-main-back:${{ github.sha }}
 
   deploy:
     needs: build
