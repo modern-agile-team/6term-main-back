@@ -31,13 +31,13 @@ jobs:
       - name: Push Docker image
         run: docker push 2swo/ma6-main-back:${{ github.sha }}
 
-      -name: Docker run
-      run: |
-            docker system prune -a --volumes -f
-            docker-compose pull
-            docker-compose down
-            docker-compose up --force-recreate --build -d --quiet-pull 2> log.out
-            cat log.out
+      - name: Docker run
+        run: |
+          docker system prune -a --volumes -f
+          docker-compose pull
+          docker-compose down
+          docker-compose up --force-recreate --build -d --quiet-pull 2> log.out
+          cat log.out
 
   # deploy:
   #   needs: build
