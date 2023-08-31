@@ -42,14 +42,14 @@ jobs:
           SSH_SECRETS_KEY_BASE64: ${{ secrets.SSH_SECRETS_KEY_BASE64 }}
 
       - name: Set permissions for SSH key
-        run: chmod 600 ~/.ssh/ma6-main-back-key.pem
+        run: chmod 600 /github/home/.ssh/ma6-main-back-key.pem
 
       - name: SSH Connect & Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ~/.ssh/ma6-main-back-key.pem
+          key: /github/home/.ssh/ma6-main-back-key.pem
           port: ${{ secrets.PORT }}
           script: |
             docker system prune -a --volumes -f
