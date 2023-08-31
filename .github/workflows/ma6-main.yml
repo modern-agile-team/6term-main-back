@@ -31,37 +31,21 @@ jobs:
       - name: Push Docker image
         run: docker push 2swo/ma6-main-back:${{ github.sha }}
 
-      - name: Docker run
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH Connect & Deploy
+        env:
+          SSH_SECRETS_KEY_BASE64: ${{ secrets.SSH_SECRETS_KEY_BASE64 }}
         run: |
+          mkdir -p $HOME/.ssh
+          echo "${SSH_SECRETS_KEY_BASE64}" | base64 --decode > $HOME/.ssh/ma6-main-back-key.pem
+          chmod 600 $HOME/.ssh/ma6-main-back-key.pem
+
           docker system prune -a --volumes -f
           docker-compose pull
           docker-compose down
           docker-compose up --force-recreate --build -d --quiet-pull 2> log.out
           cat log.out
-
-  # deploy:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Set up SSH key
-  #       run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > $HOME/.ssh/ma6-main-back-key.pem
-  #       env:
-  #         SSH_SECRETS_KEY_BASE64: ${{ secrets.SSH_SECRETS_KEY_BASE64 }}
-
-  #     - name: Set permissions for SSH key
-  #       run: chmod 600 $HOME/.ssh/ma6-main-back-key.pem
-
-  #     - name: SSH Connect & Deploy
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.HOST }}
-  #         username: ${{ secrets.USERNAME }}
-  #         key: /github/home/.ssh/ma6-main-back-key.pem
-  #         port: ${{ secrets.PORT }}
-  #         script: |
-  #           docker system prune -a --volumes -f
-  #           docker-compose pull
-  #           docker-compose down
-  #           docker-compose up --force-recreate --build -d --quiet-pull 2> log.out
-  #           cat log.out
