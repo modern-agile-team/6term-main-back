@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Set up SSH key
-        run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > ~/.ssh/ma6-main-back-key.pem
+        run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > ~/github/home/.ssh/ma6-main-back-key.pem
         env:
           SSH_SECRETS_KEY_BASE64: ${{ secrets.SSH_SECRETS_KEY_BASE64 }}
 
