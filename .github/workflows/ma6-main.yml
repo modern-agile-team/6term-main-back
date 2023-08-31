@@ -36,8 +36,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up SSH key directory
-
       - name: Set up SSH key
         run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > $HOME/.ssh/ma6-main-back-key.pem
         env:
