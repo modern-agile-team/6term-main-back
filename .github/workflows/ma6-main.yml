@@ -37,19 +37,19 @@ jobs:
 
     steps:
       - name: Set up SSH key
-        run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > ~/github/home/.ssh/ma6-main-back-key.pem
+        run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > $HOME/.ssh/ma6-main-back-key.pem
         env:
           SSH_SECRETS_KEY_BASE64: ${{ secrets.SSH_SECRETS_KEY_BASE64 }}
 
       - name: Set permissions for SSH key
-        run: chmod 600 /github/home/.ssh/ma6-main-back-key.pem
+        run: chmod 600 $HOME/.ssh/ma6-main-back-key.pem
 
       - name: SSH Connect & Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: /github/home/.ssh/ma6-main-back-key.pem
+          key: $HOME/.ssh/ma6-main-back-key.pem
           port: ${{ secrets.PORT }}
           script: |
             docker system prune -a --volumes -f
