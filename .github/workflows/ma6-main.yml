@@ -36,12 +36,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up SSH key directory
+        run: mkdir -p $HOME/.ssh
+
       - name: Set up SSH key
-        run: |
-          echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > $HOME/.ssh/ma6-main-back-key.pem
-          chmod 600 $HOME/.ssh/ma6-main-back-key.pem
+        run: echo "${{ secrets.SSH_SECRETS_KEY_BASE64 }}" | base64 --decode > $HOME/.ssh/ma6-main-back-key.pem
         env:
           SSH_SECRETS_KEY_BASE64: ${{ secrets.SSH_SECRETS_KEY_BASE64 }}
+
+      - name: Set permissions for SSH key
+        run: chmod 600 $HOME/.ssh/ma6-main-back-key.pem
 
       - name: SSH Connect & Deploy
         uses: appleboy/ssh-action@master
