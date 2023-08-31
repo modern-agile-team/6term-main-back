@@ -1,5 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Image } from 'src/uploads/image.entity';
+import { Image } from 'src/uploads/entity/image.entity';
 import * as dotenv from 'dotenv';
 
 // .env 파일 로드
