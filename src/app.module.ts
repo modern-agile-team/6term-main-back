@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
 import { Image } from './uploads/entity/image.entity';
@@ -11,6 +11,7 @@ import { UploadsService } from './uploads/uploads.service';
 import { UploadsModule } from './uploads/uploads.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
 
 @Module({
   imports: [
@@ -30,4 +31,9 @@ import { MongooseModule } from '@nestjs/mongoose';
   controllers: [Test1Controller, UploadsController],
   providers: [Test1Service, UploadsService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  private readonly isDev: boolean = process.env.NODE_ENV === 'dev' ? true : false;
+  configure() {
+    mongoose.set('debug', this.isDev);
+  }
+}
