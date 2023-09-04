@@ -1,5 +1,5 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({
     name: 'board'
@@ -22,6 +22,9 @@ export class Board {
 
     @CreateDateColumn({ name: 'create_at' })
     createAt: Date;
+
+    @UpdateDateColumn({ name: 'updated_at' })
+    updateAt: Date;
 
     @ManyToOne(() => User)
     @JoinColumn({ name: 'user_id' })
