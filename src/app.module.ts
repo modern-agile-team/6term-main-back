@@ -1,17 +1,15 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
-import { Image } from './uploads/entity/image.entity';
-
 import { Test1Controller } from './test1/test1.controller';
 import { Test1Service } from './test1/test1.service';
 import { Test1Module } from './test1/test1.module';
-import { UploadsController } from './uploads/uploads.controller';
-import { UploadsService } from './uploads/uploads.service';
-import { UploadsModule } from './uploads/uploads.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from './chat/chat.module';
+import { S3Module } from './common/s3/s3.module';
+import { S3Service } from './common/s3/s3.service';
+
 import * as mongoose from 'mongoose';
 
 @Module({
@@ -22,16 +20,16 @@ import * as mongoose from 'mongoose';
     }),
     TypeOrmModule.forFeature([Image]),
     Test1Module,
-    UploadsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
     }),
     MongooseModule.forRoot(process.env.DB_URI), 
     ChatModule,
+    S3Module
   ],
-  controllers: [Test1Controller, UploadsController],
-  providers: [Test1Service, UploadsService],
+  controllers: [Test1Controller],
+  providers: [Test1Service, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean = process.env.NODE_ENV === 'dev' ? true : false;
