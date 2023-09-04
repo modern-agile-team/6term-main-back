@@ -29,7 +29,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "aws-sdk": "^2.1443.0",
     "dotenv": "^16.3.1",
-    "mongoose": "^7.4.5",
+    "mongoose": "^7.5.0",
     "mysql2": "^3.6.0",
     "nest-aws-sdk": "^3.0.1",
     "reflect-metadata": "^0.1.13",
