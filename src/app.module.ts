@@ -1,3 +1,4 @@
+import { UserModule } from './users/user.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
@@ -14,6 +15,7 @@ import * as mongoose from 'mongoose';
 
 @Module({
   imports: [
+    UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
       entities: [Image], // Image 엔티티 추가
@@ -24,7 +26,7 @@ import * as mongoose from 'mongoose';
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
     }),
-    MongooseModule.forRoot(process.env.DB_URI), 
+    MongooseModule.forRoot(process.env.DB_URI),
     ChatModule,
     S3Module
   ],
