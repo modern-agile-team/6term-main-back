@@ -11,6 +11,7 @@ import { ChatModule } from './chat/chat.module';
 import { S3Module } from './common/s3/s3.module';
 import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
+import { FriendModule } from './friend/friend.module';
 
 import * as mongoose from 'mongoose';
 
@@ -30,7 +31,8 @@ import * as mongoose from 'mongoose';
     MongooseModule.forRoot(process.env.DB_URI),
     ChatModule,
     S3Module,
-    BoardsModule
+    BoardsModule,
+    FriendModule
   ],
   controllers: [Test1Controller],
   providers: [Test1Service, S3Service],
