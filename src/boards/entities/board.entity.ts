@@ -7,6 +7,10 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 export class Board {
     @PrimaryGeneratedColumn()
     id: number;
+    
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'user_id' })
+    userId: User;
 
     @Column()
     head: string;
@@ -26,8 +30,5 @@ export class Board {
     @UpdateDateColumn({ name: 'updated_at' })
     updateAt: Date;
 
-    @ManyToOne(() => User)
-    @JoinColumn({ name: 'user_id' })
-    userId: User;
 
 }
