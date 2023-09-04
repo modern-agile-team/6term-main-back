@@ -1,11 +1,11 @@
-import { Board } from "src/boards/entities/board.entity";
+import { Comment } from "src/comments/entities/comment.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
-  name: 'comment'
+  name: 'recomment'
 })
-export class Comment {
+export class Recomment {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -13,9 +13,9 @@ export class Comment {
   @JoinColumn({ name: 'user_id' })
   userId: User;
 
-  @ManyToOne(() => Board)
-  @JoinColumn({ name: 'board_id '})
-  boardId: Board;
+  @ManyToOne(() => Comment)
+  @JoinColumn({ name: 'comment_id' })
+  commentId: Comment;
 
   @Column()
   content: string;
