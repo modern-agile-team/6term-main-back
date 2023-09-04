@@ -1,3 +1,4 @@
+import { CommentModule } from './comments/comment.module';
 import { UserModule } from './users/user.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,11 +13,13 @@ import { S3Module } from './common/s3/s3.module';
 import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
 import { FriendModule } from './friend/friend.module';
+import { NoticeModule } from './notice/notice.module';
 
 import * as mongoose from 'mongoose';
 
 @Module({
   imports: [
+    CommentModule,
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
@@ -32,7 +35,8 @@ import * as mongoose from 'mongoose';
     ChatModule,
     S3Module,
     BoardsModule,
-    FriendModule
+    FriendModule,
+    NoticeModule
   ],
   controllers: [Test1Controller],
   providers: [Test1Service, S3Service],
