@@ -1,3 +1,4 @@
+import { CommentModule } from './comments/comment.module';
 import { UserModule } from './users/user.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -17,6 +18,7 @@ import * as mongoose from 'mongoose';
 
 @Module({
   imports: [
+    CommentModule,
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
