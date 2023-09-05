@@ -14,7 +14,7 @@ export class CommentLike {
     userId: User;
 
     @ManyToOne(() => Comment)
-    @JoinColumn({ name: 'board_id' })
+    @JoinColumn({ name: 'comment_id' })
     boardId: Comment;
 
     @ManyToOne(() => Recomment)
