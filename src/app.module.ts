@@ -23,9 +23,9 @@ import * as mongoose from 'mongoose';
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
-      entities: [Image], // Image 엔티티 추가
+      // entities: [Image], // Image 엔티티 추가
     }),
-    TypeOrmModule.forFeature([Image]),
+    // TypeOrmModule.forFeature([Image]),
     Test1Module,
     ConfigModule.forRoot({
       isGlobal: true,
