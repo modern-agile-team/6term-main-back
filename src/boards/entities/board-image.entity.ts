@@ -8,7 +8,7 @@ export class BoardImage {
     id: number;
 
     @ManyToOne(() => Board)
-    @JoinColumn({ name: 'board_id '})
+    @JoinColumn({ name: 'board_id' })
     boardId: Board;
 
     @CreateDateColumn({ name: 'create_at' })

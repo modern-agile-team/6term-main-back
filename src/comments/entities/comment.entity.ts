@@ -14,7 +14,7 @@ export class Comment {
   userId: User;
 
   @ManyToOne(() => Board)
-  @JoinColumn({ name: 'board_id '})
+  @JoinColumn({ name: 'board_id'})
   boardId: Board;
 
   @Column()

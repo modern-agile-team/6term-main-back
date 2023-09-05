@@ -1,5 +1,6 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BoardImage } from "./board-image.entity";
 
 @Entity({
     name: 'board'
@@ -29,6 +30,5 @@ export class Board {
 
     @UpdateDateColumn({ name: 'updated_at' })
     updateAt: Date;
-
 
 }
