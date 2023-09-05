@@ -1,6 +1,6 @@
 import { CommentModule } from './comments/comment.module';
 import { UserModule } from './users/user.module';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
 import { Test1Controller } from './test1/test1.controller';
