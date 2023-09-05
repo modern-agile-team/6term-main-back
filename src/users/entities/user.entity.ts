@@ -1,9 +1,11 @@
-import { Board } from "src/boards/entities/board.entity";
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity({
   name: 'user'
 })
+@Unique(["name"])
+@Unique(["email"])
+@Unique(["phone"])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
