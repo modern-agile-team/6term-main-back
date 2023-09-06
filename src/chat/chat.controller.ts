@@ -7,18 +7,18 @@ import { ChatImage } from './schemas/chat-image.schemas';
 
 @Controller('chat')
 export class ChatController {
-    constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) {}
 
-    // @Get()
-    // async getAllChats(): Promise<ChatRoom[]> {
-    //     return await this.chatService.findAll();
-    // }
+  // @Get()
+  // async getAllChats(): Promise<ChatRoom[]> {
+  //     return await this.chatService.findAll();
+  // }
 
-    @Post()
-    async createChat(
-        @Body() 
-        chat
-    ): Promise<ChatNotification> {
-        return this.chatService.create(chat);
-    }
+  @Post()
+  async createChat(
+    @Body()
+    chat,
+  ): Promise<ChatNotification> {
+    return this.chatService.create(chat);
+  }
 }

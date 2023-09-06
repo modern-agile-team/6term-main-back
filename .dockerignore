@@ -1,15 +1,4 @@
-
-.dockerignore
 .git
-
 node_modules
-
-config
-
-src
-test
-.prettierrc
-.eslintrc.js
 .gitignore
-
 README.md
