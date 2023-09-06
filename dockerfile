@@ -4,6 +4,7 @@ FROM node:18.16.0-alpine
 # 작업 디렉토리 설정
 WORKDIR /home/app
 
+# 작업 디렉토리에 내용 복사
 COPY . .
 
 # 애플리케이션 의존성 설치 및 빌드
