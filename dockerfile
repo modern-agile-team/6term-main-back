@@ -5,10 +5,9 @@ FROM node:18.16.0-alpine
 WORKDIR /home/app
 
 # 작업 디렉토리에 내용 복사
-COPY . .
+COPY package*.json ./
 
 RUN npm ci
-RUN npm i -g @nestjs/cli@10.0.0
 
 # /dist 폴더를 이미지에 복사
 COPY ./dist ./dist
