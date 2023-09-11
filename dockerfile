@@ -7,13 +7,12 @@ WORKDIR /home/app
 # 작업 디렉토리에 내용 복사
 COPY package*.json ./
 
-RUN npm ci
+RUN npm ci --only=production && npm cache clean --force
 
 # /dist 폴더를 이미지에 복사
 COPY ./dist ./dist
 
-# 애플리케이션 의존성 설치
-RUN npm install
+
 
 # 애플리케이션 실행
 CMD ["npm", "run", "start:prod"]
