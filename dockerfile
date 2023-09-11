@@ -7,8 +7,11 @@ WORKDIR /home/app
 # 작업 디렉토리에 내용 복사
 COPY . .
 
+RUN npm ci
+RUN npm i -g @nestjs/cli@10.0.0
+RUN npm run build
 # 애플리케이션 의존성 설치 및 빌드
-RUN npm ci && npm run build
+# RUN npm ci && npm run build
 
 # 애플리케이션 실행
 CMD ["npm", "run", "start:prod"]
