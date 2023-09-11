@@ -23,6 +23,7 @@ import * as mongoose from 'mongoose';
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
+      synchronize: true,
       // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
@@ -36,13 +37,14 @@ import * as mongoose from 'mongoose';
     S3Module,
     BoardsModule,
     FriendModule,
-    NoticeModule
+    NoticeModule,
   ],
   controllers: [Test1Controller],
   providers: [Test1Service, S3Service],
 })
 export class AppModule implements NestModule {
-  private readonly isDev: boolean = process.env.NODE_ENV === 'dev' ? true : false;
+  private readonly isDev: boolean =
+    process.env.NODE_ENV === 'dev' ? true : false;
   configure() {
     mongoose.set('debug', this.isDev);
   }
