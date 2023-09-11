@@ -10,6 +10,9 @@ COPY package*.json ./
 # 애플리케이션 의존성 설치 (npm ci는 package-lock.json을 사용하여 의존성을 설치)
 RUN npm ci
 
+# ts -> js 변환 dist 폴더생성
+RUN npm run build
+
 # 로컬에서 이미 빌드된 /dist 폴더를 이미지에 복사
 COPY ./dist ./dist
 
