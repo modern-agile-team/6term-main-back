@@ -25,16 +25,16 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
   entities: [
     User,
     UserImage,
-    Board, 
-    BoardImage, 
-    BoardLike, 
-    Comment, 
-    CommentLike, 
-    Recomment, 
-    Friend, 
-    BoardNotification, 
-    CommentNotification 
-  ],  // 여기에 엔티티들을 추가해야 합니다.
-  synchronize: process.env.NODE_ENV === 'development', // 배포 시에는 false로 변경
+    Board,
+    BoardImage,
+    BoardLike,
+    Comment,
+    CommentLike,
+    Recomment,
+    Friend,
+    BoardNotification,
+    CommentNotification,
+  ], // 여기에 엔티티들을 추가해야 합니다.
+  synchronize: process.env.NODE_ENV === 'true',
   logging: true,
 };
