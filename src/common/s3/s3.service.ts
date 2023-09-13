@@ -23,7 +23,7 @@ export class S3Service {
     try {
       for (const file of files) {
         // const countImages = await this.imageRepository.count();
-        const uniqueId = uuidv4();
+        // const uniqueId = uuidv4();
         // const fileName = `${uniqueId}_${countImages + 1}.jpeg`;
 
         const params = new PutObjectCommand({
@@ -39,7 +39,7 @@ export class S3Service {
 
         const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${__filename}`; // entity 정상 추가시 filename으로 변경경
 
-        const image = new Image();
+        // const image = new Image();
         // image.image_url = fileUrl;
         // await this.imageRepository.save(image);
 
@@ -51,6 +51,6 @@ export class S3Service {
     }
   }
 }
-function uuidv4() {
-  throw new Error('Function not implemented.');
-}
+// function uuidv4() {
+//   throw new Error('Function not implemented.');
+// }
