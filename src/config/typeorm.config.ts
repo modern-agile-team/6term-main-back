@@ -35,6 +35,6 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
     BoardNotification,
     CommentNotification,
   ], // 여기에 엔티티들을 추가해야 합니다.
-  synchronize: process.env.NODE_ENV === 'true', // 배포 시에는 false로 변경
+  synchronize: process.env.NODE_ENV === 'false', // 배포 시에는 false로 변경
   logging: true,
 };
