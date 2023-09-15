@@ -17,4 +17,16 @@ export class AuthController {
   googleAuthRedirect(@Req() req) {
     return this.authService.googleLogin(req);
   }
+
+  @Get()
+  @UseGuards(AuthGuard('naver'))
+  async naverAuth(@Req() req) {
+
+  }
+
+  @Get('auth/naver/callback')
+  @UseGuards(AuthGuard('naver'))
+  naverAuthRedirect(@Req() req) {
+    return this.authService.naverLogin(req);
+  }
 }

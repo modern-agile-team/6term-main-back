@@ -16,6 +16,10 @@ import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
 
 import * as mongoose from 'mongoose';
+import { GoogleStrategy } from './common/auth/google.strategy';
+import { NaverStrategy } from './common/auth/naver.strategy';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
@@ -39,8 +43,8 @@ import * as mongoose from 'mongoose';
     FriendModule,
     NoticeModule,
   ],
-  controllers: [Test1Controller],
-  providers: [Test1Service, S3Service],
+  controllers: [AuthController, Test1Controller],
+  providers: [AuthService, GoogleStrategy, NaverStrategy, Test1Service, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
