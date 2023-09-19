@@ -1,14 +1,13 @@
-import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
+import { S3 } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 @Injectable()
 export class S3Service {
-  s3 = new S3({
+  private s3 = new S3({
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -16,41 +15,30 @@ export class S3Service {
     region: process.env.AWS_S3_REGION,
   });
 
-  // @InjectRepository(Image) private imageRepository: Repository<Image> // entity 관련
-  async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
-    const uploadedUrls: string[] = [];
+  private s3Adress = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`;
+
+  async imgUpload(file, userId): Promise<{ url: string; key: string } | false> {
+    const currentTime = new Date().getTime();
+    const filename = `${userId}_${currentTime}.jpeg`;
+
+    const params = {
+      ACL: 'public-read',
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: filename,
+      Body: file.buffer,
+      ContentType: 'image/jpeg',
+      ContentDisposition: 'inline',
+    };
 
     try {
-      for (const file of files) {
-        // const countImages = await this.imageRepository.count();
-        const uniqueId = uuidv4();
-        // const fileName = `${uniqueId}_${countImages + 1}.jpeg`;
+      await this.s3.send(new PutObjectCommand(params));
 
-        const params = new PutObjectCommand({
-          ACL: 'public-read',
-          Bucket: process.env.AWS_S3_BUCKET,
-          Key: __filename, // entity 정상 추가시 filename으로 변경
-          Body: file.buffer,
-          ContentType: 'image/jpeg',
-          ContentDisposition: 'inline',
-        });
+      const fileUrl = `${this.s3Adress}${filename}`;
 
-        await this.s3.send(params);
-
-        const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${__filename}`; // entity 정상 추가시 filename으로 변경경
-
-        const image = new Image();
-        // image.image_url = fileUrl;
-        // await this.imageRepository.save(image);
-
-        uploadedUrls.push(fileUrl);
-      }
-      return uploadedUrls;
-    } catch (err) {
-      throw new Error();
+      return { url: fileUrl, key: filename };
+    } catch (error) {
+      console.error('S3 업로드 오류:', error);
+      return false;
     }
   }
-}
-function uuidv4() {
-  throw new Error('Function not implemented.');
 }

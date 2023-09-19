@@ -6,12 +6,12 @@ import { TypeORMconfig } from './config/typeorm.config';
 import { Test1Controller } from './test1/test1.controller';
 import { Test1Service } from './test1/test1.service';
 import { Test1Module } from './test1/test1.module';
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from './chat/chat.module';
 import { S3Module } from './common/s3/s3.module';
 import { S3Service } from './common/s3/s3.service';
-import { BoardsModule } from './boards/boards.module';
+import { BoardsModule } from './boards/Boards.module';
 import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
 
