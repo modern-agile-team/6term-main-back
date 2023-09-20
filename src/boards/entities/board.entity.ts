@@ -1,34 +1,42 @@
-import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { BoardImage } from "./board-image.entity";
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { BoardImage } from './board-image.entity';
 
 @Entity({
-    name: 'board'
+  name: 'board',
 })
 export class Board {
-    @PrimaryGeneratedColumn()
-    id: number;
-    
-    @ManyToOne(() => User)
-    @JoinColumn({ name: 'user_id' })
-    userId: User;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    head: string;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  userId: User;
 
-    @Column()
-    body: string;
+  @Column()
+  head: string;
 
-    @Column()
-    main_category: number;
+  @Column()
+  body: string;
 
-    @Column()
-    sub_category: number;
+  @Column()
+  main_category: number;
 
-    @CreateDateColumn({ name: 'create_at' })
-    createAt: Date;
+  @Column()
+  sub_category: number;
 
-    @UpdateDateColumn({ name: 'updated_at' })
-    updateAt: Date;
+  @CreateDateColumn({ name: 'create_at' })
+  createAt: Date;
 
+  @UpdateDateColumn({ name: 'updated_at' })
+  updateAt: Date;
 }
