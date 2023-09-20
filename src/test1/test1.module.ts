@@ -7,4 +7,4 @@ import { Test1Service } from './test1.service';
   controllers: [Test1Controller],
   providers: [Test1Service],
 })
-export class Test1Module {}
+export class Test1Module {} // 서버테스트입니다
