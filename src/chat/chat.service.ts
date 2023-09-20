@@ -9,8 +9,8 @@ import { ChatImage } from './schemas/chat-image.schemas';
 @Injectable()
 export class ChatService {
   constructor(
-    @InjectModel(ChatNotification.name)
-    private chatRoomModel: mongoose.Model<ChatNotification>,
+    @InjectModel(ChatRoom.name)
+    private chatRoomModel: mongoose.Model<ChatRoom>,
   ) {}
 
   // async findAll(): Promise<ChatRoom[]> {
@@ -18,8 +18,7 @@ export class ChatService {
   //     return chatRooms;
   // }
 
-  async create(chatroom: ChatNotification): Promise<ChatNotification> {
+  async createChatRoom(chatroom: ChatRoom): Promise<ChatRoom> {
     const res = await this.chatRoomModel.create(chatroom);
-    return res;
   }
 }
