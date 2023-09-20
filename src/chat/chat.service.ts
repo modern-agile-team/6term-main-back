@@ -18,7 +18,7 @@ export class ChatService {
   //     return chatRooms;
   // }
 
-  async createChatRoom(chatroom: ChatRoom): Promise<ChatRoom> {
-    const res = await this.chatRoomModel.create(chatroom);
+  async createChatRoom(content: string, myId): Promise<ChatRoom> {
+    const res = await this.chatRoomModel.create(ChatRoom);
   }
 }
