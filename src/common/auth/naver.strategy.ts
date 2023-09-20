@@ -17,9 +17,10 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
-    const { nickname, profileImage, gender, email } = profile;
-
+    const { provider, nickname, profileImage, gender, email } = profile;
+    
     const user = {
+      provider,
       nickname,
       profileImage,
       gender,
