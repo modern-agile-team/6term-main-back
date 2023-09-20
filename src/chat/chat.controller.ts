@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import { Controller } from '@nestjs/common';
-
-@Controller('chat')
-export class ChatController {}
-=======
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoom } from './schemas/chat-room.schemas';
@@ -28,4 +22,3 @@ export class ChatController {
     return this.chatService.create(chat);
   }
 }
->>>>>>> bdb9578c653be91200ea0d43c4789fc699bafd80
