@@ -20,6 +20,7 @@ import { GoogleStrategy } from './common/auth/google.strategy';
 import { NaverStrategy } from './common/auth/naver.strategy';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
+import { KakaoStrategy } from './common/auth/kakao.strategy';
 
 @Module({
   imports: [
@@ -44,7 +45,7 @@ import { AuthController } from './auth/auth.controller';
     NoticeModule,
   ],
   controllers: [AuthController, Test1Controller],
-  providers: [AuthService, GoogleStrategy, NaverStrategy, Test1Service, S3Service],
+  providers: [AuthService, GoogleStrategy, NaverStrategy, KakaoStrategy, Test1Service, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =

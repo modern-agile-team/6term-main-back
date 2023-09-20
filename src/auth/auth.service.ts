@@ -21,4 +21,14 @@ export class AuthService {
       user: req.user
     }
   }
+
+  kakaoLogin(req) {
+    if(!req.user) {
+      return 'No user from kakao'
+    }
+    return {
+      message: 'User Info from kakao',
+      user: req.user
+    }
+  }
 }
