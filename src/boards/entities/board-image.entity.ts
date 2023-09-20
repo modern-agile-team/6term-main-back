@@ -16,6 +16,6 @@ export class BoardImage {
   @JoinColumn({ name: 'board_id' })
   boardId: Board;
 
-  @CreateDateColumn({ name: 'create_at' })
-  createAt: Date;
+  @CreateDateColumn({ name: 'image_url' })
+  imageUrl: string;
 }
