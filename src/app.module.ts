@@ -7,9 +7,6 @@ import { Test1Controller } from './test1/test1.controller';
 import { Test1Service } from './test1/test1.service';
 import { Test1Module } from './test1/test1.module';
 import { ConfigModule } from '@nestjs/config';
-<<<<<<< HEAD
-import { ChatModule } from './chat/chat.module';
-=======
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from './chat/chat.module';
 import { S3Module } from './common/s3/s3.module';
@@ -20,7 +17,6 @@ import { NoticeModule } from './notice/notice.module';
 
 import * as mongoose from 'mongoose';
 
->>>>>>> bdb9578c653be91200ea0d43c4789fc699bafd80
 @Module({
   imports: [
     CommentModule,
@@ -36,16 +32,12 @@ import * as mongoose from 'mongoose';
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
     }),
-<<<<<<< HEAD
-    ChatModule,
-=======
     MongooseModule.forRoot(process.env.DB_URI),
     ChatModule,
     S3Module,
     BoardsModule,
     FriendModule,
     NoticeModule,
->>>>>>> bdb9578c653be91200ea0d43c4789fc699bafd80
   ],
   controllers: [Test1Controller],
   providers: [Test1Service, S3Service],
