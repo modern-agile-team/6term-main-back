@@ -33,12 +33,13 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':roomId/:receiverId')
+  @Post(':roomId/:senderId/:receiverId')
   async createChat(
     @Param('roomId') roomId: number,
     @Param('receiverId') receiverId: number,
     @Body() body: PostChatDto,
-    @Users() senderId: number,
+    @Param('senderId') senderId: number,
+    // @Users() senderId: number,
   ) {
     return this.chatService.createChat(
       roomId,
