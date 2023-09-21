@@ -1,5 +1,5 @@
 import {
-  CreateDateColumn,
+  Column,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -14,8 +14,8 @@ export class BoardImage {
 
   @ManyToOne(() => Board)
   @JoinColumn({ name: 'board_id' })
-  boardId: Board;
+  boardId: number;
 
-  @CreateDateColumn({ name: 'image_url' })
+  @Column({ name: 'image_url' })
   imageUrl: string;
 }

@@ -34,6 +34,8 @@ export class S3Service {
       await this.s3.send(new PutObjectCommand(params));
 
       const fileUrl = `${this.s3Adress}${filename}`;
+      console.log(file.buffer);
+      console.log({ url: fileUrl, key: filename });
 
       return { url: fileUrl, key: filename };
     } catch (error) {

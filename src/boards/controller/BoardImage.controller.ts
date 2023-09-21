@@ -21,6 +21,4 @@ export class BoardImagesController {
   ): Promise<BoardImage> {
     return this.boardImagesService.create(boardId, file);
   }
-
-  // ... 다른 메서드들 ...
 }

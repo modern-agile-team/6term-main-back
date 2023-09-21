@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BoardImage } from '../entities/board-image.entity'; // BoardImage 엔티티 임포트
 import { S3Service } from '../../common/s3/s3.service'; // S3Service 임포트
-// import { BoardImagesController } from '../controller/BoardImage.controller';
 
 @Injectable()
 export class BoardImagesService {
-  constructor(private readonly s3Service: S3Service) {}
+  constructor(
+    private readonly s3Service: S3Service,
+    @InjectRepository(BoardImage)
+    private readonly boardImageRepository: Repository<BoardImage>, // BoardImage 엔티티를 위한 Repository 주입
+  ) {}
 
   async create(
     boardId: number,
@@ -13,21 +18,15 @@ export class BoardImagesService {
   ): Promise<BoardImage> {
     const userId = 1; // 사용자 ID (이건 나중에 준혁이가 변경할겁니다)
 
-    // 이미지 업로드를 S3Service를 사용하여 실행
-    const uploadedImage = await this.s3Service.imgUpload(file, userId);
-
-    // 이미지 업로드에 성공하면 반환된 URL을 DB에 저장
+    const uploadedImage = await this.s3Service.imgUpload(file, userId); // s3에 업로드하는거 -> (s3Service 에서 실행)
     if (uploadedImage) {
       const boardImage = new BoardImage();
       boardImage.boardId = boardId;
-      boardImage.imageUrl = uploadedImage.url; // S3에서 받아온 URL을 boardimage 테이블에 저장
-
-      // boardImage를 데이터베이스에 저장
-      const savedImage = await boardImage.save();
-
+      boardImage.imageUrl = uploadedImage.url;
+      const savedImage = await this.boardImageRepository.save(boardImage);
+      console.log(uploadedImage);
       return savedImage;
     } else {
-      // 이미지 업로드 실패 시 적절하게 처리
       throw new Error('이미지 업로드 실패');
     }
   }

@@ -8,7 +8,10 @@ const options: SchemaOptions = {
 @Schema(options)
 export class ChatRoom {
   @Prop({ required: true })
-  owner: number;
+  host_id: number;
+
+  @Prop({ required: true })
+  guest_id: number;
 
   @Prop({ type: Date, default: null })
   deleted_at: Date | null;
