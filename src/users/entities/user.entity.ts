@@ -16,6 +16,6 @@ export class User {
   @Column({ length: 5 })
   gender: string;
 
-  @Column({ length: 10 })
+  @Column({ default: false })
   admin: boolean;
 }

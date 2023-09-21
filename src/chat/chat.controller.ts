@@ -16,6 +16,7 @@ import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { PostChatDto } from './dto/post-chat.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
+import mongoose from 'mongoose';
 
 @Controller('chat')
 export class ChatController {
@@ -35,7 +36,7 @@ export class ChatController {
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
   @Post(':roomId/:senderId/:receiverId')
   async createChat(
-    @Param('roomId') roomId: number,
+    @Param('roomId') roomId: mongoose.Types.ObjectId,
     @Param('receiverId') receiverId: number,
     @Body() body: PostChatDto,
     @Param('senderId') senderId: number,

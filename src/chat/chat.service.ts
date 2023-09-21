@@ -32,11 +32,14 @@ export class ChatService {
   }
 
   async createChat(
-    roomId: number,
+    roomId: mongoose.Types.ObjectId,
     content: string,
     myId: number,
     receiverId: number,
   ) {
+    const roomObjectId = await this.chatRoomModel.findOne({
+      $where: roomId,
+    });
     const chatReturned = await this.chatModel.create({});
   }
 }
