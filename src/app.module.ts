@@ -23,7 +23,7 @@ import * as mongoose from 'mongoose';
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
-      synchronize: true,
+      synchronize: true, // DB 동기화 여부 설정
       // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
