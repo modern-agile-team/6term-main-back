@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoom } from './schemas/chat-room.schemas';
 import { Chat } from './schemas/chat.schemas';
@@ -15,22 +22,29 @@ export class ChatController {
   constructor(private chatService: ChatService) {}
 
   @ApiOperation({ summary: '채팅방 생성' })
-  @Post('')
-  async createChatRoom(@Body() body: CreateRoomDto, @Users() user: User) {
-    return await this.chatService.createChatRoom(body.name, myId: user.id);
+  @Post(':testUser')
+  // async createChatRoom(@Users() user: User) {
+  async createChatRoom(
+    @Param('testUser', ParseIntPipe) testUser: number,
+    @Body('guestId', ParseIntPipe) guestId: number,
+  ) {
+    return await this.chatService.createChatRoom(testUser, guestId);
+    // return await this.chatService.createChatRoom(user.id);
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':url')
-  async createWorkspaceChannelChats(
-    @Param('url') url: string,
+  @Post(':roomId/:receiverId')
+  async createChat(
+    @Param('roomId') roomId: number,
+    @Param('receiverId') receiverId: number,
     @Body() body: PostChatDto,
-    @Users() user: User,
+    @Users() senderId: number,
   ) {
-    return this.chatService.createWorkspaceChannelChats({
-      url,
-      content: body.content,
-      myId: user.id,
-    });
+    return this.chatService.createChat(
+      roomId,
+      body.content,
+      senderId,
+      receiverId,
+    );
   }
 }
