@@ -8,6 +8,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ length: 10 })
+  provider: string;
+
   @Column({ length: 20 })
   name: string;
 
