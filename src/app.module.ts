@@ -21,6 +21,7 @@ import { NaverStrategy } from './common/auth/naver.strategy';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { KakaoStrategy } from './common/auth/kakao.strategy';
+import { UserRepository } from './users/repository/user.repository';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { KakaoStrategy } from './common/auth/kakao.strategy';
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
-      synchronize: true,
+      synchronize: false, // DB 동기화 여부 설정
       // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
@@ -45,7 +46,7 @@ import { KakaoStrategy } from './common/auth/kakao.strategy';
     NoticeModule,
   ],
   controllers: [AuthController, Test1Controller],
-  providers: [AuthService, GoogleStrategy, NaverStrategy, KakaoStrategy, Test1Service, S3Service],
+  providers: [AuthService, UserRepository, GoogleStrategy, NaverStrategy, KakaoStrategy, Test1Service, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
