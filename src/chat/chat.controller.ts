@@ -37,9 +37,9 @@ export class ChatController {
   @Post(':roomId/:senderId/:receiverId')
   async createChat(
     @Param('roomId') roomId: mongoose.Types.ObjectId,
-    @Param('receiverId') receiverId: number,
+    @Param('receiverId', ParseIntPipe) receiverId: number,
     @Body() body: PostChatDto,
-    @Param('senderId') senderId: number,
+    @Param('senderId', ParseIntPipe) senderId: number,
     // @Users() senderId: number,
   ) {
     return this.chatService.createChat(

@@ -37,9 +37,20 @@ export class ChatService {
     myId: number,
     receiverId: number,
   ) {
-    const roomObjectId = await this.chatRoomModel.findOne({
-      $where: roomId,
+    const chatReturned = await this.chatModel.create({
+      chatroom_id: roomId,
+      content: content,
+      sender: myId,
+      receiver: receiverId,
     });
-    const chatReturned = await this.chatModel.create({});
+    console.log(chatReturned);
+    const chat = {
+      content: chatReturned.content,
+      sender: chatReturned.sender,
+      receiver: chatReturned.receiver,
+    };
+    const socketRoomId = roomId.toString();
+    console.log(socketRoomId);
+    this.eventsGateway.server.to(socketRoomId).emit('message', chat);
   }
 }
