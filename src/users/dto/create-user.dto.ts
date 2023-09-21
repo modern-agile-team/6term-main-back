@@ -1,6 +1,9 @@
-import { IsEmail, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsString } from "class-validator";
 
 export class CreateUSerDto {
+  @IsString()
+  readonly provider: string;
+
   @IsString()
   readonly name: string;
 
@@ -9,4 +12,7 @@ export class CreateUSerDto {
 
   @IsString()
   readonly gender: string;
+
+  @IsBoolean()
+  readonly admin: boolean;
 }
