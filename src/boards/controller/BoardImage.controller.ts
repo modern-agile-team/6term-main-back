@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { BoardImagesService } from '../service/BoardImage.service';
-import { BoardImage } from '../entities/board-image.entity'; // BoardImage 엔티티 임포트
+import { BoardImage } from '../entities/board-image.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Board } from '../entities/board.entity';
 
@@ -15,7 +15,7 @@ export class BoardImagesController {
   constructor(private readonly boardImagesService: BoardImagesService) {}
 
   @Post(':boardId')
-  @UseInterceptors(FileInterceptor('file')) // 'file'은 업로드할 파일 필드의 이름입니다.
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @Param('boardId') boardId: Board,
     @UploadedFile() file: Express.Multer.File,

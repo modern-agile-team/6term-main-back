@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
+import { CreateBoardDto } from '../dto/create.board.dto';
 
 @Injectable()
 export class BoardsService {
@@ -11,7 +12,7 @@ export class BoardsService {
     private boardRepository: Repository<Board>,
   ) {}
 
-  async create(boardData: DeepPartial<Board>): Promise<Board> {
+  async create(boardData: CreateBoardDto): Promise<Board> {
     const userId = 1; // 임시로 1 쓴거야 준혁아 이부분 너가 수정해야해
 
     const user = new User(); // User 엔터티의 인스턴스를 생성
