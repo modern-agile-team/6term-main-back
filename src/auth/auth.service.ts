@@ -5,16 +5,6 @@ import { UserRepository } from 'src/users/repository/user.repository';
 export class AuthService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  googleLogin(req) {
-    if(!req.user) {
-      return 'No user from google'
-    }
-    return {
-      message: 'User Info from google',
-      user: req.user
-    }
-  }
-
   async naverLogin(req) {
     const userInfo = req.user; // 네이버에서 전달받은 사용자 정보
 
