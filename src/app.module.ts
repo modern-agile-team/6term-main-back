@@ -3,9 +3,6 @@ import { UserModule } from './users/user.module';
 import { Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
-import { Test1Controller } from './test1/test1.controller';
-import { Test1Service } from './test1/test1.service';
-import { Test1Module } from './test1/test1.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from './chat/chat.module';
@@ -32,7 +29,6 @@ import { UserRepository } from './users/repository/user.repository';
       // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
-    Test1Module,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
@@ -44,8 +40,8 @@ import { UserRepository } from './users/repository/user.repository';
     FriendModule,
     NoticeModule,
   ],
-  controllers: [AuthController, Test1Controller],
-  providers: [AuthService, UserRepository, NaverStrategy, KakaoStrategy, Test1Service, S3Service],
+  controllers: [AuthController,],
+  providers: [AuthService, UserRepository, NaverStrategy, KakaoStrategy, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
