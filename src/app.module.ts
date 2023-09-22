@@ -3,9 +3,6 @@ import { UserModule } from './users/user.module';
 import { Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMconfig } from './config/typeorm.config';
-import { Test1Controller } from './test1/test1.controller';
-import { Test1Service } from './test1/test1.service';
-import { Test1Module } from './test1/test1.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from './chat/chat.module';
@@ -27,7 +24,6 @@ import * as mongoose from 'mongoose';
       // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
-    Test1Module,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env', // .env 파일 경로 설정
@@ -39,8 +35,8 @@ import * as mongoose from 'mongoose';
     FriendModule,
     NoticeModule,
   ],
-  controllers: [Test1Controller],
-  providers: [Test1Service, S3Service],
+
+  providers: [S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =

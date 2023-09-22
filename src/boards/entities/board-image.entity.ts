@@ -14,7 +14,7 @@ export class BoardImage {
 
   @ManyToOne(() => Board)
   @JoinColumn({ name: 'board_id' })
-  boardId: number;
+  boardId: Board;
 
   @Column({ name: 'image_url' })
   imageUrl: string;

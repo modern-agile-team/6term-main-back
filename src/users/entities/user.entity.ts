@@ -7,6 +7,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ length: 10 })
+  provider: string;
+
   @Column({ length: 20 })
   name: string;
 
@@ -16,6 +19,6 @@ export class User {
   @Column({ length: 5 })
   gender: string;
 
-  @Column({ length: 10, default: false })
+  @Column({ default: false })
   admin: boolean;
 }

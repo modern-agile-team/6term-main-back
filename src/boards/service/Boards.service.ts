@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Board } from '../entities/board.entity'; // Board 엔터티 가져오기
+import { DeepPartial, Repository } from 'typeorm';
+import { Board } from '../entities/board.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class BoardsService {
@@ -10,13 +11,22 @@ export class BoardsService {
     private boardRepository: Repository<Board>,
   ) {}
 
-  async create(boardData: Partial<Board>): Promise<Board> {
-    const board = this.boardRepository.create(boardData);
-    return this.boardRepository.save(board);
+  async create(boardData: DeepPartial<Board>): Promise<Board> {
+    const userId = 1; // 임시로 1 쓴거야 준혁아 이부분 너가 수정해야해
+
+    const user = new User(); // User 엔터티의 인스턴스를 생성
+    user.id = userId;
+
+    const board = this.boardRepository.create({
+      ...boardData,
+      userId: user,
+    });
+
+    return await this.boardRepository.save(board);
   }
 
   async findAll(): Promise<Board[]> {
-    return this.boardRepository.find();
+    return await this.boardRepository.find();
   }
 
   async findOne(id: number): Promise<Board | undefined> {
