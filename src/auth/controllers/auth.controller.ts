@@ -1,12 +1,12 @@
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get()
+  @Get('auth/naver')
   @UseGuards(AuthGuard('naver'))
   async naverAuth(@Req() req) {
 

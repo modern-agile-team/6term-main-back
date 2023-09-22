@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { VerifyCallback } from "jsonwebtoken";
 import { Strategy } from 'passport-naver-v2';
 import * as dotenv from 'dotenv';
 
@@ -16,7 +15,7 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
+  async validate(accessToken: string, refreshToken: string, profile: any) {
     const { provider, nickname, profileImage, gender, email } = profile;
     
     const user = {
@@ -28,6 +27,6 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     }
     console.log(user);
 
-    done(null, user);
+    return user;
   }
 }

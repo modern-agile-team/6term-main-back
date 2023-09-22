@@ -1,3 +1,4 @@
+import { AuthModule } from './auth/modules/auth.module';
 import { CommentModule } from './comments/comment.module';
 import { UserModule } from './users/user.module';
 import { Module, NestModule } from '@nestjs/common';
@@ -13,19 +14,15 @@ import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
 
 import * as mongoose from 'mongoose';
-import { NaverStrategy } from './common/auth/naver.strategy';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { KakaoStrategy } from './common/auth/kakao.strategy';
-import { UserRepository } from './users/repository/user.repository';
 
 @Module({
   imports: [
+    AuthModule,
     CommentModule,
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
-      synchronize: false, // DB 동기화 여부 설정
+      synchronize: true, // DB 동기화 여부 설정
       // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
@@ -40,8 +37,10 @@ import { UserRepository } from './users/repository/user.repository';
     FriendModule,
     NoticeModule,
   ],
-  controllers: [AuthController,],
-  providers: [AuthService, UserRepository, NaverStrategy, KakaoStrategy, S3Service],
+  controllers: [],
+  providers: [
+    S3Service,
+  ],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
