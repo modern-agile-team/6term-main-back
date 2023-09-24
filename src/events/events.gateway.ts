@@ -12,7 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { onlineMap } from './onlineMap';
 import mongoose from 'mongoose';
 
-@WebSocketGateway({ namespace: `^${mongoose.Types.ObjectId}` })
+@WebSocketGateway({ namespace: /\/ch\d+/ })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -28,13 +28,12 @@ export class EventsGateway
     @MessageBody() data: { id: number; channels: number[] },
     @ConnectedSocket() socket: Socket,
   ) {
-    const newNamespace = socket.nsp;
-    console.log('login', newNamespace);
-    onlineMap[socket.nsp.name][socket.id] = data.id;
-    newNamespace.emit('onlineList', Object.values(onlineMap[socket.nsp.name]));
-    data.channels.forEach((channel) => {
-      console.log('join', socket.nsp.name, channel);
-      socket.join(`${socket.nsp.name}-${channel}`);
+    const userName = data.id;
+    const rooms = data.channels;
+    console.log('login', userName);
+    rooms.forEach((channels: number) => {
+      console.log('join', channels);
+      socket.join(`${channels}`);
     });
   }
 
@@ -44,17 +43,12 @@ export class EventsGateway
 
   handleConnection(@ConnectedSocket() socket: Socket): any {
     console.log('connected', socket.nsp.name);
-    if (!onlineMap[socket.nsp.name]) {
-      onlineMap[socket.nsp.name] = {};
-    }
-
-    socket.emit('hello', socket.nsp.name);
+    socket.on('message', (chat) => {
+      console.log('Received new chat message:', chat);
+    });
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket): any {
     console.log('disconnected', socket.nsp.name);
-    const newNamespace = socket.nsp;
-    delete onlineMap[socket.nsp.name][socket.id];
-    newNamespace.emit('onlineList', Object.values(onlineMap[socket.nsp.name]));
   }
 }

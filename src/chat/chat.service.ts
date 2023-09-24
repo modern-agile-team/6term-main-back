@@ -49,7 +49,7 @@ export class ChatService {
       sender: chatReturned.sender,
       receiver: chatReturned.receiver,
     };
-    const socketRoomId = roomId.toString();
+    const socketRoomId = chatReturned.chatroom_id.toString();
     console.log(socketRoomId);
     this.eventsGateway.server.to(socketRoomId).emit('message', chat);
   }
