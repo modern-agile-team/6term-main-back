@@ -22,6 +22,25 @@ import mongoose from 'mongoose';
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
+  @ApiOperation({ summary: '채팅방 전체 조회' })
+  @Get(':testUser')
+  // async createChatRoom(@Users() user: User) {
+  async getChatRooms(@Param('testUser', ParseIntPipe) testUser: number) {
+    return await this.chatService.getChatRooms(testUser);
+    // return await this.chatService.createChatRoom(user.id);
+  }
+
+  @ApiOperation({ summary: '채팅방 단일 조회' })
+  @Get(':testUser/:roomId')
+  // async createChatRoom(@Users() user: User) {
+  async getOneChatRoom(
+    @Param('testUser', ParseIntPipe) testUser: number,
+    @Param('roomId') roomId: mongoose.Types.ObjectId,
+  ) {
+    return await this.chatService.getOneChatRoom(testUser, roomId);
+    // return await this.chatService.createChatRoom(user.id);
+  }
+
   @ApiOperation({ summary: '채팅방 생성' })
   @Post(':testUser')
   // async createChatRoom(@Users() user: User) {
@@ -30,6 +49,14 @@ export class ChatController {
     @Body('guestId', ParseIntPipe) guestId: number,
   ) {
     return await this.chatService.createChatRoom(testUser, guestId);
+    // return await this.chatService.createChatRoom(user.id);
+  }
+
+  @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
+  @Get(':testUser/:roomId')
+  // async createChatRoom(@Users() user: User) {
+  async getChats(@Param('roomId') roomId: mongoose.Types.ObjectId) {
+    return await this.chatService.getChats(roomId);
     // return await this.chatService.createChatRoom(user.id);
   }
 
