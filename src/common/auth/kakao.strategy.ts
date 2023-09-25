@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { VerifyCallback } from "jsonwebtoken";
 import { Strategy } from 'passport-kakao';
 import * as dotenv from 'dotenv';
 
@@ -15,7 +14,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
+  async validate(accessToken: string, refreshToken: string, profile: any) {
     const { provider, _json } = profile;
     
     if (provider == 'kakao') {
@@ -29,8 +28,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       gender: _json.kakao_account.gender,
       email: _json.kakao_account.email,
     }
-    console.log(user);
+    console.log(accessToken, refreshToken);
 
-    done(null, user);
+    return user;
   }
 }

@@ -38,9 +38,7 @@ import * as mongoose from 'mongoose';
     NoticeModule,
   ],
   controllers: [],
-  providers: [
-    S3Service,
-  ],
+  providers: [S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =

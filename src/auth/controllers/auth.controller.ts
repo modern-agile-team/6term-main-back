@@ -18,15 +18,19 @@ export class AuthController {
     return this.authService.naverLogin(req);
   }
 
-  @Get()
+  @Get('auth/kakao')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuth(@Req() req) {
-
+    
   }
 
   @Get('auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  kakaoAuthRedirect(@Req() req) {
-    return this.authService.kakaoLogin(req);
+  async kakaoAuthRedirect(@Req() req) {
+    const userId = await this.authService.kakaoLogin(req);
+    const accessToken = await this.authService.createAccessToken(userId);
+    const refreshToken = await this.authService.createRefreshToken(userId);
+    
+    return { accessToken, refreshToken };
   }
 }
