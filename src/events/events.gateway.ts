@@ -12,7 +12,8 @@ import { Server, Socket } from 'socket.io';
 import { onlineMap } from './onlineMap';
 import mongoose from 'mongoose';
 
-@WebSocketGateway({ namespace: /\/ch\d+/ })
+// @WebSocketGateway({ namespace: /\/ch\d+/ })
+@WebSocketGateway({ namespace: '/ch123' })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

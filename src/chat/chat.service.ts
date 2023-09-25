@@ -51,6 +51,7 @@ export class ChatService {
     };
     const socketRoomId = chatReturned.chatroom_id.toString();
     console.log(socketRoomId);
-    this.eventsGateway.server.to(socketRoomId).emit('message', chat);
+    // this.eventsGateway.server.to(socketRoomId).emit('message', chat);
+    this.eventsGateway.server.to('/ch123').emit('message', chat);
   }
 }
