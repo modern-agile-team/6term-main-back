@@ -1,15 +1,19 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsInstance } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateBoardDto {
   @IsString()
-  readonly head: string;
+  head: string;
 
   @IsString()
-  readonly body: string;
+  body: string;
 
   @IsNumber()
-  readonly main_category: number;
+  main_category: string;
 
   @IsNumber()
-  readonly sub_category: number;
+  sub_category: string;
+
+  @IsInstance(User)
+  userId: User;
 }
