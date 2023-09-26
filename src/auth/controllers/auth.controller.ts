@@ -1,10 +1,14 @@
+import { UserRepository } from 'src/users/repository/user.repository';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from '../auth.service';
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { AuthService } from '../service/auth.service';
+import { Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService, 
+    private userRepository: UserRepository
+  ) {}
 
   @Get()
   getHello(): string {
