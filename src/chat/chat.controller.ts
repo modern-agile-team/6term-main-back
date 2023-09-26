@@ -17,6 +17,7 @@ import { User } from 'src/users/entities/user.entity';
 import { PostChatDto } from './dto/post-chat.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import mongoose from 'mongoose';
+import { ParseObjectIdPipe } from './parse-object-id.pipe';
 
 @Controller('chat')
 export class ChatController {
@@ -53,9 +54,11 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
-  @Get(':testUser/:roomId')
+  @Get(':roomId')
   // async createChatRoom(@Users() user: User) {
-  async getChats(@Param('roomId') roomId: mongoose.Types.ObjectId) {
+  async getChats(
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+  ) {
     return await this.chatService.getChats(roomId);
     // return await this.chatService.createChatRoom(user.id);
   }

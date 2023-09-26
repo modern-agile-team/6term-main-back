@@ -42,7 +42,6 @@ export class ChatService {
         ],
       })
       .exec();
-    console.log(returnedRoom);
     if (!returnedRoom) {
       throw new NotFoundException('해당 ChatRoom이 존재하지 않습니다.');
     }
@@ -68,7 +67,6 @@ export class ChatService {
     receiverId: number,
   ) {
     const exception = await this.getOneChatRoom(myId, roomId);
-    console.log(exception);
     if (!exception.length)
       throw new NotFoundException('해당 ChatRoom이 없습니다.');
     const chatReturned = await this.chatModel.create({
@@ -77,16 +75,15 @@ export class ChatService {
       sender: myId,
       receiver: receiverId,
     });
-    console.log(chatReturned);
     const chat = {
       content: chatReturned.content,
       sender: chatReturned.sender,
       receiver: chatReturned.receiver,
     };
-    console.log(chat);
     const socketRoomId = chatReturned.chatroom_id.toString();
-    console.log(socketRoomId);
-    this.eventsGateway.server.to(`/ch${socketRoomId}`).emit('message', chat);
+    this.eventsGateway.server
+      .to(`/ch${socketRoomId}`)
+      .emit('message', chat.content, 'login', chat.sender);
     // this.eventsGateway.server.to('/ch123').emit('message', chat);
     return chat;
   }

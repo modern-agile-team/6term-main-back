@@ -11,8 +11,9 @@ import {
 import { Server, Socket } from 'socket.io';
 import { onlineMap } from './onlineMap';
 import mongoose from 'mongoose';
+import { User } from 'src/users/entities/user.entity';
 
-@WebSocketGateway({ namespace: /\/ch\d+/ })
+@WebSocketGateway({ namespace: /\/ch\d+/, cors: true })
 // @WebSocketGateway({ namespace: '/ch123' })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -24,10 +25,10 @@ export class EventsGateway
     console.log('test', data);
   }
 
-  @SubscribeMessage('send')
+  @SubscribeMessage('login')
   handleLogin(
     // @MessageBody() data: { id: number; roomId: number[] },
-    @MessageBody() data: { id: number; channel: string },
+    @MessageBody() data: { id: string; channel: string },
     @ConnectedSocket() socket: Socket,
   ) {
     const userName = data.id;
@@ -49,9 +50,14 @@ export class EventsGateway
   handleConnection(@ConnectedSocket() socket: Socket): any {
     console.log('connected', socket.nsp.name);
     socket.emit('hello', socket.nsp.name);
+    socket.on('login', (data) => {
+      const userName = data.id;
+      socket.data.userName = userName;
+    });
     socket.on('message', (chat) => {
       console.log('Received new chat message:', chat);
-      socket.emit('gimotti', chat);
+      const userName = socket.data.userName;
+      socket.broadcast.emit('msgNoti', `${userName}의 message: ${chat}`);
     });
   }
 
