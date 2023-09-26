@@ -28,8 +28,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       gender: _json.kakao_account.gender,
       email: _json.kakao_account.email,
     }
-    console.log(accessToken, refreshToken);
 
-    return user;
+    return {user, accessToken, refreshToken};
   }
 }

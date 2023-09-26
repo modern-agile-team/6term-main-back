@@ -26,18 +26,20 @@ export class AuthService {
 
   async kakaoLogin(req) {
     const userInfo = req.user; // 카카오에서 전달받은 사용자 정보
-
+    const kakaoAccessToken = userInfo.accessToken;
+    const kakaoRefreshToken = userInfo.refreshToken;
+    
     const checkProvider = await this.userRepository.findByProvider(userInfo.provider);
     const checkEmail = await this.userRepository.findByEmail(userInfo.email);
     const checkName = await this.userRepository.findByName(userInfo.nickname);
 
     if (checkProvider && checkEmail && checkName) { // 이미 존재하는 사용자인 경우
       const userId = checkProvider.id;
-      return userId;
+      return { userId, kakaoAccessToken, kakaoRefreshToken };
     } else { // 존재하지 않는 사용자인 경우
       const newUser = await this.userRepository.createUser(userInfo);
       const userId = newUser.id;
-      return userId;
+      return { userId, kakaoAccessToken, kakaoRefreshToken };
     }
   }
 
