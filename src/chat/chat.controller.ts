@@ -5,6 +5,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoom } from './schemas/chat-room.schemas';
@@ -20,6 +22,7 @@ import mongoose from 'mongoose';
 import { ParseObjectIdPipe } from './parse-object-id.pipe';
 
 @Controller('chat')
+@UsePipes(ValidationPipe)
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
@@ -56,9 +59,7 @@ export class ChatController {
   @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
   @Get(':roomId')
   // async createChatRoom(@Users() user: User) {
-  async getChats(
-    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-  ) {
+  async getChats(@Param('roomId') roomId: string) {
     return await this.chatService.getChats(roomId);
     // return await this.chatService.createChatRoom(user.id);
   }

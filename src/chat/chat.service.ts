@@ -56,7 +56,7 @@ export class ChatService {
     return chatRoomReturned;
   }
 
-  async getChats(roomId: mongoose.Types.ObjectId) {
+  async getChats(roomId: string) {
     return await this.chatModel.find({ chatroom_id: roomId }).exec();
   }
 
