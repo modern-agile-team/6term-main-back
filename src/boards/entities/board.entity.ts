@@ -3,13 +3,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  // EntityRepository,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  //OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { BoardImage } from './board-image.entity';
+//import { BoardImage } from './board-image.entity';
 
 @Entity({
   name: 'board',
@@ -29,10 +30,10 @@ export class Board {
   body: string;
 
   @Column()
-  main_category: number;
+  main_category: string;
 
   @Column()
-  sub_category: number;
+  sub_category: string;
 
   @CreateDateColumn({ name: 'create_at' })
   createAt: Date;
