@@ -1,3 +1,4 @@
+import { UserImage } from './../entities/user-image.entity';
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -28,5 +29,13 @@ export class UserRepository {
     user.gender = userInfo.gender;
 
     return this.entityManager.save(user);
+  }
+
+  async uploadProfileImage(userId: number, profileImage: string): Promise<UserImage> {
+    const userImage = new UserImage();
+    userImage.userId = userId;
+    userImage.imageUrl = profileImage;
+
+    return this.entityManager.save(userImage);
   }
 }
