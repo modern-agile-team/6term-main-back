@@ -31,16 +31,6 @@ export class UserRepository {
     return this.entityManager.save(user);
   }
 
-  async checkUserImage(userId: number): Promise<UserImage | null> {
-    try {
-      const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
-      return userImage;
-    } catch (error) {
-      console.error('이미지 체크 오류:', error);
-      return null;
-    }
-  }
-
   async uploadUserImage(userId: number, imageUrl: string): Promise<UserImage> {
     const userImage = new UserImage();
     userImage.userId = userId;
