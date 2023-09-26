@@ -32,15 +32,17 @@ export class AuthService {
     const checkProvider = await this.userRepository.findByProvider(userInfo.user.provider);
     const checkEmail = await this.userRepository.findByEmail(userInfo.user.email);
     const checkName = await this.userRepository.findByName(userInfo.user.nickname);
-    
+      
     if (checkProvider && checkEmail && checkName) { // 이미 존재하는 사용자인 경우
       const userId = checkProvider.id;
-      await this.userRepository.updateUserImage(userId, userInfo.user.profileImage);
 
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     } else { // 존재하지 않는 사용자인 경우
       const newUser = await this.userRepository.createUser(userInfo.user);
       const userId = newUser.id;
+      if (!userInfo.user.profileImage) {
+        await this.userRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
+      }
       await this.userRepository.uploadUserImage(userId, userInfo.user.profileImage);
 
       return { userId, kakaoAccessToken, kakaoRefreshToken };
