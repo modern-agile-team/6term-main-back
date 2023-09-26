@@ -1,29 +1,15 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from './user.entity';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "./user.entity";
 
 @Entity({ name: 'user_image' })
 export class UserImage {
-  @PrimaryGeneratedColumn()
-  id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @OneToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
-  userId: User;
+    @OneToOne(() => User)
+    @JoinColumn({ name: 'user_id' })
+    userId: number;
 
-  @Column({ name: 'image_url' })
-  imageUrl: string;
-
-  @CreateDateColumn({ name: 'create_at' })
-  create_at: Date;
-
-  @DeleteDateColumn({ name: 'delete_at' })
-  delete_at: Date | null;
+    @Column({ name: 'image_url' })
+    imageUrl: string;
 }
