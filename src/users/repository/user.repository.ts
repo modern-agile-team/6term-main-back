@@ -31,10 +31,17 @@ export class UserRepository {
     return this.entityManager.save(user);
   }
 
-  async uploadProfileImage(userId: number, profileImage: string): Promise<UserImage> {
+  async uploadUserImage(userId: number, imageUrl: string): Promise<UserImage> {
     const userImage = new UserImage();
     userImage.userId = userId;
-    userImage.imageUrl = profileImage;
+    userImage.imageUrl = imageUrl;
+
+    return this.entityManager.save(userImage);
+  }
+
+  async updateUserImage(userId: number, newImageUrl: string): Promise<UserImage> {
+    const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
+    userImage.imageUrl = newImageUrl;
 
     return this.entityManager.save(userImage);
   }
