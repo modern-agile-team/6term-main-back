@@ -1,5 +1,5 @@
 import { UserRepository } from 'src/users/repository/user.repository';
-import { Controller, InternalServerErrorException, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, InternalServerErrorException, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from 'src/common/s3/s3.service';
 
@@ -7,7 +7,7 @@ import { S3Service } from 'src/common/s3/s3.service';
 export class UserImageController {
   constructor(private readonly s3Service: S3Service, private userRepository: UserRepository) {}
 
-  @Post(':userId')
+  @Patch(':userId')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@Param('userId') userId: number, @UploadedFile() file: Express.Multer.File) {
     userId = parseInt(userId.toString().slice(1));
