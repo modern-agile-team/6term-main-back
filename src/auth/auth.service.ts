@@ -28,16 +28,18 @@ export class AuthService {
     const userInfo = req.user; // 카카오에서 전달받은 사용자 정보
     const kakaoAccessToken = userInfo.accessToken;
     const kakaoRefreshToken = userInfo.refreshToken;
+    console.log(userInfo.user);
     
-    const checkProvider = await this.userRepository.findByProvider(userInfo.provider);
-    const checkEmail = await this.userRepository.findByEmail(userInfo.email);
-    const checkName = await this.userRepository.findByName(userInfo.nickname);
-
+    const checkProvider = await this.userRepository.findByProvider(userInfo.user.provider);
+    const checkEmail = await this.userRepository.findByEmail(userInfo.user.email);
+    const checkName = await this.userRepository.findByName(userInfo.user.nickname);
+    console.log(checkProvider, checkEmail, checkName);
+    
     if (checkProvider && checkEmail && checkName) { // 이미 존재하는 사용자인 경우
       const userId = checkProvider.id;
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     } else { // 존재하지 않는 사용자인 경우
-      const newUser = await this.userRepository.createUser(userInfo);
+      const newUser = await this.userRepository.createUser(userInfo.user);
       const userId = newUser.id;
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     }
@@ -66,5 +68,20 @@ export class AuthService {
     const refreshToken = jwt.sign(payload, jwtSecretKey);
 
     return refreshToken;
+  }
+
+  async verifyToken(accessToken: string) {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const verifyToken = jwt.verify(accessToken, jwtSecretKey);
+    if (verifyToken) {
+      return { status: true, message: "유효한 토큰입니다." };
+    }
+    return { status: false, message: "유효하지 않은 토큰입니다." };
+  }
+
+  async decodeToken(accessToken: string) {
+    const payload = jwt.decode(accessToken);
+    const userId = payload['userId'];
+    return userId;
   }
 }
