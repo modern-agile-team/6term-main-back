@@ -5,7 +5,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { BoardImagesService } from '../service/BoardImage.service';
+import { BoardImagesService } from '../services/BoardImage.service';
 import { BoardImage } from '../entities/board-image.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Board } from '../entities/board.entity';

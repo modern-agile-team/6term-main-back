@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BoardsController } from './controller/Boards.controller';
-import { BoardsService } from './service/Boards.service';
+import { BoardsController } from './controllers/Boards.controller';
+import { BoardsService } from './services/Boards.service';
 import { Board } from './entities/board.entity';
-import { BoardImagesController } from './controller/BoardImage.controller';
-import { BoardImagesService } from './service/BoardImage.service';
+import { BoardImagesController } from './controllers/BoardImage.controller';
+import { BoardImagesService } from './services/BoardImage.service';
 import { S3Service } from 'src/common/s3/s3.service';
 import { BoardImage } from './entities/board-image.entity';
 import { BoardRepository } from './repository/boards.repository';

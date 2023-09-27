@@ -21,7 +21,7 @@ export class BoardImagesService {
       boardImage.boardId = board; // boardId 대신 board 엔터티를 할당 ( fk 키 )
       boardImage.imageUrl = uploadedImage.url;
       const savedImage = await this.boardImageRepository.save(boardImage);
-      console.log(uploadedImage);
+
       return savedImage;
     } else {
       throw new Error('이미지 업로드 실패');
