@@ -19,7 +19,6 @@ import { User } from 'src/users/entities/user.entity';
 import { PostChatDto } from './dto/post-chat.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import mongoose from 'mongoose';
-import { ParseObjectIdPipe } from './parse-object-id.pipe';
 
 @Controller('chat')
 @UsePipes(ValidationPipe)
@@ -27,7 +26,7 @@ export class ChatController {
   constructor(private chatService: ChatService) {}
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
-  @Get(':testUser')
+  @Get('room/:testUser')
   // async createChatRoom(@Users() user: User) {
   async getChatRooms(@Param('testUser', ParseIntPipe) testUser: number) {
     return await this.chatService.getChatRooms(testUser);
@@ -35,7 +34,7 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방 단일 조회' })
-  @Get(':testUser/:roomId')
+  @Get('room/:testUser/:roomId')
   // async createChatRoom(@Users() user: User) {
   async getOneChatRoom(
     @Param('testUser', ParseIntPipe) testUser: number,
@@ -46,7 +45,7 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방 생성' })
-  @Post(':testUser')
+  @Post('room/:testUser')
   // async createChatRoom(@Users() user: User) {
   async createChatRoom(
     @Param('testUser', ParseIntPipe) testUser: number,
@@ -56,10 +55,21 @@ export class ChatController {
     // return await this.chatService.createChatRoom(user.id);
   }
 
+  @ApiOperation({ summary: '해당 채팅방 삭제' })
+  @Post('room/:testUser/:roomId')
+  // async createChatRoom(@Users() user: User) {
+  async deleteChatRoom(
+    @Param('testUser', ParseIntPipe) testUser: number,
+    @Param('roomId') roomId: mongoose.Types.ObjectId,
+  ) {
+    return await this.chatService.createChatRoom(testUser, roomId);
+    // return await this.chatService.createChatRoom(user.id);
+  }
+
   @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
   @Get(':roomId')
-  // async createChatRoom(@Users() user: User) {
-  async getChats(@Param('roomId') roomId: string) {
+  // async createChatRoom(@Users( ) user: User) {
+  async getChats(@Param('roomId') roomId: mongoose.Types.ObjectId) {
     return await this.chatService.getChats(roomId);
     // return await this.chatService.createChatRoom(user.id);
   }

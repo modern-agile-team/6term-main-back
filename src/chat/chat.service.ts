@@ -56,7 +56,20 @@ export class ChatService {
     return chatRoomReturned;
   }
 
-  async getChats(roomId: string) {
+  async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
+    const chatRoom = await this.chatRoomModel.findById(roomId);
+    if (!chatRoom) {
+      throw new NotFoundException('해당 채팅방이 없습니다.');
+    }
+    const isUser = await this.chatRoomModel.findOne({
+      $or: [{ host_id: myId }, { guest_id: myId }],
+    });
+    if (!isUser) {
+      throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
+    }
+  }
+
+  async getChats(roomId: mongoose.Types.ObjectId) {
     return await this.chatModel.find({ chatroom_id: roomId }).exec();
   }
 
@@ -81,9 +94,7 @@ export class ChatService {
       receiver: chatReturned.receiver,
     };
     const socketRoomId = chatReturned.chatroom_id.toString();
-    this.eventsGateway.server
-      .to(`/ch${socketRoomId}`)
-      .emit('message', chat.content, 'login', chat.sender);
+    this.eventsGateway.server.to(`/ch${socketRoomId}`).emit('message', chat);
     // this.eventsGateway.server.to('/ch123').emit('message', chat);
     return chat;
   }

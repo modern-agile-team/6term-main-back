@@ -50,6 +50,9 @@ export class EventsGateway
   handleConnection(@ConnectedSocket() socket: Socket): any {
     console.log('connected', socket.nsp.name);
     socket.emit('hello', socket.nsp.name);
+    socket.on('hello', (data) => {
+      console.log(data);
+    });
     socket.on('login', (data) => {
       const userName = data.id;
       socket.data.userName = userName;

@@ -1,15 +1,12 @@
-import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { BadRequestException } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 
 @Injectable()
-export class ParseObjectIdPipe implements PipeTransform<any, Types.ObjectId> {
-  transform(value: any): Types.ObjectId {
-    const validObjectId = Types.ObjectId.isValid(value);
-
-    if (!validObjectId) {
-      throw new BadRequestException('Invalid ObjectId');
+export class ParseObjectIdPipe implements PipeTransform<string> {
+  async transform(value: string, metadata: ArgumentMetadata) {
+    if (!value.match('^[a-fA-F0-9]{24}$')) {
+      throw new BadRequestException('Validation failed');
     }
-
-    return Types.ObjectId.createFromHexString(value);
+    return value;
   }
 }
