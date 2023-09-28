@@ -42,9 +42,9 @@ export class AuthService {
       const userId = newUser.id;
       if (!userInfo.user.profileImage) {
         await this.userRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
+      } else {
+        await this.userRepository.uploadUserImage(userId, userInfo.user.profileImage);
       }
-      await this.userRepository.uploadUserImage(userId, userInfo.user.profileImage);
-
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     }
   }
