@@ -13,7 +13,7 @@ import { onlineMap } from './onlineMap';
 import mongoose from 'mongoose';
 import { User } from 'src/users/entities/user.entity';
 
-@WebSocketGateway({ namespace: /\/ch\d+/, cors: true })
+@WebSocketGateway({ namespace: /\/ch-\d+/, cors: true })
 // @WebSocketGateway({ namespace: '/ch123' })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -25,23 +25,23 @@ export class EventsGateway
     console.log('test', data);
   }
 
-  @SubscribeMessage('login')
-  handleLogin(
-    // @MessageBody() data: { id: number; roomId: number[] },
-    @MessageBody() data: { id: string; channel: string },
-    @ConnectedSocket() socket: Socket,
-  ) {
-    const userName = data.id;
-    // const rooms = data.roomId;
-    const rooms = data.channel;
-    console.log('login', userName);
-    console.log('join', rooms);
-    socket.join(`${rooms}`);
-    // rooms.forEach((channels: number) => {
-    //   console.log('join', channels);
-    //   socket.join(`${channel}`);
-    // });
-  }
+  // @SubscribeMessage('login')
+  // handleLogin(
+  //   // @MessageBody() data: { id: number; roomId: number[] },
+  //   @MessageBody() data: { id: string; channel: string },
+  //   @ConnectedSocket() socket: Socket,
+  // ) {
+  //   const userName = data.id;
+  //   // const rooms = data.roomId;
+  //   const rooms = data.channel;
+  //   console.log('login', userName);
+  //   console.log('join', rooms);
+  //   socket.join(`${rooms}`);
+  //   // rooms.forEach((channels: number) => {
+  //   //   console.log('join', channels);
+  //   //   socket.join(`${channel}`);
+  //   // });
+  // }
 
   afterInit(server: Server): any {
     console.log('websocketserver init');
@@ -57,10 +57,11 @@ export class EventsGateway
       const userName = data.id;
       socket.data.userName = userName;
     });
-    socket.on('message', (chat) => {
-      console.log('Received new chat message:', chat);
-      const userName = socket.data.userName;
-      socket.broadcast.emit('msgNoti', `${userName}의 message: ${chat}`);
+    socket.on('message', (data) => {
+      const userId = data.id;
+      const chat = data.message;
+      console.log('Received new chat message:', data.message);
+      socket.broadcast.emit('msgNoti', `${userId}의 message: ${chat}`);
     });
   }
 

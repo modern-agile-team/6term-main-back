@@ -67,6 +67,9 @@ export class ChatService {
     if (!isUser) {
       throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
     }
+    return await this.chatRoomModel.updateOne({
+      deleted_at: new Date(),
+    });
   }
 
   async getChats(roomId: mongoose.Types.ObjectId) {
@@ -94,7 +97,7 @@ export class ChatService {
       receiver: chatReturned.receiver,
     };
     const socketRoomId = chatReturned.chatroom_id.toString();
-    this.eventsGateway.server.to(`/ch${socketRoomId}`).emit('message', chat);
+    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
     // this.eventsGateway.server.to('/ch123').emit('message', chat);
     return chat;
   }
