@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -55,16 +56,16 @@ export class ChatController {
     // return await this.chatService.createChatRoom(user.id);
   }
 
-  // @ApiOperation({ summary: '해당 채팅방 삭제' })
-  // @Post('room/:testUser/:roomId')
-  // // async createChatRoom(@Users() user: User) {
-  // async deleteChatRoom(
-  //   @Param('testUser', ParseIntPipe) testUser: number,
-  //   @Param('roomId') roomId: mongoose.Types.ObjectId,
-  // ) {
-  //   return await this.chatService.createChatRoom(testUser, roomId);
-  //   // return await this.chatService.createChatRoom(user.id);
-  // }
+  @ApiOperation({ summary: '해당 채팅방 삭제' })
+  @Delete('room/:testUser/:roomId')
+  // async createChatRoom(@Users() user: User) {
+  async deleteChatRoom(
+    @Param('testUser', ParseIntPipe) testUser: number,
+    @Param('roomId') roomId: mongoose.Types.ObjectId,
+  ) {
+    return await this.chatService.deleteChatRoom(testUser, roomId);
+    // return await this.chatService.createChatRoom(user.id);
+  }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
   @Get(':roomId')
