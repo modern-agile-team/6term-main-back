@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { S3 } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, S3 } from '@aws-sdk/client-s3';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import * as dotenv from 'dotenv';
 
@@ -39,6 +39,21 @@ export class S3Service {
     } catch (error) {
       console.error('S3 업로드 오류:', error);
       return false;
+    }
+  }
+
+  async deleteImage(key: string): Promise<boolean> {
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: key,
+    };
+
+    try {
+      await this.s3.send(new DeleteObjectCommand(params));
+      return true; // 이미지 삭제 성공
+    } catch (error) {
+      console.error('S3 이미지 삭제 오류:', error);
+      return false; // 이미지 삭제 실패
     }
   }
 }
