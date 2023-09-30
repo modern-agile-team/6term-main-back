@@ -5,7 +5,10 @@ import { S3Service } from 'src/common/s3/s3.service';
 
 @Controller('user/image')
 export class UserImageController {
-  constructor(private readonly s3Service: S3Service, private userRepository: UserRepository) {}
+  constructor(
+    private readonly s3Service: S3Service,
+    private userRepository: UserRepository
+    ) {}
 
   @Patch(':userId')
   @UseInterceptors(FileInterceptor('file'))

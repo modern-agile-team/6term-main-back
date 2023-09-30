@@ -1,14 +1,14 @@
-import { UserRepository } from 'src/users/repository/user.repository';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../service/auth.service';
-import { Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Headers, Req, UseGuards } from '@nestjs/common';
+import { S3Service } from 'src/common/s3/s3.service';
 
 @Controller()
 export class AuthController {
   constructor(
-    private readonly authService: AuthService, 
-    private userRepository: UserRepository
-  ) {}
+    private readonly authService: AuthService,
+    private s3Service: S3Service
+    ) {}
 
   @Get()
   getHello(): string {
@@ -41,5 +41,12 @@ export class AuthController {
     const refreshToken = await this.authService.createRefreshToken(userId);
     
     return { accessToken, refreshToken, kakaoAccessToken, kakaoRefreshToken };
+  }
+
+  @Delete('auth/kakao/account')
+  async kakaoAccountDelete(@Headers('Authorization') authorization: string) {
+    const userId = await this.authService.decodeToken(authorization);
+    await this.s3Service.deleteImagesWithPrefix(userId + '_');
+    return await this.authService.kakaoAccountDelete(userId);
   }
 }

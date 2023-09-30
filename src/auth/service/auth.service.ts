@@ -49,6 +49,15 @@ export class AuthService {
     }
   }
 
+  async kakaoAccountDelete(userId: number) {
+    const deleteUser = await this.userRepository.deleteUser(userId);
+    if (!deleteUser) {
+      return "사용자 계정 삭제에 실패했습니다.";
+    } else {
+      return "사용자 계정 삭제에 성공했습니다.";
+    }
+  }
+
   async createAccessToken(userId: number) {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
     const payload = {

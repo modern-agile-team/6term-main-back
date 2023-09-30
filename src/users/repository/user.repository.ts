@@ -31,6 +31,21 @@ export class UserRepository {
     return this.entityManager.save(user);
   }
 
+  async deleteUser(userId: number): Promise<User | null> {
+    try {
+      const user = await this.entityManager.findOne(User, { where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      } else {
+        await this.entityManager.delete(User, { id: userId });
+        return user;
+      }
+    } catch (error) {
+      console.error('사용자 삭제 오류:', error);
+      return null;
+    }
+  }
+
   async checkUserImage(userId: number): Promise<UserImage> {
     const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
 
