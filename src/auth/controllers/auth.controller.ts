@@ -23,8 +23,14 @@ export class AuthController {
 
   @Get('auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
-  naverAuthRedirect(@Req() req) {
-    return this.authService.naverLogin(req);
+  async naverAuthRedirect(@Req() req) {
+    const {userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(req);
+    console.log("controller",userId);
+    
+    const accessToken = await this.authService.createAccessToken(userId);
+    const refreshToken = await this.authService.createRefreshToken(userId);
+
+    return { accessToken, refreshToken, naverAccessToken, naverRefreshToken };
   }
 
   // @Get('auth/kakao')

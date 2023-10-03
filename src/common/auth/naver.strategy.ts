@@ -25,8 +25,7 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
       gender,
       email,
     }
-    console.log(accessToken, refreshToken);
 
-    return user;
+    return { user, accessToken, refreshToken};
   }
 }
