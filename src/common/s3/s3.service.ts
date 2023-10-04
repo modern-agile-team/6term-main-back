@@ -35,7 +35,6 @@ export class S3Service {
     };
 
     try {
-
       await this.s3.send(new PutObjectCommand(params));
       const fileUrl = `${this.s3Adress}${filename}`;
 
@@ -67,7 +66,6 @@ export class S3Service {
       Prefix: prefix,
     };
 
-
     try {
       const listResponse = await this.s3.listObjectsV2(listParams); // listObjectsV2 메서드 사용
       if (listResponse.Contents) {
@@ -92,4 +90,3 @@ export class S3Service {
     }
   }
 }
-

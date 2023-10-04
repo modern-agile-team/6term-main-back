@@ -1,3 +1,5 @@
+import { UserImageService } from './users/services/user-image.service';
+import { AuthModule } from './auth/modules/auth.module';
 import { CommentModule } from './comments/comment.module';
 import { UserModule } from './users/user.module';
 import { Module, NestModule } from '@nestjs/common';
@@ -15,9 +17,11 @@ import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
 
 import * as mongoose from 'mongoose';
+import { UserImageRepository } from './users/repositories/user-image.repository';
 
 @Module({
   imports: [
+    AuthModule,
     CommentModule,
     UserModule,
     TypeOrmModule.forRoot({
@@ -37,7 +41,7 @@ import * as mongoose from 'mongoose';
     NoticeModule,
     EventsModule,
   ], //
-  providers: [S3Service, EventsGateway],
+  providers: [UserImageService, UserImageRepository, S3Service, EventsGateway],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =

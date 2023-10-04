@@ -1,8 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserImage } from "./user-image.entity";
 
 @Entity({
   name: 'user',
 })
+
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,4 +23,9 @@ export class User {
 
   @Column({ default: false })
   admin: boolean;
+
+  @OneToOne(() => UserImage, (userImage) => userImage.user, {
+    onDelete: 'CASCADE',
+    })
+  userImage: UserImage;
 }
