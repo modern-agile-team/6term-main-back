@@ -36,9 +36,8 @@ import * as mongoose from 'mongoose';
     FriendModule,
     NoticeModule,
     EventsModule,
-  ],
+  ], //
   providers: [S3Service, EventsGateway],
-  
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
