@@ -10,6 +10,7 @@ import {
   ChatNotificationSchema,
 } from './schemas/chat-notifiation.schemas';
 import { EventsModule } from 'src/events/events.module';
+import { S3Module } from 'src/common/s3/s3.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EventsModule } from 'src/events/events.module';
       { name: ChatNotification.name, schema: ChatNotificationSchema },
     ]),
     EventsModule,
+    S3Module,
   ],
   controllers: [ChatController],
   providers: [ChatService],

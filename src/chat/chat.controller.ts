@@ -6,6 +6,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UploadedFile,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,11 +22,16 @@ import { ApiOperation } from '@nestjs/swagger';
 import { PostChatDto } from './dto/post-chat.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import mongoose from 'mongoose';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { S3Service } from 'src/common/s3/s3.service';
 
 @Controller('chat')
 @UsePipes(ValidationPipe)
 export class ChatController {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private s3Service: S3Service,
+  ) {}
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
   @Get('room/:testUser')
@@ -90,5 +97,19 @@ export class ChatController {
       senderId,
       receiverId,
     );
+  }
+
+  @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
+  @Post(':roomId/:senderId/:receiverId')
+  @UseInterceptors(FileInterceptor('file'))
+  async createChatImage(
+    @Param('roomId') roomId: mongoose.Types.ObjectId,
+    @Param('senderId') senderId: number,
+    @Param('receiverId') receiverId: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    // const userId = senderId;
+    const { url, key } = await this.s3Service.imgUpload(file, senderId);
+    return this.chatService.createChatImage(roomId, senderId, receiverId, url);
   }
 }

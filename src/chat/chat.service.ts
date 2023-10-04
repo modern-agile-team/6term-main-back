@@ -126,4 +126,15 @@ export class ChatService {
     // this.eventsGateway.server.to('/ch123').emit('message', chat);
     return chat;
   }
+
+  async createChatImage(
+    roomId: mongoose.Types.ObjectId,
+    myId: number,
+    receiverId: number,
+    imageUrl: string,
+  ) {
+    await this.getOneChatRoom(myId, roomId);
+    const imageUrlReturned = await this.chatI;
+    const chatReturned = await this.chatModel();
+  }
 }
