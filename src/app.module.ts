@@ -15,6 +15,7 @@ import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
 
 import * as mongoose from 'mongoose';
+import { UserImageRepository } from './users/repositories/user-image.repository';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import * as mongoose from 'mongoose';
     NoticeModule,
   ],
   controllers: [],
-  providers: [UserImageService, S3Service],
+  providers: [UserImageService, UserImageRepository, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
