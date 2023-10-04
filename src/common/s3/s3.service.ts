@@ -35,8 +35,8 @@ export class S3Service {
     };
 
     try {
-      await this.s3.send(new PutObjectCommand(params));
 
+      await this.s3.send(new PutObjectCommand(params));
       const fileUrl = `${this.s3Adress}${filename}`;
 
       return { url: fileUrl, key: filename };
@@ -67,12 +67,14 @@ export class S3Service {
       Prefix: prefix,
     };
 
+
     try {
       const listResponse = await this.s3.listObjectsV2(listParams); // listObjectsV2 메서드 사용
       if (listResponse.Contents) {
         const objectsToDelete = listResponse.Contents.map((object) => ({
           Key: object.Key,
         }));
+
 
         const deleteParams = {
           Bucket: process.env.AWS_S3_BUCKET,
@@ -90,3 +92,4 @@ export class S3Service {
     }
   }
 }
+
