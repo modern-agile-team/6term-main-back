@@ -3,8 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from './schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
 import { Chat } from './schemas/chat.schemas';
-import { ChatNotification } from './schemas/chat-notifiation.schemas';
-import { ChatImage } from './schemas/chat-image.schemas';
 import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
@@ -22,56 +20,83 @@ export class ChatService {
   //     return chatRooms;
   // }
   async getChatRooms(testUser: number) {
-    return await this.chatRoomModel
-      .find({
-        $or: [{ host_id: testUser }, { guest_id: testUser }],
-        deleted_at: null,
-      })
-      .exec();
-  }
-
-  async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
-    const returnedRoom = await this.chatRoomModel
+    const chatRoom = await this.chatRoomModel
       .find({
         $and: [
-          {
-            $or: [{ host_id: testUser }, { guest_id: testUser }],
-          },
+          { $or: [{ host_id: testUser }, { guest_id: testUser }] },
           { deleted_at: null },
-          { _id: roomId },
         ],
       })
       .exec();
-    if (!returnedRoom) {
-      throw new NotFoundException('해당 ChatRoom이 존재하지 않습니다.');
+    if (!chatRoom.length) {
+      throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
     }
-    return returnedRoom;
+
+    return chatRoom;
+  }
+
+  async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
+    try {
+      const returnedRoom = await this.chatRoomModel
+        .find({
+          $and: [
+            {
+              $or: [{ host_id: testUser }, { guest_id: testUser }],
+            },
+            { deleted_at: null },
+            { _id: roomId },
+          ],
+        })
+        .exec();
+
+      return returnedRoom;
+    } catch (error) {
+      if (error instanceof mongoose.Error.CastError) {
+        throw new NotFoundException(
+          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
+        );
+      }
+    }
   }
   async createChatRoom(myId: number, guestId: number) {
     const chatRoomReturned = await this.chatRoomModel.create({
       host_id: myId,
       guest_id: guestId,
     });
-    console.log(chatRoomReturned.id);
     return chatRoomReturned;
   }
 
   async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
-    const chatRoom = await this.chatRoomModel.findById({
-      _id: roomId,
-    });
-    if (!chatRoom) {
-      throw new NotFoundException('해당 채팅방이 없습니다.');
+    try {
+      const chatRoom = await this.chatRoomModel
+        .findById({
+          _id: roomId,
+        })
+        .exec();
+      const isUser = await this.chatRoomModel
+        .find({
+          $and: [
+            { $or: [{ host_id: myId }, { guest_id: myId }] },
+            { _id: roomId },
+          ],
+        })
+        .exec();
+      if (!isUser.length) {
+        throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
+      }
+
+      return await this.chatRoomModel
+        .findByIdAndUpdate(chatRoom.id, {
+          deleted_at: new Date(),
+        })
+        .exec();
+    } catch (error) {
+      if (error instanceof mongoose.Error.CastError) {
+        throw new NotFoundException(
+          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
+        );
+      }
     }
-    const isUser = await this.chatRoomModel.findOne({
-      $or: [{ host_id: myId }, { guest_id: myId }],
-    });
-    if (!isUser) {
-      throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
-    }
-    return await this.chatRoomModel.findByIdAndUpdate(chatRoom.id, {
-      deleted_at: new Date(),
-    });
   }
 
   async getChats(roomId: mongoose.Types.ObjectId) {
@@ -84,9 +109,7 @@ export class ChatService {
     myId: number,
     receiverId: number,
   ) {
-    const exception = await this.getOneChatRoom(myId, roomId);
-    if (!exception.length)
-      throw new NotFoundException('해당 ChatRoom이 없습니다.');
+    await this.getOneChatRoom(myId, roomId);
     const chatReturned = await this.chatModel.create({
       chatroom_id: roomId,
       content: content,
