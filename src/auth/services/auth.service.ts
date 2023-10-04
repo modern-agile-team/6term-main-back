@@ -67,9 +67,8 @@ export class AuthService {
     const deleteUser = await this.userRepository.deleteUser(userId);
     if (!deleteUser) {
       return "사용자 계정 삭제에 실패했습니다.";
-    } else {
-      return "사용자 계정 삭제에 성공했습니다.";
     }
+    return "사용자 계정 삭제에 성공했습니다.";
   }
 
   async createAccessToken(userId: number) {
