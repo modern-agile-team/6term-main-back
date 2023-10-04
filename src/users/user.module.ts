@@ -11,6 +11,6 @@ import { UserImageService } from './services/user-image.service';
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UserImageController],
   providers: [
-        S3Service, UserImageController, UserRepository, UserImageRepository, UserImageService],
+        S3Service, UserRepository, UserImageRepository, UserImageService],
 })
 export class UserModule {}
