@@ -10,17 +10,6 @@ export class AuthController {
     private s3Service: S3Service
     ) {}
 
-  @Get()
-  getHello(): string {
-    return 'Hello World!';
-  }
-
-  // @Get('auth/naver')
-  // @UseGuards(AuthGuard('naver'))
-  // async naverAuth(@Req() req) {
-
-  // }
-
   @Get('auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
   async naverAuthRedirect(@Req() req) {
@@ -31,12 +20,6 @@ export class AuthController {
 
     return { accessToken, refreshToken, naverAccessToken, naverRefreshToken };
   }
-
-  // @Get('auth/kakao')
-  // @UseGuards(AuthGuard('kakao'))
-  // async kakaoAuth(@Req() req) {
-    
-  // }
 
   @Get('auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
