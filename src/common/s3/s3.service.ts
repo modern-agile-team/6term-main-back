@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { S3 } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  S3,
+} from '@aws-sdk/client-s3';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import * as dotenv from 'dotenv';
 
@@ -34,14 +38,55 @@ export class S3Service {
       await this.s3.send(new PutObjectCommand(params));
 
       const fileUrl = `${this.s3Adress}${filename}`;
-      console.log(file);
-      console.log(file.buffer);
-      console.log({ url: fileUrl, key: filename });
 
       return { url: fileUrl, key: filename };
     } catch (error) {
       console.error('S3 업로드 오류:', error);
       return false;
+    }
+  }
+
+  async deleteImage(key: string): Promise<boolean> {
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: key,
+    };
+
+    try {
+      await this.s3.send(new DeleteObjectCommand(params));
+      return true; // 이미지 삭제 성공
+    } catch (error) {
+      console.error('S3 이미지 삭제 오류:', error);
+      return false; // 이미지 삭제 실패
+    }
+  }
+
+  async deleteImagesWithPrefix(prefix: string): Promise<boolean> {
+    const listParams = {
+      Bucket: process.env.AWS_S3_BUCKET,
+      Prefix: prefix,
+    };
+
+    try {
+      const listResponse = await this.s3.listObjectsV2(listParams); // listObjectsV2 메서드 사용
+      if (listResponse.Contents) {
+        const objectsToDelete = listResponse.Contents.map((object) => ({
+          Key: object.Key,
+        }));
+
+        const deleteParams = {
+          Bucket: process.env.AWS_S3_BUCKET,
+          Delete: { Objects: objectsToDelete },
+        };
+
+        await this.s3.send(new DeleteObjectsCommand(deleteParams));
+        return true; // 이미지 삭제 성공
+      } else {
+        return false; // 삭제할 이미지 없음
+      }
+    } catch (error) {
+      console.error('S3 이미지 삭제 오류:', error);
+      return false; // 이미지 삭제 실패
     }
   }
 }
