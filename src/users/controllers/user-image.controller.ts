@@ -14,6 +14,7 @@ export class UserImageController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@Param('userId') userId: number, @UploadedFile() file: Express.Multer.File) {
     userId = parseInt(userId.toString().slice(1)); // userId 앞에 붙는 ':' 제거
+    
     const res = await this.s3Service.imgUpload(file, userId); // S3에 이미지 업로드
     if (res === false) { // S3에 이미지 업로드 실패
       throw new InternalServerErrorException('S3 이미지 업로드에 실패했습니다.');

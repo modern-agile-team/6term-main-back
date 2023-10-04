@@ -59,7 +59,7 @@ export class AuthService {
     }
   }
 
-  async kakaoAccountDelete(userId: number) {
+  async accountDelete(userId: number) {
     const deleteUser = await this.userRepository.deleteUser(userId);
     if (!deleteUser) {
       return "사용자 계정 삭제에 실패했습니다.";

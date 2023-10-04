@@ -15,17 +15,16 @@ export class AuthController {
     return 'Hello World!';
   }
 
-  @Get('auth/naver')
-  @UseGuards(AuthGuard('naver'))
-  async naverAuth(@Req() req) {
+  // @Get('auth/naver')
+  // @UseGuards(AuthGuard('naver'))
+  // async naverAuth(@Req() req) {
 
-  }
+  // }
 
   @Get('auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
   async naverAuthRedirect(@Req() req) {
     const {userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(req);
-    console.log("controller",userId);
     
     const accessToken = await this.authService.createAccessToken(userId);
     const refreshToken = await this.authService.createRefreshToken(userId);
@@ -49,10 +48,10 @@ export class AuthController {
     return { accessToken, refreshToken, kakaoAccessToken, kakaoRefreshToken };
   }
 
-  @Delete('auth/kakao/account')
+  @Delete('auth/account')
   async kakaoAccountDelete(@Headers('Authorization') authorization: string) {
     const userId = await this.authService.decodeToken(authorization);
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
-    return await this.authService.kakaoAccountDelete(userId);
+    return await this.authService.accountDelete(userId);
   }
 }

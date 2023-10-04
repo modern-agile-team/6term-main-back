@@ -66,8 +66,11 @@ export class UserRepository {
 
   async updateUserImage(userId: number, newImageUrl: string): Promise<UserImage | null> {
     try {
-      const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
+      console.log('userId:',userId);
 
+      const userImage = await this.entityManager.findOne(UserImage, { where: { userId }});
+      console.log('userImage:', userImage);
+      
       if (!userImage) {
         throw new NotFoundException('사용자 이미지를 찾을 수 없습니다.');
       } else {
