@@ -1,3 +1,4 @@
+import { UserImageService } from './users/services/user-image.service';
 import { AuthModule } from './auth/modules/auth.module';
 import { CommentModule } from './comments/comment.module';
 import { UserModule } from './users/user.module';
@@ -38,7 +39,7 @@ import * as mongoose from 'mongoose';
     NoticeModule,
   ],
   controllers: [],
-  providers: [S3Service],
+  providers: [UserImageService, S3Service],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =

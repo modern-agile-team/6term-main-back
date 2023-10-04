@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/users/repository/user.repository';
+import { UserRepository } from 'src/users/repositories/user.repository';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
+import { UserImageRepository } from 'src/users/repositories/user-image.repository';
 
 dotenv.config();
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userImageRepository: UserImageRepository,
+    ) {}
 
   async naverLogin(req) {
     const userInfo = req.user; // 네이버에서 전달받은 사용자 정보
@@ -26,9 +30,9 @@ export class AuthService {
       const newUser = await this.userRepository.createUser(userInfo.user);
       const userId = newUser.id;
       if (!userInfo.user.profileImage) {
-        await this.userRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
+        await this.userImageRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
       } else {
-        await this.userRepository.uploadUserImage(userId, userInfo.user.profileImage);
+        await this.userImageRepository.uploadUserImage(userId, userInfo.user.profileImage);
       }
       return { userId, naverAccessToken, naverRefreshToken };
     }
@@ -51,9 +55,9 @@ export class AuthService {
       const newUser = await this.userRepository.createUser(userInfo.user);
       const userId = newUser.id;
       if (!userInfo.user.profileImage) {
-        await this.userRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
+        await this.userImageRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
       } else {
-        await this.userRepository.uploadUserImage(userId, userInfo.user.profileImage);
+        await this.userImageRepository.uploadUserImage(userId, userInfo.user.profileImage);
       }
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     }

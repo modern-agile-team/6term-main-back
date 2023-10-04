@@ -1,5 +1,5 @@
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from '../service/auth.service';
+import { AuthService } from '../services/auth.service';
 import { Controller, Delete, Get, Headers, Req, UseGuards } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 
