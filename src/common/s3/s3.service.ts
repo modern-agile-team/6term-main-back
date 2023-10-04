@@ -1,14 +1,17 @@
-import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  S3,
+} from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 @Injectable()
 export class S3Service {
-  s3 = new S3({
+  private s3 = new S3({
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -16,41 +19,77 @@ export class S3Service {
     region: process.env.AWS_S3_REGION,
   });
 
-  // @InjectRepository(Image) private imageRepository: Repository<Image> // entity 관련
-  async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
-    const uploadedUrls: string[] = [];
+  private s3Adress = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`;
+
+  async imgUpload(file, userId): Promise<{ url: string; key: string } | false> {
+    const currentTime = new Date().getTime();
+    const filename = `${userId}_${currentTime}.jpeg`;
+
+    const params = {
+      ACL: 'public-read',
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: filename,
+      Body: file.buffer,
+      ContentType: 'image/jpeg',
+      ContentDisposition: 'inline',
+    };
 
     try {
-      for (const file of files) {
-        // const countImages = await this.imageRepository.count();
-        // const uniqueId = uuidv4();
-        // const fileName = `${uniqueId}_${countImages + 1}.jpeg`;
 
-        const params = new PutObjectCommand({
-          ACL: 'public-read',
+      await this.s3.send(new PutObjectCommand(params));
+      const fileUrl = `${this.s3Adress}${filename}`;
+
+      return { url: fileUrl, key: filename };
+    } catch (error) {
+      console.error('S3 업로드 오류:', error);
+      return false;
+    }
+  }
+
+  async deleteImage(key: string): Promise<boolean> {
+    const params = {
+      Bucket: process.env.AWS_S3_BUCKET,
+      Key: key,
+    };
+
+    try {
+      await this.s3.send(new DeleteObjectCommand(params));
+      return true; // 이미지 삭제 성공
+    } catch (error) {
+      console.error('S3 이미지 삭제 오류:', error);
+      return false; // 이미지 삭제 실패
+    }
+  }
+
+  async deleteImagesWithPrefix(prefix: string): Promise<boolean> {
+    const listParams = {
+      Bucket: process.env.AWS_S3_BUCKET,
+      Prefix: prefix,
+    };
+
+
+    try {
+      const listResponse = await this.s3.listObjectsV2(listParams); // listObjectsV2 메서드 사용
+      if (listResponse.Contents) {
+        const objectsToDelete = listResponse.Contents.map((object) => ({
+          Key: object.Key,
+        }));
+
+
+        const deleteParams = {
           Bucket: process.env.AWS_S3_BUCKET,
-          Key: __filename, // entity 정상 추가시 filename으로 변경
-          Body: file.buffer,
-          ContentType: 'image/jpeg',
-          ContentDisposition: 'inline',
-        });
+          Delete: { Objects: objectsToDelete },
+        };
 
-        await this.s3.send(params);
-
-        const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${__filename}`; // entity 정상 추가시 filename으로 변경경
-
-        // const image = new Image();
-        // image.image_url = fileUrl;
-        // await this.imageRepository.save(image);
-
-        uploadedUrls.push(fileUrl);
+        await this.s3.send(new DeleteObjectsCommand(deleteParams));
+        return true; // 이미지 삭제 성공
+      } else {
+        return false; // 삭제할 이미지 없음
       }
-      return uploadedUrls;
-    } catch (err) {
-      throw new Error();
+    } catch (error) {
+      console.error('S3 이미지 삭제 오류:', error);
+      return false; // 이미지 삭제 실패
     }
   }
 }
-// function uuidv4() {
-//   throw new Error('Function not implemented.');
-// }
+
