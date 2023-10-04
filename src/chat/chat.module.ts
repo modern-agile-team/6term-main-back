@@ -9,6 +9,7 @@ import {
   ChatNotification,
   ChatNotificationSchema,
 } from './schemas/chat-notifiation.schemas';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {
       { name: ChatImage.name, schema: ChatImageSchema },
       { name: ChatNotification.name, schema: ChatNotificationSchema },
     ]),
+    EventsModule,
   ],
   controllers: [ChatController],
   providers: [ChatService],

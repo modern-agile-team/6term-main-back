@@ -11,6 +11,8 @@ import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
 import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
+import { EventsGateway } from './events/events.gateway';
+import { EventsModule } from './events/events.module';
 
 import * as mongoose from 'mongoose';
 
@@ -33,9 +35,10 @@ import * as mongoose from 'mongoose';
     BoardsModule,
     FriendModule,
     NoticeModule,
+    EventsModule,
   ],
-
-  providers: [S3Service],
+  providers: [S3Service, EventsGateway],
+  
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =
