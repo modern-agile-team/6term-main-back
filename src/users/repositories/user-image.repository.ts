@@ -13,9 +13,8 @@ export class UserImageRepository {
 
     if (!userImage) {
       throw new NotFoundException('사용자 이미지를 찾을 수 없습니다.');
-    } else {
-      return userImage;
     }
+    return userImage;
   }
 
   async uploadUserImage(userId: number, imageUrl: string): Promise<UserImage> {
@@ -32,12 +31,11 @@ export class UserImageRepository {
       
       if (!userImage) {
         throw new NotFoundException('사용자 이미지를 찾을 수 없습니다.');
-      } else {
-        userImage.imageUrl = newImageUrl;
-        await this.entityManager.save(userImage);
-    
-        return userImage;
       }
+      userImage.imageUrl = newImageUrl;
+      await this.entityManager.save(userImage);
+  
+      return userImage;
     } catch (error) {
       console.error('이미지 업데이트 오류:', error);
       return null;
