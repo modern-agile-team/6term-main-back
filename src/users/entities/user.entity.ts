@@ -2,7 +2,7 @@ import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserImage } from "./user-image.entity";
 
 @Entity({
-  name: 'user'
+  name: 'user',
 })
 
 export class User {

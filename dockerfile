@@ -12,8 +12,6 @@ RUN npm ci --only=production && npm cache clean --force
 # /dist 폴더를 이미지에 복사
 COPY ./dist ./dist
 
-
-
 # 애플리케이션 실행
 CMD ["npm", "run", "start:prod"]
 

@@ -13,6 +13,8 @@ import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
 import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
+import { EventsGateway } from './events/events.gateway';
+import { EventsModule } from './events/events.module';
 
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
@@ -25,7 +27,6 @@ import { UserImageRepository } from './users/repositories/user-image.repository'
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
       synchronize: true, // DB 동기화 여부 설정
-      // entities: [Image], // Image 엔티티 추가
     }),
     // TypeOrmModule.forFeature([Image]),
     ConfigModule.forRoot({
@@ -38,9 +39,9 @@ import { UserImageRepository } from './users/repositories/user-image.repository'
     BoardsModule,
     FriendModule,
     NoticeModule,
-  ],
-  controllers: [],
-  providers: [UserImageService, UserImageRepository, S3Service],
+    EventsModule,
+  ], //
+  providers: [UserImageService, UserImageRepository, S3Service, EventsGateway],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean =

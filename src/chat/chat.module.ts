@@ -5,16 +5,23 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChatRoom, ChatRoomSchema } from './schemas/chat-room.schemas';
 import { Chat, ChatSchema } from './schemas/chat.schemas';
 import { ChatImage, ChatImageSchema } from './schemas/chat-image.schemas';
-import { ChatNotification, ChatNotificationSchema } from './schemas/chat-notifiation.schemas';
+import {
+  ChatNotification,
+  ChatNotificationSchema,
+} from './schemas/chat-notifiation.schemas';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([
-    { name: ChatRoom.name , schema: ChatRoomSchema },
-    { name: Chat.name , schema: ChatSchema },
-    { name: ChatImage.name, schema: ChatImageSchema }, 
-    { name: ChatNotification.name, schema: ChatNotificationSchema },
-  ])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: ChatRoom.name, schema: ChatRoomSchema },
+      { name: Chat.name, schema: ChatSchema },
+      { name: ChatImage.name, schema: ChatImageSchema },
+      { name: ChatNotification.name, schema: ChatNotificationSchema },
+    ]),
+    EventsModule,
+  ],
   controllers: [ChatController],
-  providers: [ChatService]
+  providers: [ChatService],
 })
 export class ChatModule {}
