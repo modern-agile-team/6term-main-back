@@ -24,6 +24,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from 'src/common/s3/s3.service';
+import { Users } from 'src/common/decorators/user.decorator';
 
 @Controller('chat')
 @UsePipes(ValidationPipe)
@@ -85,31 +86,34 @@ export class ChatController {
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
   @Post(':roomId/:senderId/:receiverId')
   async createChat(
+    @Users('user') user,
     @Param('roomId') roomId: mongoose.Types.ObjectId,
     @Param('receiverId', ParseIntPipe) receiverId: number,
     @Body() body: PostChatDto,
     @Param('senderId', ParseIntPipe) senderId: number,
     // @Users() senderId: number,
   ) {
+    console.log(user);
     return this.chatService.createChat(
       roomId,
       body.content,
       senderId,
       receiverId,
+      user,
     );
   }
 
-  @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':roomId/:senderId/:receiverId')
-  @UseInterceptors(FileInterceptor('file'))
-  async createChatImage(
-    @Param('roomId') roomId: mongoose.Types.ObjectId,
-    @Param('senderId') senderId: number,
-    @Param('receiverId') receiverId: number,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    // const userId = senderId;
-    const { url, key } = await this.s3Service.imgUpload(file, senderId);
-    return this.chatService.createChatImage(roomId, senderId, receiverId, url);
-  }
+  // @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
+  // @Post(':roomId/:senderId/:receiverId')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async createChatImage(
+  //   @Param('roomId') roomId: mongoose.Types.ObjectId,
+  //   @Param('senderId') senderId: number,
+  //   @Param('receiverId') receiverId: number,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   // const userId = senderId;
+  //   const { url, key } = await this.s3Service.imgUpload(file, senderId);
+  //   return this.chatService.createChatImage(roomId, senderId, receiverId, url);
+  // }
 }

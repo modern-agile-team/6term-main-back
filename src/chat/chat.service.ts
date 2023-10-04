@@ -108,6 +108,7 @@ export class ChatService {
     content: string,
     myId: number,
     receiverId: number,
+    user,
   ) {
     await this.getOneChatRoom(myId, roomId);
     const chatReturned = await this.chatModel.create({
@@ -122,19 +123,21 @@ export class ChatService {
       receiver: chatReturned.receiver,
     };
     const socketRoomId = chatReturned.chatroom_id.toString();
+    // this.eventsGateway.handleConnection(user);
     this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+
     // this.eventsGateway.server.to('/ch123').emit('message', chat);
     return chat;
   }
 
-  async createChatImage(
-    roomId: mongoose.Types.ObjectId,
-    myId: number,
-    receiverId: number,
-    imageUrl: string,
-  ) {
-    await this.getOneChatRoom(myId, roomId);
-    const imageUrlReturned = await this.chatI;
-    const chatReturned = await this.chatModel();
-  }
+  // async createChatImage(
+  //   roomId: mongoose.Types.ObjectId,
+  //   myId: number,
+  //   receiverId: number,
+  //   imageUrl: string,
+  // ) {
+  //   await this.getOneChatRoom(myId, roomId);
+  //   const imageUrlReturned = await this.chatI;
+  //   const chatReturned = await this.chatModel();
+  // }
 }

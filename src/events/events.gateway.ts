@@ -25,23 +25,23 @@ export class EventsGateway
     console.log('test', data);
   }
 
-  // @SubscribeMessage('login')
-  // handleLogin(
-  //   // @MessageBody() data: { id: number; roomId: number[] },
-  //   @MessageBody() data: { id: string; channel: string },
-  //   @ConnectedSocket() socket: Socket,
-  // ) {
-  //   const userName = data.id;
-  //   // const rooms = data.roomId;
-  //   const rooms = data.channel;
-  //   console.log('login', userName);
-  //   console.log('join', rooms);
-  //   socket.join(`${rooms}`);
-  //   // rooms.forEach((channels: number) => {
-  //   //   console.log('join', channels);
-  //   //   socket.join(`${channel}`);
-  //   // });
-  // }
+  @SubscribeMessage('login')
+  handleLogin(
+    // @MessageBody() data: { id: number; roomId: number[] },
+    @MessageBody() data: { id: string; channel: number[] },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const userName = data.id;
+    // const rooms = data.roomId;
+    const rooms = data.channel;
+    console.log('login', userName);
+    console.log('join', rooms);
+    socket.join(`${rooms}`);
+    // rooms.forEach((channels: number) => {
+    //   console.log('join', channels);
+    //   socket.join(`${channel}`);
+    // });
+  }
 
   afterInit(server: Server): any {
     console.log('websocketserver init');
