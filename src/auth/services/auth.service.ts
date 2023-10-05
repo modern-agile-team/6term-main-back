@@ -18,22 +18,18 @@ export class AuthService {
     const naverAccessToken = userInfo.accessToken;
     const naverRefreshToken = userInfo.refreshToken;
 
-    const checkProvider = await this.userRepository.findByProvider(userInfo.user.provider);
-    const checkEmail = await this.userRepository.findByEmail(userInfo.user.email);
-    const checkName = await this.userRepository.findByName(userInfo.user.nickname);
+    const checkUser = await this.userRepository.findUser(userInfo.user.email, userInfo.user.provider);
 
-    if (checkProvider && checkEmail) { // 이미 존재하는 사용자인 경우
-      const userId = checkProvider.id;
+    if (checkUser) { // 이미 존재하는 사용자인 경우
+      const userId = checkUser.id;
 
-      if (!checkName) { // 이름이 변경된 경우
-        await this.userRepository.updateUserName(userId, userInfo.user.nickname);
-      }
+      await this.userRepository.updateUserName(userId, userInfo.user.nickname); // 이름 업데이트
       
       const userImage = (await this.userImageRepository.checkUserImage(userId)).imageUrl; // DB 이미지
       const imageUrlParts = userImage.split('/');
-      const dbImageUrl = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
+      const dbImageProvider = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
       
-      if (dbImageUrl != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
+      if (dbImageProvider != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
         await this.userImageRepository.updateUserImage(userId, userInfo.user.profileImage); // DB에 이미지 URL 업데이트
       }
 
@@ -55,22 +51,18 @@ export class AuthService {
     const kakaoAccessToken = userInfo.accessToken;
     const kakaoRefreshToken = userInfo.refreshToken;
     
-    const checkProvider = await this.userRepository.findByProvider(userInfo.user.provider);
-    const checkEmail = await this.userRepository.findByEmail(userInfo.user.email);
-    const checkName = await this.userRepository.findByName(userInfo.user.nickname);
-      
-    if (checkProvider && checkEmail) { // 이미 존재하는 사용자인 경우
-      const userId = checkProvider.id;
+    const checkUser = await this.userRepository.findUser(userInfo.user.email, userInfo.user.provider);
 
-      if (!checkName) { // 이름이 변경된 경우
-        await this.userRepository.updateUserName(userId, userInfo.user.nickname);
-      }
+    if (checkUser) { // 이미 존재하는 사용자인 경우
+      const userId = checkUser.id;
+
+      await this.userRepository.updateUserName(userId, userInfo.user.nickname); // 이름 업데이트
       
       const userImage = (await this.userImageRepository.checkUserImage(userId)).imageUrl; // DB 이미지
       const imageUrlParts = userImage.split('/');
-      const dbImageUrl = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
+      const dbImageProvider = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
       
-      if (dbImageUrl != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
+      if (dbImageProvider != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
         await this.userImageRepository.updateUserImage(userId, userInfo.user.profileImage); // DB에 이미지 URL 업데이트
       }
 
@@ -118,6 +110,16 @@ export class AuthService {
     const refreshToken = jwt.sign(payload, jwtSecretKey);
 
     return refreshToken;
+  }
+
+  async newAccessToken(refreshToken: string) {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const payload = jwt.verify(refreshToken, jwtSecretKey);
+    console.log(payload);
+    
+    const userId = payload['userId'];
+    const newAccessToken = await this.createAccessToken(userId);
+    return newAccessToken;
   }
 
   async verifyToken(accessToken: string) {

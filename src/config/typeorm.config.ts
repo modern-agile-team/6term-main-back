@@ -1,6 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import * as dotenv from 'dotenv';
+import { Token } from 'src/auth/entities/token.entity';
 import { BoardImage } from 'src/boards/entities/board-image.entity';
 import { BoardLike } from 'src/boards/entities/board-like.entity';
 import { Board } from 'src/boards/entities/board.entity';
@@ -27,6 +28,7 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
   entities: [
     User,
     UserImage,
+    Token,
     Board,
     BoardImage,
     BoardLike,
