@@ -108,7 +108,6 @@ export class ChatService {
     content: string,
     myId: number,
     receiverId: number,
-    user,
   ) {
     await this.getOneChatRoom(myId, roomId);
     const chatReturned = await this.chatModel.create({

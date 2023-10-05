@@ -86,20 +86,19 @@ export class ChatController {
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
   @Post(':roomId/:senderId/:receiverId')
   async createChat(
-    @Users('user') user,
+    // @Users('user') user,
     @Param('roomId') roomId: mongoose.Types.ObjectId,
     @Param('receiverId', ParseIntPipe) receiverId: number,
     @Body() body: PostChatDto,
     @Param('senderId', ParseIntPipe) senderId: number,
     // @Users() senderId: number,
   ) {
-    console.log(user);
     return this.chatService.createChat(
       roomId,
       body.content,
       senderId,
       receiverId,
-      user,
+      // user,
     );
   }
 
