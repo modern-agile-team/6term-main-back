@@ -31,9 +31,15 @@ export class AuthController {
     return { accessToken, refreshToken, kakaoAccessToken, kakaoRefreshToken };
   }
 
+  @Get('auth/new-access-token')
+  async newAccessToken(@Headers('refresh_token') refreshToken: string) {
+    const userId = await this.authService.decodeToken(refreshToken);
+    return await this.authService.createAccessToken(userId);
+  }
+
   @Delete('auth/account')
-  async kakaoAccountDelete(@Headers('Authorization') authorization: string) {
-    const userId = await this.authService.decodeToken(authorization);
+  async kakaoAccountDelete(@Headers('access_token') accessToken: string) {
+    const userId = await this.authService.decodeToken(accessToken);
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
     return await this.authService.accountDelete(userId);
   }

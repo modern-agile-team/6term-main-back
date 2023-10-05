@@ -8,16 +8,8 @@ export class UserRepository {
     private readonly entityManager: EntityManager,
   ) {}
 
-  async findByProvider(provider: string): Promise<User | undefined> {
-    return this.entityManager.findOne(User, { where: { provider } });
-  }
-
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.entityManager.findOne(User, { where: { email } });
-  }
-
-  async findByName(name: string): Promise<User | undefined> {
-    return this.entityManager.findOne(User, { where: { name } });
+  async findUser(email: string, provider: string): Promise<User | undefined> {
+    return this.entityManager.findOne(User, { where: { email, provider } });
   }
 
   async createUser(userInfo: any): Promise<User> {
@@ -41,7 +33,6 @@ export class UserRepository {
 
     return this.entityManager.save(user);
   }
-
 
   async deleteUser(userId: number): Promise<User | null> {
     try {
