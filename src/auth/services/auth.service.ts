@@ -22,8 +22,20 @@ export class AuthService {
     const checkEmail = await this.userRepository.findByEmail(userInfo.user.email);
     const checkName = await this.userRepository.findByName(userInfo.user.nickname);
 
-    if (checkProvider && checkEmail && checkName) { // 이미 존재하는 사용자인 경우
+    if (checkProvider && checkEmail) { // 이미 존재하는 사용자인 경우
       const userId = checkProvider.id;
+
+      if (!checkName) { // 이름이 변경된 경우
+        await this.userRepository.updateUserName(userId, userInfo.user.nickname);
+      }
+      
+      const userImage = (await this.userImageRepository.checkUserImage(userId)).imageUrl; // DB 이미지
+      const imageUrlParts = userImage.split('/');
+      const dbImageUrl = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
+      
+      if (dbImageUrl != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
+        await this.userImageRepository.updateUserImage(userId, userInfo.user.profileImage); // DB에 이미지 URL 업데이트
+      }
 
       return { userId, naverAccessToken, naverRefreshToken };
     } else { // 존재하지 않는 사용자인 경우
@@ -47,8 +59,20 @@ export class AuthService {
     const checkEmail = await this.userRepository.findByEmail(userInfo.user.email);
     const checkName = await this.userRepository.findByName(userInfo.user.nickname);
       
-    if (checkProvider && checkEmail && checkName) { // 이미 존재하는 사용자인 경우
+    if (checkProvider && checkEmail) { // 이미 존재하는 사용자인 경우
       const userId = checkProvider.id;
+
+      if (!checkName) { // 이름이 변경된 경우
+        await this.userRepository.updateUserName(userId, userInfo.user.nickname);
+      }
+      
+      const userImage = (await this.userImageRepository.checkUserImage(userId)).imageUrl; // DB 이미지
+      const imageUrlParts = userImage.split('/');
+      const dbImageUrl = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
+      
+      if (dbImageUrl != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
+        await this.userImageRepository.updateUserImage(userId, userInfo.user.profileImage); // DB에 이미지 URL 업데이트
+      }
 
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     } else { // 존재하지 않는 사용자인 경우

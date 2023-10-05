@@ -30,6 +30,19 @@ export class UserRepository {
     return this.entityManager.save(user);
   }
 
+  async updateUserName(userId: number, name: string): Promise<User> {
+    const user = await this.entityManager.findOne(User, { where: { id:userId } });
+
+    if (!user) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+
+    user.name = name;
+
+    return this.entityManager.save(user);
+  }
+
+
   async deleteUser(userId: number): Promise<User | null> {
     try {
       const user = await this.entityManager.findOne(User, { where: { id: userId } });
