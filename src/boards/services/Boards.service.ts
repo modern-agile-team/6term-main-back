@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BoardRepository } from '../repository/boards.repository';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { Board } from '../entities/board.entity';
-// import { getConnection } from 'typeorm';
+import { BoardResponseDTO } from '../dto/board.response.dto';
 
 @Injectable()
 export class BoardsService {
@@ -16,10 +16,29 @@ export class BoardsService {
     }
   }
 
-  async findAll(): Promise<Board[]> {
-    // const queryBuilder = getConnection(), createQueryBuilder( Board, 'board')
-
-    return await this.boardRepository.findAllBoards();
+  async findAll(): Promise<BoardResponseDTO[]> {
+    const boards = await this.boardRepository.findAllBoards();
+    return boards.map((board) => ({
+      id: board.id,
+      head: board.head,
+      body: board.body,
+      main_category: board.main_category,
+      sub_category: board.sub_category,
+      createAt: board.createAt,
+      updateAt: board.updateAt,
+      userId: {
+        id: board.user.id,
+        name: board.user.name,
+        userImage: {
+          id: board.user?.userImage?.id || null,
+          imageUrl: board.user?.userImage?.imageUrl || null,
+        },
+      },
+      boardImages: board.boardImages.map((image) => ({
+        id: image.id,
+        imageUrl: image.imageUrl,
+      })),
+    }));
   }
 
   async findOne(id: number): Promise<Board | undefined> {

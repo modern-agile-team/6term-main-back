@@ -8,7 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from './chat/chat.module';
 import { S3Module } from './common/s3/s3.module';
 import { S3Service } from './common/s3/s3.service';
-import { BoardsModule } from './boards/Boards.module';
+import { BoardsModule } from './boards/boards.module';
 import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
 
