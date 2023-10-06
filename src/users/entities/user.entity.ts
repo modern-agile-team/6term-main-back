@@ -12,14 +12,9 @@ import { Board } from 'src/boards/entities/board.entity';
 @Entity({
   name: 'user',
 })
-
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @OneToOne(() => UserImage, (userImage) => userImage.userId)
-  @JoinColumn()
-  userImage: UserImage;
 
   @OneToMany(() => Board, (board) => board.user)
   @JoinColumn({ name: 'board_id' })
@@ -42,6 +37,7 @@ export class User {
 
   @OneToOne(() => UserImage, (userImage) => userImage.user, {
     onDelete: 'CASCADE',
-    })
+  })
+  @JoinColumn()
   userImage: UserImage;
 }
