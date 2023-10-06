@@ -1,5 +1,13 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserImage } from "./user-image.entity";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
+import { UserImage } from './user-image.entity';
+import { Board } from 'src/boards/entities/board.entity';
 
 @Entity({
   name: 'user',
@@ -8,6 +16,14 @@ import { UserImage } from "./user-image.entity";
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @OneToOne(() => UserImage, (userImage) => userImage.userId)
+  @JoinColumn()
+  userImage: UserImage;
+
+  @OneToMany(() => Board, (board) => board.user)
+  @JoinColumn({ name: 'board_id' })
+  board: Board;
 
   @Column({ length: 10 })
   provider: string;

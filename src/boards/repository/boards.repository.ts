@@ -1,46 +1,48 @@
-import { Repository } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { User } from 'src/users/entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BoardRepository {
-  constructor(
-    @InjectRepository(Board)
-    private readonly boardRepository: Repository<Board>,
-  ) {}
+  constructor(private readonly entityManager: EntityManager) {}
+
   async createBoard(boardData: CreateBoardDto): Promise<Board> {
     const userId = 1; // 임시로 1 쓴거야, 준혁아 여기 수정하면 된다.
+
     const user = new User();
     user.id = userId;
 
-    const board = this.boardRepository.create({
-      ...boardData,
-      userId: user,
-    });
+    const board = new Board();
+    board.head = boardData.head;
+    board.body = boardData.body;
+    board.main_category = boardData.main_category;
+    board.sub_category = boardData.sub_category;
+    board.user = user;
 
-    return await this.boardRepository.save(board);
+    return await this.entityManager.save(Board, board);
   }
 
   async findAllBoards(): Promise<Board[]> {
-    return await this.boardRepository.find();
+    return await this.entityManager.find(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+    });
   }
 
   async findBoardById(id: number): Promise<Board | undefined> {
-    return await this.boardRepository.findOne({ where: { id } }); // 버전을 다운시키던가 아니면 이대로 써야함
-    // 원래코드 : return await this.findOne(id);
+    return await this.entityManager.findOne(Board, { where: { id } });
   }
 
   async updateBoard(
     id: number,
     boardData: Partial<Board>,
   ): Promise<Board | undefined> {
-    await this.boardRepository.update(id, boardData);
-    return await this.boardRepository.findOne({ where: { id } });
-    //  원래코드 : return await this.boardRepository.findOne(id);
+    await this.entityManager.update(Board, id, boardData);
+    return await this.findBoardById(id);
   }
 
   async deleteBoard(id: number): Promise<void> {
-    await this.boardRepository.delete(id);
+    await this.entityManager.delete(Board, id);
   }
 }

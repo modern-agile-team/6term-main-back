@@ -15,6 +15,7 @@ import { CreateBoardDto } from '../dto/create.board.dto';
 import { BoardImagesService } from '../services/BoardImage.service';
 import { BoardImage } from '../entities/board-image.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { BoardResponseDTO } from '../dto/board.response.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -29,9 +30,12 @@ export class BoardsController {
   }
 
   @Get('/getall')
-  async findAll(): Promise<Board[]> {
+  async findAll(): Promise<BoardResponseDTO[]> {
     return this.boardsService.findAll();
   }
+  // async findAll(): Promise<Board[]> {
+  //   return this.boardsService.findAll();
+  // }
 
   @Get(':id/getone')
   async findOne(@Param('id') id: string): Promise<Board | undefined> {
@@ -54,7 +58,7 @@ export class BoardsController {
   @Post(':boardId/images')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @Param('boardId') boardId: Board,
+    @Param('boardId') boardId: number, // 보드의 ID를 받아옴
     @UploadedFile() file: Express.Multer.File,
   ): Promise<BoardImage> {
     return this.boardImagesService.create(boardId, file);

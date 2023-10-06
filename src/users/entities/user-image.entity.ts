@@ -6,8 +6,10 @@ export class UserImage {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ name: 'user_id' })
-    userId: number;
+
+  @OneToOne(() => User, (user) => user.userImage)
+  @JoinColumn()
+  userId: User;
 
     @Column({ name: 'image_url' })
     imageUrl: string;
