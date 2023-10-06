@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ChatRoom } from './schemas/chat-room.schemas';
+import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
-import { Chat } from './schemas/chat.schemas';
+import { Chat } from '../schemas/chat.schemas';
 import { EventsGateway } from 'src/events/events.gateway';
+import { ChatImage } from '../schemas/chat-image.schemas';
 
 @Injectable()
 export class ChatService {
@@ -12,6 +13,8 @@ export class ChatService {
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
     @InjectModel(Chat.name)
     private readonly chatModel: mongoose.Model<Chat>,
+    @InjectModel(ChatImage.name)
+    private readonly chatImageModel: mongoose.Model<ChatImage>,
     private readonly eventsGateway: EventsGateway,
   ) {}
 
@@ -129,14 +132,30 @@ export class ChatService {
     return chat;
   }
 
-  // async createChatImage(
-  //   roomId: mongoose.Types.ObjectId,
-  //   myId: number,
-  //   receiverId: number,
-  //   imageUrl: string,
-  // ) {
-  //   await this.getOneChatRoom(myId, roomId);
-  //   const imageUrlReturned = await this.chatI;
-  //   const chatReturned = await this.chatModel();
-  // }
+  async createChatImage(
+    roomId: mongoose.Types.ObjectId,
+    myId: number,
+    receiverId: number,
+    imageUrl: string,
+  ) {
+    await this.getOneChatRoom(myId, roomId);
+    const chatReturned = await this.chatModel.create({
+      chatroom_id: roomId,
+      sender: myId,
+      receiver: receiverId,
+      content: imageUrl,
+    });
+    await this.chatImageModel.create({
+      chat_id: chatReturned.id,
+      image_url: chatReturned.content,
+    });
+    const chat = {
+      content: chatReturned.content,
+      sender: chatReturned.sender,
+      receiver: chatReturned.receiver,
+    };
+    const socketRoomId = await chatReturned.chatroom_id.toString();
+    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+    return chat;
+  }
 }

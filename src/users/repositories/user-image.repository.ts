@@ -6,9 +6,9 @@ import { UserImage } from '../entities/user-image.entity';
 export class UserImageRepository {
   constructor(private readonly entityManager: EntityManager) {}
 
-  async checkUserImage(userId: number): Promise<UserImage> {
+  async checkUserImage(userIdd: number): Promise<UserImage> {
     const userImage = await this.entityManager.findOne(UserImage, {
-      where: { userId },
+      where: { userIdd },
     });
 
     if (!userImage) {
@@ -17,21 +17,21 @@ export class UserImageRepository {
     return userImage;
   }
 
-  async uploadUserImage(userId: number, imageUrl: string): Promise<UserImage> {
+  async uploadUserImage(userIdd: number, imageUrl: string): Promise<UserImage> {
     const userImage = new UserImage();
-    userImage.userId = userId;
+    userImage.userIdd = userIdd;
     userImage.imageUrl = imageUrl;
 
     return this.entityManager.save(userImage);
   }
 
   async updateUserImage(
-    userId: number,
+    userIdd: number,
     newImageUrl: string,
   ): Promise<UserImage | null> {
     try {
       const userImage = await this.entityManager.findOne(UserImage, {
-        where: { userId },
+        where: { userIdd },
       });
 
       if (!userImage) {

@@ -21,7 +21,7 @@ export class S3Service {
 
   private s3Adress = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`;
 
-  async imgUpload(file, userId): Promise<{ url: string; key: string } | false> {
+  async imgUpload(file, userId): Promise<{ url: string; key: string }> {
     const currentTime = new Date().getTime();
     const filename = `${userId}_${currentTime}.jpeg`;
 
@@ -39,8 +39,7 @@ export class S3Service {
 
       return { url: fileUrl, key: filename };
     } catch (error) {
-      console.error('S3 업로드 오류:', error);
-      return false;
+      throw new Error('S3 업로드 오류');
     }
   }
 
