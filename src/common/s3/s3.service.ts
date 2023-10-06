@@ -35,7 +35,6 @@ export class S3Service {
     };
     try {
       await this.s3.send(new PutObjectCommand(params));
-
       const fileUrl = `${this.s3Adress}${filename}`;
 
       return { url: fileUrl, key: filename };
@@ -72,6 +71,7 @@ export class S3Service {
         const objectsToDelete = listResponse.Contents.map((object) => ({
           Key: object.Key,
         }));
+
 
         const deleteParams = {
           Bucket: process.env.AWS_S3_BUCKET,

@@ -12,6 +12,7 @@ import { Board } from 'src/boards/entities/board.entity';
 @Entity({
   name: 'user',
 })
+
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -38,4 +39,9 @@ export class User {
 
   @Column({ default: false })
   admin: boolean;
+
+  @OneToOne(() => UserImage, (userImage) => userImage.user, {
+    onDelete: 'CASCADE',
+    })
+  userImage: UserImage;
 }
