@@ -12,9 +12,12 @@ export class BoardImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, (board) => board.boardImages)
   @JoinColumn({ name: 'board_id' })
-  boardId: Board;
+  board: Board;
+
+  @Column({ name: 'board_id' })
+  boardId: number;
 
   @Column({ name: 'image_url' })
   imageUrl: string;

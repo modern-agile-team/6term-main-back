@@ -12,10 +12,16 @@ export class UserImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
-  userId: number;
+  @OneToOne(() => User, (user) => user.userImage)
+  @JoinColumn()
+  userId: User;
 
   @Column({ name: 'image_url' })
   imageUrl: string;
+
+  @OneToOne(() => User, (userId: User) => userId.userImage, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }
