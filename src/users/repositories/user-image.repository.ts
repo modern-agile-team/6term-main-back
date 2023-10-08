@@ -8,8 +8,8 @@ export class UserImageRepository {
     private readonly entityManager: EntityManager,
   ) {}
 
-  async checkUserImage(userId: number): Promise<UserImage> {
-    const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
+  async checkUserImage(userIdd: number): Promise<UserImage> {
+    const userImage = await this.entityManager.findOne(UserImage, { where: { userIdd } });
 
     if (!userImage) {
       throw new NotFoundException('사용자 이미지를 찾을 수 없습니다.');
@@ -17,17 +17,17 @@ export class UserImageRepository {
     return userImage;
   }
 
-  async uploadUserImage(userId: number, imageUrl: string): Promise<UserImage> {
+  async uploadUserImage(userIdd: number, imageUrl: string): Promise<UserImage> {
     const userImage = new UserImage();
-    userImage.userId = userId;
+    userImage.userIdd = userIdd;
     userImage.imageUrl = imageUrl;
 
     return this.entityManager.save(userImage);
   }
 
-  async updateUserImage(userId: number, newImageUrl: string): Promise<UserImage | null> {
+  async updateUserImage(userIdd: number, newImageUrl: string): Promise<UserImage | null> {
     try {
-      const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
+      const userImage = await this.entityManager.findOne(UserImage, { where: { userIdd } });
       
       if (!userImage) {
         throw new NotFoundException('사용자 이미지를 찾을 수 없습니다.');

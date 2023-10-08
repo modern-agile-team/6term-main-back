@@ -1,5 +1,6 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserImage } from "./user-image.entity";
+import { Token } from "src/auth/entities/token.entity";
 
 @Entity({
   name: 'user',
@@ -28,4 +29,9 @@ export class User {
     onDelete: 'CASCADE',
     })
   userImage: UserImage;
+
+  @OneToOne(() => Token, (token) => token.user, {
+    onDelete: 'CASCADE',
+    })
+  token: Token;
 }
