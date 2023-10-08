@@ -2,11 +2,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
 import { Controller, Delete, Get, Headers, Req, UseGuards } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
+import { TokenService } from '../services/token.service';
 
 @Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private tokenService: TokenService,
     private s3Service: S3Service
     ) {}
 
@@ -14,11 +16,12 @@ export class AuthController {
   @UseGuards(AuthGuard('naver'))
   async naverAuthRedirect(@Req() req) {
     const {userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(req);
-    
     const accessToken = await this.authService.createAccessToken(userId);
     const refreshToken = await this.authService.createRefreshToken(userId);
 
-    return { accessToken, refreshToken, naverAccessToken, naverRefreshToken };
+    await this.tokenService.saveTokens(userId, refreshToken, naverAccessToken, naverRefreshToken);
+
+    return { accessToken, refreshToken };
   }
 
   @Get('auth/kakao/callback')
@@ -27,8 +30,10 @@ export class AuthController {
     const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(req);
     const accessToken = await this.authService.createAccessToken(userId);
     const refreshToken = await this.authService.createRefreshToken(userId);
-    
-    return { accessToken, refreshToken, kakaoAccessToken, kakaoRefreshToken };
+
+    await this.tokenService.saveTokens(userId, refreshToken, kakaoAccessToken, kakaoRefreshToken);
+
+    return { accessToken, refreshToken };
   }
 
   @Get('auth/new-access-token')
@@ -38,7 +43,7 @@ export class AuthController {
   }
 
   @Delete('auth/account')
-  async kakaoAccountDelete(@Headers('access_token') accessToken: string) {
+  async accountDelete(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
     return await this.authService.accountDelete(userId);

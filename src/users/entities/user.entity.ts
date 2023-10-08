@@ -27,11 +27,11 @@ export class User {
 
   @OneToOne(() => UserImage, (userImage) => userImage.user, {
     onDelete: 'CASCADE',
-    })
+  })
   userImage: UserImage;
 
   @OneToOne(() => Token, (token) => token.user, {
     onDelete: 'CASCADE',
-    })
+  })
   token: Token;
 }
