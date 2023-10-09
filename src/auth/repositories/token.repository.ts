@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import { Token } from "../entities/token.entity";
 
@@ -8,6 +8,10 @@ export class TokenRepository {
     private readonly entityManager: EntityManager,
   ) {}
 
+  async getUserTokens(userId: number): Promise<Token[]> {
+    return await this.entityManager.find(Token, { where: { userId } });
+  }
+
   async saveTokens(userId: number, refreshToken: string, socialAccessToken: string, socialRefreshToken: string): Promise<Token> {
     const token = new Token();
     token.userId = userId;
@@ -16,5 +20,29 @@ export class TokenRepository {
     token.socialRefreshToken = socialRefreshToken;
 
     return await this.entityManager.save(token);
+  }
+
+  async updateTokens(userId: number, refreshToken: string, socialAccessToken: string, socialRefreshToken: string): Promise<Token> {
+    const token = await this.entityManager.findOne(Token, { where: { userId } });
+    token.refreshToken = refreshToken;
+    token.socialAccessToken = socialAccessToken;
+    token.socialRefreshToken = socialRefreshToken;
+
+    return await this.entityManager.save(token);
+  }
+
+  async deleteTokens(userId: number): Promise<Token | null> {
+    try {
+      const token = await this.entityManager.findOne(Token, { where: { userId } });
+      if (!token) {
+        throw new NotFoundException('토큰을 찾을 수 없습니다.');
+      } else {
+        await this.entityManager.delete(Token, { userId });
+        return token;
+      }
+    } catch (error) {
+      console.error('토큰 삭제 오류:', error);
+      return null;
+    }
   }
 }

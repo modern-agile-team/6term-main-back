@@ -3,6 +3,7 @@ import { UserRepository } from 'src/users/repositories/user.repository';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import { UserImageRepository } from 'src/users/repositories/user-image.repository';
+import axios from 'axios';
 
 dotenv.config();
 
@@ -77,6 +78,18 @@ export class AuthService {
       }
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     }
+  }
+
+  async kakaoLogout(accessToken: string) {
+    const kakaoLogoutUrl = 'https://kapi.kakao.com/v1/user/logout';
+    const kakaoLogoutHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    axios.post(kakaoLogoutUrl, {}, kakaoLogoutHeader);
+    return { status: true, message: "카카오 로그아웃이 완료되었습니다." };
   }
 
   async accountDelete(userId: number) {

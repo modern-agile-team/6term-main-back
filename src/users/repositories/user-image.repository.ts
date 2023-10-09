@@ -22,7 +22,7 @@ export class UserImageRepository {
     userImage.userIdd = userIdd;
     userImage.imageUrl = imageUrl;
 
-    return this.entityManager.save(userImage);
+    return await this.entityManager.save(userImage);
   }
 
   async updateUserImage(userIdd: number, newImageUrl: string): Promise<UserImage | null> {
