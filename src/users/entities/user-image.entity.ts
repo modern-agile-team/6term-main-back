@@ -15,9 +15,6 @@ export class UserImage {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @Column({ name: 'user_id' }) // userIdd가 --> userId로 변경될 예정
-  userIdd: number;
-
   @Column({ name: 'image_url' })
   imageUrl: string;
 
