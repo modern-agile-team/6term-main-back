@@ -3,6 +3,7 @@ import { UserRepository } from 'src/users/repositories/user.repository';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import { UserImageRepository } from 'src/users/repositories/user-image.repository';
+import axios from 'axios';
 
 dotenv.config();
 
@@ -77,6 +78,48 @@ export class AuthService {
       }
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     }
+  }
+
+  async kakaoLogout(accessToken: string) {
+    const kakaoLogoutUrl = 'https://kapi.kakao.com/v1/user/logout';
+    const kakaoLogoutHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    axios.post(kakaoLogoutUrl, {}, kakaoLogoutHeader);
+    return { status: true, message: "카카오 로그아웃이 완료되었습니다." };
+  }
+
+  async kakaoUnlink(accessToken: string) {
+    const kakaoUnlinkUrl = 'https://kapi.kakao.com/v1/user/unlink';
+    const kakaoUnlinkHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    axios.post(kakaoUnlinkUrl, {}, kakaoUnlinkHeader);
+    return { status: true, message: "카카오 연결 끊기가 완료되었습니다." };
+  }
+
+  async naverUnlink(accessToken: string) {
+    const naverUnlinkUrl = 'https://nid.naver.com/oauth2.0/token';
+    const naverUnlinkHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    const naverUnlinkBody = {
+      client_id: process.env.NAVER_CLIENT_ID,
+      client_secret: process.env.NAVER_CLIENT_SECRET,
+      grant_type: 'delete',
+      service_provider: 'NAVER',
+    };
+
+    axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
+    return { status: true, message: "네이버 연동 해제가 완료되었습니다." };
   }
 
   async accountDelete(userId: number) {
