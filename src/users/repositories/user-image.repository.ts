@@ -15,9 +15,9 @@ export class UserImageRepository {
     return userImage;
   }
 
-  async uploadUserImage(userIdd: number, imageUrl: string): Promise<UserImage> {
+  async uploadUserImage(userId: number, imageUrl: string): Promise<UserImage> {
     const userImage = new UserImage();
-    userImage.userIdd = userIdd;
+    userImage.userId = userId;
     userImage.imageUrl = imageUrl;
 
     return await this.entityManager.save(userImage);
@@ -26,7 +26,7 @@ export class UserImageRepository {
   async updateUserImage(userId: number, newImageUrl: string): Promise<UserImage | null> {
     try {
       const userImage = await this.entityManager.findOne(UserImage, { where: { userId } });
-
+      
       if (!userImage) {
         throw new NotFoundException('사용자 이미지를 찾을 수 없습니다.');
       }
