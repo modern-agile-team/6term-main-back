@@ -4,7 +4,7 @@ import { Controller, Delete, Get, Headers, Post, Req, UseGuards } from '@nestjs/
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -12,7 +12,7 @@ export class AuthController {
     private s3Service: S3Service
     ) {}
 
-  @Get('auth/naver/callback')
+  @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
   async naverAuthRedirect(@Req() req) {
     const {userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(req);
@@ -24,7 +24,7 @@ export class AuthController {
     return { accessToken, refreshToken };
   }
 
-  @Get('auth/kakao/callback')
+  @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuthRedirect(@Req() req) {
     const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(req);
@@ -36,13 +36,13 @@ export class AuthController {
     return { accessToken, refreshToken };
   }
 
-  @Get('auth/new-access-token')
+  @Get('new-access-token')
   async newAccessToken(@Headers('refresh_token') refreshToken: string) {
     const userId = await this.authService.decodeToken(refreshToken);
     return await this.authService.createAccessToken(userId);
   }
 
-  @Post('auth/kakao/logout')
+  @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
@@ -51,14 +51,14 @@ export class AuthController {
     return await this.authService.kakaoLogout(kakaoAccessToken);
   }
 
-  @Post('auth/naver/logout')
+  @Post('naver/logout')
   async naverLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
   
     return await this.tokenService.deleteTokens(userId);
   }
 
-  @Delete('auth/account')
+  @Delete('account')
   async accountDelete(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
