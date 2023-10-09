@@ -11,6 +11,7 @@ import {
 } from './schemas/chat-notifiation.schemas';
 import { EventsModule } from 'src/events/events.module';
 import { S3Module } from 'src/common/s3/s3.module';
+import { ChatRepository } from './repositories/chat.repository';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { S3Module } from 'src/common/s3/s3.module';
     S3Module,
   ],
   controllers: [ChatController],
-  providers: [ChatService],
+  providers: [ChatService, ChatRepository],
 })
 export class ChatModule {}

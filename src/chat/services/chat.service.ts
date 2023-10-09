@@ -1,3 +1,4 @@
+import { ChatRepository } from '../repositories/chat.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
@@ -9,6 +10,7 @@ import { ChatImage } from '../schemas/chat-image.schemas';
 @Injectable()
 export class ChatService {
   constructor(
+    private readonly chatRepository: ChatRepository,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
     @InjectModel(Chat.name)
@@ -23,50 +25,37 @@ export class ChatService {
   //     return chatRooms;
   // }
   async getChatRooms(testUser: number) {
-    const chatRoom = await this.chatRoomModel
-      .find({
-        $and: [
-          { $or: [{ host_id: testUser }, { guest_id: testUser }] },
-          { deleted_at: null },
-        ],
-      })
-      .exec();
-    if (!chatRoom.length) {
-      throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
-    }
+    try {
+      const chatRoom = await this.chatRepository.getChatRooms(testUser);
 
-    return chatRoom;
+      if (!chatRoom.length) {
+        throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
+      }
+
+      return chatRoom;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
     try {
-      const returnedRoom = await this.chatRoomModel
-        .find({
-          $and: [
-            {
-              $or: [{ host_id: testUser }, { guest_id: testUser }],
-            },
-            { deleted_at: null },
-            { _id: roomId },
-          ],
-        })
-        .exec();
-
+      const returnedRoom = await this.chatRepository.getOneChatRoom(
+        testUser,
+        roomId,
+      );
       return returnedRoom;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
+      throw error;
     }
   }
   async createChatRoom(myId: number, guestId: number) {
-    const chatRoomReturned = await this.chatRoomModel.create({
-      host_id: myId,
-      guest_id: guestId,
-    });
-    return chatRoomReturned;
+    try {
+      const chatRoomReturned = await this.createChatRoom(myId, guestId);
+      return chatRoomReturned;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
