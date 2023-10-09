@@ -10,8 +10,8 @@ export class BoardResponseDTO {
     id: number;
     name: string;
     userImage: {
-      id: number | null;
-      imageUrl: string | null;
+      id: number;
+      imageUrl: string;
     };
   };
   boardImages: any[]; // 여기에 실제 boardImages 데이터 타입을 지정해야 합니다.

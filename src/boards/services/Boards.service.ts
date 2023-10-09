@@ -30,8 +30,8 @@ export class BoardsService {
         id: board.user.id,
         name: board.user.name,
         userImage: {
-          id: board.user?.userImage?.id || null,
-          imageUrl: board.user?.userImage?.imageUrl || null,
+          id: board.user.userImage.id,
+          imageUrl: board.user.userImage.imageUrl,
         },
       },
       boardImages: board.boardImages.map((image) => ({

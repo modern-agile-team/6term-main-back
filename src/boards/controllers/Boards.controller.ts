@@ -33,10 +33,6 @@ export class BoardsController {
   async findAll(): Promise<BoardResponseDTO[]> {
     return this.boardsService.findAll();
   }
-  // async findAll(): Promise<Board[]> {
-  //   return this.boardsService.findAll();
-  // }
-
   @Get(':id/getone')
   async findOne(@Param('id') id: string): Promise<Board | undefined> {
     return this.boardsService.findOne(+id);

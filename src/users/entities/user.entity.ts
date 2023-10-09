@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  OneToOne,
   JoinColumn,
   OneToMany,
 } from 'typeorm';
@@ -16,7 +15,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => UserImage, (userImage) => userImage.userId)
   @JoinColumn()
   userImage: UserImage;
 
