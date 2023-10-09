@@ -5,7 +5,7 @@ import { Token } from 'src/auth/entities/token.entity';
 import { BoardImage } from 'src/boards/entities/board-image.entity';
 import { BoardLike } from 'src/boards/entities/board-like.entity';
 import { Board } from 'src/boards/entities/board.entity';
-import { BoardRepository } from 'src/boards/repository/boards.repository';
+// import { BoardRepository } from 'src/boards/repository/boards.repository';
 import { CommentLike } from 'src/comments/entities/comment-like.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Recomment } from 'src/comments/entities/recomment.entity';
@@ -38,7 +38,7 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
     Friend,
     BoardNotification,
     CommentNotification,
-    BoardRepository,
+    // BoardRepository,
   ], // 여기에 엔티티들을 추가해야 합니다.
   synchronize: process.env.NODE_ENV === 'true',
 };

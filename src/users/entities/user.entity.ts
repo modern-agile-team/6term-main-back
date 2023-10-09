@@ -1,14 +1,25 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserImage } from "./user-image.entity";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
+import { UserImage } from './user-image.entity';
 import { Token } from "src/auth/entities/token.entity";
+import { Board } from 'src/boards/entities/board.entity';
 
 @Entity({
   name: 'user',
 })
-
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @OneToMany(() => Board, (board) => board.user)
+  @JoinColumn({ name: 'board_id' })
+  board: Board;
 
   @Column({ length: 10 })
   provider: string;
@@ -28,6 +39,7 @@ export class User {
   @OneToOne(() => UserImage, (userImage) => userImage.user, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   userImage: UserImage;
 
   @OneToOne(() => Token, (token) => token.user, {

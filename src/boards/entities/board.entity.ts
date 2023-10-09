@@ -1,16 +1,15 @@
 import { User } from 'src/users/entities/user.entity';
+import { BoardImage } from './board-image.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  // EntityRepository,
   JoinColumn,
   ManyToOne,
-  //OneToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-//import { BoardImage } from './board-image.entity';
 
 @Entity({
   name: 'board',
@@ -19,9 +18,15 @@ export class Board {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @Column({ name: 'user_id' })
+  userId: number;
+
+  @ManyToOne(() => User, (user) => user.board)
   @JoinColumn({ name: 'user_id' })
-  userId: User;
+  user: User;
+
+  @OneToMany(() => BoardImage, (boardImage) => boardImage.board)
+  boardImages: BoardImage[];
 
   @Column()
   head: string;

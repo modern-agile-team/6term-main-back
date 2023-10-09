@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BoardImage } from '../entities/board-image.entity';
 import { S3Service } from '../../common/s3/s3.service';
-import { Board } from '../entities/board.entity';
+
 @Injectable()
 export class BoardImagesService {
   constructor(
@@ -12,13 +12,16 @@ export class BoardImagesService {
     private readonly boardImageRepository: Repository<BoardImage>,
   ) {}
 
-  async create(board: Board, file: Express.Multer.File): Promise<BoardImage> {
+  async create(
+    boardId: number,
+    file: Express.Multer.File,
+  ): Promise<BoardImage> {
     const userId = 1; // 사용자 ID (이건 나중에 준혁이가 변경할겁니다)
 
     const uploadedImage = await this.s3Service.imgUpload(file, userId); // s3에 업로드하는거 -> (s3Service 에서 실행)
     if (uploadedImage) {
       const boardImage = new BoardImage();
-      boardImage.boardId = board; // boardId 대신 board 엔터티를 할당 ( fk 키 )
+      boardImage.boardId = boardId;
       boardImage.imageUrl = uploadedImage.url;
       const savedImage = await this.boardImageRepository.save(boardImage);
 

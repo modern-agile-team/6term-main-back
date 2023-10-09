@@ -33,7 +33,6 @@ export class S3Service {
       ContentType: 'image/jpeg',
       ContentDisposition: 'inline',
     };
-
     try {
       await this.s3.send(new PutObjectCommand(params));
       const fileUrl = `${this.s3Adress}${filename}`;

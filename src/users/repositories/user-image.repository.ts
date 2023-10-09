@@ -1,12 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { EntityManager } from "typeorm";
-import { UserImage } from "../entities/user-image.entity";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { UserImage } from '../entities/user-image.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserImageRepository {
-  constructor(
-    private readonly entityManager: EntityManager,
-  ) {}
+  constructor(private readonly entityManager: EntityManager) {}
 
   async checkUserImage(userIdd: number): Promise<UserImage> {
     const userImage = await this.entityManager.findOne(UserImage, { where: { userIdd } });
@@ -34,7 +33,7 @@ export class UserImageRepository {
       }
       userImage.imageUrl = newImageUrl;
       await this.entityManager.save(userImage);
-  
+
       return userImage;
     } catch (error) {
       console.error('이미지 업데이트 오류:', error);
