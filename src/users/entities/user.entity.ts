@@ -17,10 +17,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => Board, (board) => board.user)
-  @JoinColumn({ name: 'board_id' })
-  board: Board;
-
   @Column({ length: 10 })
   provider: string;
 
@@ -36,11 +32,12 @@ export class User {
   @Column({ default: false })
   admin: boolean;
 
-  @OneToOne(() => UserImage, (userImage) => userImage.user, {
-    onDelete: 'CASCADE',
-  })
   @JoinColumn()
   userImage: UserImage;
+
+  @OneToMany(() => Board, (board) => board.user)
+  @JoinColumn({ name: 'board_id' })
+  board: Board;
 
   @OneToOne(() => Token, (token) => token.user, {
     onDelete: 'CASCADE',

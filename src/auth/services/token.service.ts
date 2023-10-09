@@ -21,6 +21,14 @@ export class TokenService {
   }
 
   async deleteTokens(userId: number) {
-    return await this.tokenRepository.deleteTokens(userId);
+    try {
+      const del = await this.tokenRepository.deleteTokens(userId);
+      console.log(del);
+      
+      return { status: true, message: '토큰 삭제 성공' };
+    } catch (error) {
+      console.error('토큰 삭제 오류:', error);
+      return { status: false, message: '토큰 삭제 실패' };
+    }
   }
 }

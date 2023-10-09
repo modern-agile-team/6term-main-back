@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { EntityManager } from "typeorm";
+import { DeleteResult, EntityManager } from "typeorm";
 import { Token } from "../entities/token.entity";
 
 @Injectable()
@@ -31,18 +31,11 @@ export class TokenRepository {
     return await this.entityManager.save(token);
   }
 
-  async deleteTokens(userId: number): Promise<Token | null> {
-    try {
-      const token = await this.entityManager.findOne(Token, { where: { userId } });
-      if (!token) {
-        throw new NotFoundException('토큰을 찾을 수 없습니다.');
-      } else {
-        await this.entityManager.delete(Token, { userId });
-        return token;
-      }
-    } catch (error) {
-      console.error('토큰 삭제 오류:', error);
-      return null;
+  async deleteTokens(userId: number): Promise<Token | DeleteResult> {
+    const res = await this.entityManager.delete(Token, { userId });
+    if (res.affected === 0) {
+      throw new NotFoundException('토큰을 찾을 수 없습니다.');
     }
+    return res;
   }
 }
