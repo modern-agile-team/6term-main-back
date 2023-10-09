@@ -101,7 +101,25 @@ export class AuthService {
     };
 
     axios.post(kakaoUnlinkUrl, {}, kakaoUnlinkHeader);
-    return { status: true, message: "카카오 연결 해제가 완료되었습니다." };
+    return { status: true, message: "카카오 연결 끊기가 완료되었습니다." };
+  }
+
+  async naverUnlink(accessToken: string) {
+    const naverUnlinkUrl = 'https://nid.naver.com/oauth2.0/token';
+    const naverUnlinkHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    const naverUnlinkBody = {
+      client_id: process.env.NAVER_CLIENT_ID,
+      client_secret: process.env.NAVER_CLIENT_SECRET,
+      grant_type: 'delete',
+      service_provider: 'NAVER',
+    };
+
+    axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
+    return { status: true, message: "네이버 연동 해제가 완료되었습니다." };
   }
 
   async accountDelete(userId: number) {
