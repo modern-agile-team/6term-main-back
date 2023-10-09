@@ -92,6 +92,18 @@ export class AuthService {
     return { status: true, message: "카카오 로그아웃이 완료되었습니다." };
   }
 
+  async kakaoUnlink(accessToken: string) {
+    const kakaoUnlinkUrl = 'https://kapi.kakao.com/v1/user/unlink';
+    const kakaoUnlinkHeader = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+
+    axios.post(kakaoUnlinkUrl, {}, kakaoUnlinkHeader);
+    return { status: true, message: "카카오 연결 해제가 완료되었습니다." };
+  }
+
   async accountDelete(userId: number) {
     const deleteUser = await this.userRepository.deleteUser(userId);
     if (!deleteUser) {

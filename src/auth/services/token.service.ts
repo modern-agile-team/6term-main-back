@@ -22,7 +22,7 @@ export class TokenService {
 
   async deleteTokens(userId: number) {
     try {
-      const del = await this.tokenRepository.deleteTokens(userId);
+      await this.tokenRepository.deleteTokens(userId);
       
       return { status: true, message: '토큰 삭제 성공' };
     } catch (error) {

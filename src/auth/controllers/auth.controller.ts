@@ -51,6 +51,15 @@ export class AuthController {
     return await this.authService.kakaoLogout(kakaoAccessToken);
   }
 
+  @Post('kakao/unlink')
+  async kakaoUnlink(@Headers('access_token') accessToken: string) {
+    const userId = await this.authService.decodeToken(accessToken);
+    const tokens = await this.tokenService.getUserTokens(userId);
+    const kakaoAccessToken = tokens[0].socialAccessToken;
+    await this.tokenService.deleteTokens(userId);
+    return await this.authService.kakaoUnlink(kakaoAccessToken);
+  }
+
   @Post('naver/logout')
   async naverLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
