@@ -47,11 +47,11 @@ export class AuthController {
     const userId = await this.authService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
     let kakaoAccessToken = tokens[0].socialAccessToken;
-    const kakaoRefreshToken = tokens[0].socialRefreshToken;
 
     const checkvalidKakaoToken = await this.tokenService.checkvalidKakaoToken(kakaoAccessToken);
 
     if (checkvalidKakaoToken === 401) {
+      const kakaoRefreshToken = tokens[0].socialRefreshToken;
       const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
       kakaoAccessToken = newKakaoToken.data.access_token;
     }
@@ -63,7 +63,15 @@ export class AuthController {
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
-    const kakaoAccessToken = tokens[0].socialAccessToken;
+    let kakaoAccessToken = tokens[0].socialAccessToken;
+
+    const checkvalidKakaoToken = await this.tokenService.checkvalidKakaoToken(kakaoAccessToken);
+
+    if (checkvalidKakaoToken === 401) {
+      const kakaoRefreshToken = tokens[0].socialRefreshToken;
+      const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
+      kakaoAccessToken = newKakaoToken.data.access_token;
+    }
     await this.tokenService.deleteTokens(userId);
     return await this.authService.kakaoUnlink(kakaoAccessToken);
   }
