@@ -48,12 +48,12 @@ export class AuthController {
     const tokens = await this.tokenService.getUserTokens(userId);
     let kakaoAccessToken = tokens[0].socialAccessToken;
 
-    const checkvalidKakaoToken = await this.tokenService.checkvalidKakaoToken(kakaoAccessToken);
+    const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(kakaoAccessToken);
 
-    if (checkvalidKakaoToken === 401) {
+    if (checkValidKakaoToken === 401) {
       const kakaoRefreshToken = tokens[0].socialRefreshToken;
       const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
-      kakaoAccessToken = newKakaoToken.data.access_token;
+      kakaoAccessToken = newKakaoToken.access_token;
     }
     await this.tokenService.deleteTokens(userId);
     return await this.authService.kakaoLogout(kakaoAccessToken);
@@ -65,12 +65,12 @@ export class AuthController {
     const tokens = await this.tokenService.getUserTokens(userId);
     let kakaoAccessToken = tokens[0].socialAccessToken;
 
-    const checkvalidKakaoToken = await this.tokenService.checkvalidKakaoToken(kakaoAccessToken);
+    const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(kakaoAccessToken);
 
-    if (checkvalidKakaoToken === 401) {
+    if (checkValidKakaoToken === 401) {
       const kakaoRefreshToken = tokens[0].socialRefreshToken;
       const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
-      kakaoAccessToken = newKakaoToken.data.access_token;
+      kakaoAccessToken = newKakaoToken.access_token;
     }
     await this.tokenService.deleteTokens(userId);
     return await this.authService.kakaoUnlink(kakaoAccessToken);
@@ -87,7 +87,15 @@ export class AuthController {
   async naverUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
-    const naverAccessToken = tokens[0].socialAccessToken;
+    let naverAccessToken = tokens[0].socialAccessToken;
+
+    const checkValidNaverToken = await this.tokenService.checkValidNaverToken(naverAccessToken);
+
+    if (checkValidNaverToken === 401) {
+      const naverRefreshToken = tokens[0].socialRefreshToken;
+      const newNaverToken = await this.tokenService.getNewNaverToken(naverRefreshToken);      
+      naverAccessToken = newNaverToken.access_token;
+    }
     await this.tokenService.deleteTokens(userId);
     return await this.authService.naverUnlink(naverAccessToken);
   }

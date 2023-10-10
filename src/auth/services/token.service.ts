@@ -21,7 +21,7 @@ export class TokenService {
     return await this.tokenRepository.saveTokens(userId, refreshToken, socialAccessToken, socialRefreshToken);
   }
 
-  async checkvalidKakaoToken(accessToken: string) {
+  async checkValidKakaoToken(accessToken: string) {
     try {
       const kakaoUnlinkUrl = 'https://kapi.kakao.com/v1/user/access_token_info';
       const kakaoUnlinkHeader = {
@@ -54,6 +54,42 @@ export class TokenService {
       return (await axios.post(kakaoTokenUrl, kakaoTokenData, kakaoTokenHeader)).data;
     } catch (error) {
       console.error('카카오 토큰 갱신 오류:', error);
+      return false;
+    }
+  }
+
+  async checkValidNaverToken(accessToken: string) {
+    try {
+      const naverUnlinkUrl = 'https://openapi.naver.com/v1/nid/me';
+      const naverUnlinkHeader = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      return (await axios.get(naverUnlinkUrl, naverUnlinkHeader)).status;
+    } catch (error) {
+      
+    }
+  }
+
+  async getNewNaverToken(refreshToken: string) {
+    try {
+      const naverTokenUrl = 'https://nid.naver.com/oauth2.0/token';
+      // const naverTokenHeader = {
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+      //   },
+      // };
+      const naverTokenData = {
+        grant_type: 'refresh_token',
+        client_id: process.env.NAVER_CLIENT_ID,
+        client_secret: process.env.NAVER_CLIENT_SECRET,
+        refresh_token: refreshToken,
+      };
+
+      return (await axios.post(naverTokenUrl, naverTokenData)).data;
+    } catch (error) {
+      console.error('네이버 토큰 갱신 오류:', error);
       return false;
     }
   }
