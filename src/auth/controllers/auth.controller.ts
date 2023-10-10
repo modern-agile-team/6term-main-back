@@ -1,10 +1,12 @@
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
-import { Controller, Delete, Get, Headers, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Headers, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('auth API')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -26,13 +28,16 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthRedirect(@Req() req) {
+  async kakaoAuthRedirect(@Req() req, @Res() res) {
     const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(req);
     const accessToken = await this.authService.createAccessToken(userId);
     const refreshToken = await this.authService.createRefreshToken(userId);
 
     await this.tokenService.saveTokens(userId, refreshToken, kakaoAccessToken, kakaoRefreshToken);
 
+    res.json({ accessToken, refreshToken });
+    console.log(accessToken, refreshToken);
+    
     return { accessToken, refreshToken };
   }
 
