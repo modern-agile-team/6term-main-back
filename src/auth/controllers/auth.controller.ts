@@ -55,7 +55,7 @@ export class AuthController {
       const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
       kakaoAccessToken = newKakaoToken.data.access_token;
     }
-
+    await this.tokenService.deleteTokens(userId);
     return await this.authService.kakaoLogout(kakaoAccessToken);
   }
 
