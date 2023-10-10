@@ -36,9 +36,15 @@ export class AuthController {
     await this.tokenService.saveTokens(userId, refreshToken, kakaoAccessToken, kakaoRefreshToken);
 
     res.json({ accessToken, refreshToken });
-    console.log(accessToken, refreshToken);
-    
+
     return { accessToken, refreshToken };
+  }
+
+  @Post('kakao/login')
+  async kakaoAuth(@Req() req) {
+    const authorize = req.body.authorize;
+    console.log(authorize);
+    
   }
 
   @Get('new-access-token')
