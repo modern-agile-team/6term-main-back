@@ -75,11 +75,6 @@ export class TokenService {
   async getNewNaverToken(refreshToken: string) {
     try {
       const naverTokenUrl = 'https://nid.naver.com/oauth2.0/token';
-      // const naverTokenHeader = {
-      //   headers: {
-      //     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-      //   },
-      // };
       const naverTokenData = {
         grant_type: 'refresh_token',
         client_id: process.env.NAVER_CLIENT_ID,
