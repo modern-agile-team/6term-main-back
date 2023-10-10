@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TokenRepository } from '../repositories/token.repository';
+import axios from 'axios';
 
 @Injectable()
 export class TokenService {
@@ -18,6 +19,43 @@ export class TokenService {
       return await this.tokenRepository.updateTokens(userId, refreshToken, socialAccessToken, socialRefreshToken);
     }
     return await this.tokenRepository.saveTokens(userId, refreshToken, socialAccessToken, socialRefreshToken);
+  }
+
+  async checkvalidKakaoToken(accessToken: string) {
+    try {
+      const kakaoUnlinkUrl = 'https://kapi.kakao.com/v1/user/access_token_info';
+      const kakaoUnlinkHeader = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      return (await axios.get(kakaoUnlinkUrl, kakaoUnlinkHeader)).status;
+    } catch (error) {
+      console.error('카카오 토큰 유효성 검사 오류:', error);
+      return false;
+    }
+  }
+
+  async getNewKakaoToken(refreshToken: string) {
+    try {
+      const kakaoTokenUrl = 'https://kauth.kakao.com/oauth/token';
+      const kakaoTokenHeader = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        },
+      };
+      const kakaoTokenData = {
+        grant_type: 'refresh_token',
+        client_id: process.env.KAKAO_CLIENT_ID,
+        refresh_token: refreshToken,
+      };
+
+      return (await axios.post(kakaoTokenUrl, kakaoTokenData, kakaoTokenHeader)).data;
+    } catch (error) {
+      console.error('카카오 토큰 갱신 오류:', error);
+      return false;
+    }
   }
 
   async deleteTokens(userId: number) {

@@ -46,8 +46,16 @@ export class AuthController {
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.authService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
-    const kakaoAccessToken = tokens[0].socialAccessToken;
-    await this.tokenService.deleteTokens(userId);
+    let kakaoAccessToken = tokens[0].socialAccessToken;
+    const kakaoRefreshToken = tokens[0].socialRefreshToken;
+
+    const checkvalidKakaoToken = await this.tokenService.checkvalidKakaoToken(kakaoAccessToken);
+
+    if (checkvalidKakaoToken === 401) {
+      const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
+      kakaoAccessToken = newKakaoToken.data.access_token;
+    }
+
     return await this.authService.kakaoLogout(kakaoAccessToken);
   }
 
