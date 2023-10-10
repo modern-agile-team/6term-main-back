@@ -60,34 +60,13 @@ export class ChatService {
 
   async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
     try {
-      const chatRoom = await this.chatRoomModel
-        .findById({
-          _id: roomId,
-        })
-        .exec();
-      const isUser = await this.chatRoomModel
-        .find({
-          $and: [
-            { $or: [{ host_id: myId }, { guest_id: myId }] },
-            { _id: roomId },
-          ],
-        })
-        .exec();
-      if (!isUser.length) {
-        throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
-      }
-
-      return await this.chatRoomModel
-        .findByIdAndUpdate(chatRoom.id, {
-          deleted_at: new Date(),
-        })
-        .exec();
+      const returnedChatRoom = await this.chatRepository.deleteChatRoom(
+        myId,
+        roomId,
+      );
+      return returnedChatRoom;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
+      throw new Error();
     }
   }
 
