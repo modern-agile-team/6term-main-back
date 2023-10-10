@@ -1,6 +1,6 @@
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
-import { Controller, Delete, Get, Headers, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Headers, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -26,25 +26,19 @@ export class AuthController {
     return { accessToken, refreshToken };
   }
 
-  @Get('kakao/callback')
-  @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthRedirect(@Req() req, @Res() res) {
-    const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(req);
+  @Get('kakao/login')
+  async kakaoLogin(@Query() { code }, @Res() res) {
+    if (!code) {
+      return res.json({ status: false, message: '인가코드가 없습니다.' });
+    }
+
+    const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(code);
     const accessToken = await this.authService.createAccessToken(userId);
     const refreshToken = await this.authService.createRefreshToken(userId);
 
     await this.tokenService.saveTokens(userId, refreshToken, kakaoAccessToken, kakaoRefreshToken);
 
-    res.json({ accessToken, refreshToken });
-
-    return { accessToken, refreshToken };
-  }
-
-  @Post('kakao/login')
-  async kakaoAuth(@Req() req) {
-    const authorize = req.body.authorize;
-    console.log(authorize);
-    
+    return res.json({ accessToken, refreshToken });
   }
 
   @Get('new-access-token')

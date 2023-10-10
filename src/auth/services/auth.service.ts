@@ -47,34 +47,67 @@ export class AuthService {
     }
   }
 
-  async kakaoLogin(req) {
-    const userInfo = req.user; // 카카오에서 전달받은 사용자 정보
-    const kakaoAccessToken = userInfo.accessToken;
-    const kakaoRefreshToken = userInfo.refreshToken;
-    
-    const checkUser = await this.userRepository.findUser(userInfo.user.email, userInfo.user.provider);
+  async kakaoLogin(authorizeCode: string) {
+    const kakaoTokenUrl = 'https://kauth.kakao.com/oauth/token';
+    const kakaoTokenHeader = {
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+    };
+    const kakaoTokenBody = {
+      grant_type: 'authorization_code',
+      client_id: process.env.KAKAO_CLIENT_ID,
+      redirect_uri: 'http://localhost:3000/auth/kakao/callback',
+      code: authorizeCode,
+    };
 
+    const kakaoToken = (await axios.post(kakaoTokenUrl, kakaoTokenBody, kakaoTokenHeader)).data;
+    const kakaoAccessToken = kakaoToken.access_token;
+    const kakaoRefreshToken = kakaoToken.refresh_token;
+
+    const kakaoUserInfoUrl = 'https://kapi.kakao.com/v2/user/me';
+    const kakaoUserInfoHeader = {
+      headers: {
+        Authorization: `Bearer ${kakaoAccessToken}`,
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+    };
+
+    const kakaoUserInfo = (await axios.get(kakaoUserInfoUrl, kakaoUserInfoHeader)).data;
+    const nickname = kakaoUserInfo.properties.nickname;
+    const email = kakaoUserInfo.kakao_account.email;
+    const profileImage = kakaoUserInfo.properties.profile_image;
+    const gender = kakaoUserInfo.kakao_account.gender == 'male' ? 'M' : 'F';
+    const provider = 'kakao';
+    const userInfo = {
+      provider,
+      nickname,
+      email,
+      gender,
+    }
+
+    const checkUser = await this.userRepository.findUser(email, provider);
     if (checkUser) { // 이미 존재하는 사용자인 경우
       const userId = checkUser.id;
 
-      await this.userRepository.updateUserName(userId, userInfo.user.nickname); // 이름 업데이트
+      await this.userRepository.updateUserName(userId, nickname); // 이름 업데이트
       
       const userImage = (await this.userImageRepository.checkUserImage(userId)).imageUrl; // DB 이미지
       const imageUrlParts = userImage.split('/');
       const dbImageProvider = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
-      
+
       if (dbImageProvider != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
-        await this.userImageRepository.updateUserImage(userId, userInfo.user.profileImage); // DB에 이미지 URL 업데이트
+        await this.userImageRepository.updateUserImage(userId, profileImage); // DB에 이미지 URL 업데이트
       }
 
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     } else { // 존재하지 않는 사용자인 경우
-      const newUser = await this.userRepository.createUser(userInfo.user);
+      const newUser = await this.userRepository.createUser(userInfo);
       const userId = newUser.id;
-      if (!userInfo.user.profileImage) {
+      if (!profileImage) {
         await this.userImageRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
       } else {
-        await this.userImageRepository.uploadUserImage(userId, userInfo.user.profileImage);
+        await this.userImageRepository.uploadUserImage(userId, profileImage);
       }
       return { userId, kakaoAccessToken, kakaoRefreshToken };
     }
