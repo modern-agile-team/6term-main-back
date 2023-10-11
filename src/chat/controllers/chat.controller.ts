@@ -87,6 +87,7 @@ export class ChatController {
     @Param('receiverId') receiverId: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    console.log(user);
     return this.chatService.createChatImage(roomId, user.id, receiverId, file);
   }
 }
