@@ -6,10 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UploadedFile,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ChatService } from './chat.service';
+import { ChatService } from '../services/chat.service';
 // import { ChatRoom } from './schemas/chat-room.schemas';
 // import { Chat } from './schemas/chat.schemas';
 // import { ChatNotification } from './schemas/chat-notifiation.schemas';
@@ -17,14 +19,19 @@ import { ChatService } from './chat.service';
 import { ApiOperation } from '@nestjs/swagger';
 // import { Users } from 'src/common/decorators/user.decorator';
 // import { User } from 'src/users/entities/user.entity';
-import { PostChatDto } from './dto/post-chat.dto';
-import { CreateRoomDto } from './dto/create-room.dto';
+import { PostChatDto } from '../dto/post-chat.dto';
 import mongoose from 'mongoose';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { S3Service } from 'src/common/s3/s3.service';
+// import { Users } from 'src/common/decorators/user.decorator';
 
 @Controller('chat')
 @UsePipes(ValidationPipe)
 export class ChatController {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private s3Service: S3Service,
+  ) {}
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
   @Get('room/:testUser')
@@ -78,6 +85,7 @@ export class ChatController {
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
   @Post(':roomId/:senderId/:receiverId')
   async createChat(
+    // @Users('user') user,
     @Param('roomId') roomId: mongoose.Types.ObjectId,
     @Param('receiverId', ParseIntPipe) receiverId: number,
     @Body() body: PostChatDto,
@@ -89,6 +97,26 @@ export class ChatController {
       body.content,
       senderId,
       receiverId,
+      // user,
+    );
+  }
+
+  @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
+  @Post('/image/:roomId/:senderId/:receiverId')
+  @UseInterceptors(FileInterceptor('file'))
+  async createChatImage(
+    @Param('roomId') roomId: mongoose.Types.ObjectId,
+    @Param('senderId') senderId: number,
+    @Param('receiverId') receiverId: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    // const userId = senderId;
+    const imageUrl = await this.s3Service.imgUpload(file, senderId);
+    return this.chatService.createChatImage(
+      roomId,
+      senderId,
+      receiverId,
+      imageUrl.url,
     );
   }
 }

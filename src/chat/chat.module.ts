@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ChatController } from './chat.controller';
-import { ChatService } from './chat.service';
+import { ChatController } from './controllers/chat.controller';
+import { ChatService } from './services/chat.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatRoom, ChatRoomSchema } from './schemas/chat-room.schemas';
 import { Chat, ChatSchema } from './schemas/chat.schemas';
@@ -10,6 +10,8 @@ import {
   ChatNotificationSchema,
 } from './schemas/chat-notifiation.schemas';
 import { EventsModule } from 'src/events/events.module';
+import { S3Module } from 'src/common/s3/s3.module';
+import { ChatRepository } from './repositories/chat.repository';
 
 @Module({
   imports: [
@@ -20,8 +22,9 @@ import { EventsModule } from 'src/events/events.module';
       { name: ChatNotification.name, schema: ChatNotificationSchema },
     ]),
     EventsModule,
+    S3Module,
   ],
   controllers: [ChatController],
-  providers: [ChatService],
+  providers: [ChatService, ChatRepository],
 })
 export class ChatModule {}

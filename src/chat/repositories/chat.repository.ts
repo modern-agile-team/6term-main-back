@@ -1,24 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ChatRoom } from './schemas/chat-room.schemas';
-import * as mongoose from 'mongoose';
-import { Chat } from './schemas/chat.schemas';
-import { EventsGateway } from 'src/events/events.gateway';
+import { ChatRoom } from '../schemas/chat-room.schemas';
+import { Chat } from '../schemas/chat.schemas';
+import { ChatImage } from '../schemas/chat-image.schemas';
+import mongoose from 'mongoose';
 
 @Injectable()
-export class ChatService {
+export class ChatRepository {
   constructor(
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
     @InjectModel(Chat.name)
     private readonly chatModel: mongoose.Model<Chat>,
-    private readonly eventsGateway: EventsGateway,
+    @InjectModel(ChatImage.name)
+    private readonly chatImageModel: mongoose.Model<ChatImage>,
   ) {}
 
-  // async findAll(): Promise<ChatRoom[]> {
-  //     const chatRooms = await this.chatRoomModel.find()
-  //     return chatRooms;
-  // }
   async getChatRooms(testUser: number) {
     const chatRoom = await this.chatRoomModel
       .find({
@@ -28,10 +25,6 @@ export class ChatService {
         ],
       })
       .exec();
-    if (!chatRoom.length) {
-      throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
-    }
-
     return chatRoom;
   }
 
@@ -58,12 +51,17 @@ export class ChatService {
       }
     }
   }
+
   async createChatRoom(myId: number, guestId: number) {
-    const chatRoomReturned = await this.chatRoomModel.create({
-      host_id: myId,
-      guest_id: guestId,
-    });
-    return chatRoomReturned;
+    try {
+      const chatRoomReturned = await this.chatRoomModel.create({
+        host_id: myId,
+        guest_id: guestId,
+      });
+      return chatRoomReturned;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
@@ -97,33 +95,5 @@ export class ChatService {
         );
       }
     }
-  }
-
-  async getChats(roomId: mongoose.Types.ObjectId) {
-    return await this.chatModel.find({ chatroom_id: roomId }).exec();
-  }
-
-  async createChat(
-    roomId: mongoose.Types.ObjectId,
-    content: string,
-    myId: number,
-    receiverId: number,
-  ) {
-    await this.getOneChatRoom(myId, roomId);
-    const chatReturned = await this.chatModel.create({
-      chatroom_id: roomId,
-      content: content,
-      sender: myId,
-      receiver: receiverId,
-    });
-    const chat = {
-      content: chatReturned.content,
-      sender: chatReturned.sender,
-      receiver: chatReturned.receiver,
-    };
-    const socketRoomId = chatReturned.chatroom_id.toString();
-    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
-    // this.eventsGateway.server.to('/ch123').emit('message', chat);
-    return chat;
   }
 }
