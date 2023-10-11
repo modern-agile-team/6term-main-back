@@ -12,13 +12,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ChatService } from '../services/chat.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PostChatDto } from '../dto/post-chat.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
 
+@ApiTags('CHAT')
 @Controller('chat')
 @UsePipes(ValidationPipe)
 export class ChatController {
@@ -31,12 +32,13 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방 단일 조회' })
-  @Get('room/:roomId')
+  @Get('room/:testUser/:roomId')
   async getOneChatRoom(
-    @Users() user: User,
+    // @Users() user: User,
+    @Param('testUser') testUser: number,
     @Param('roomId') roomId: mongoose.Types.ObjectId,
   ) {
-    return await this.chatService.getOneChatRoom(user.id, roomId);
+    return await this.chatService.getOneChatRoom(testUser, roomId);
   }
 
   @ApiOperation({ summary: '채팅방 생성' })
@@ -64,16 +66,18 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':receiverId')
+  @Post(':testUser/:receiverId')
   async createChat(
     @Param('receiverId', ParseIntPipe) receiverId: number,
+    @Param('testUser', ParseIntPipe) testUser: number,
     @Body() body: PostChatDto,
-    @Users() user: User,
+    // @Users() user: User,
   ) {
     return this.chatService.createChat(
       body.chatroom_id,
       body.content,
-      user.id,
+      testUser,
+      // user.id,
       receiverId,
     );
   }

@@ -37,7 +37,7 @@ export class ChatRepository {
   async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
     try {
       const returnedRoom = await this.chatRoomModel
-        .find({
+        .findOne({
           $and: [
             {
               $or: [{ host_id: testUser }, { guest_id: testUser }],
@@ -50,11 +50,7 @@ export class ChatRepository {
 
       return returnedRoom;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
+      throw error;
     }
   }
 
