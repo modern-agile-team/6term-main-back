@@ -156,6 +156,7 @@ export class ChatService {
       return chat;
     } catch (error) {
       console.error('채팅 이미지 생성 실패: ', error);
+      throw error;
     }
   }
 }
