@@ -1,3 +1,5 @@
+import { UserImage } from 'src/users/entities/user-image.entity';
+
 export class BoardResponseDTO {
   id: number;
   head: string;
@@ -9,10 +11,12 @@ export class BoardResponseDTO {
   userId: {
     id: number;
     name: string;
-    userImage: {
-      id: number;
-      imageUrl: string;
-    };
+    userImage: UserImage | UserImage[];
+    // userImage: string;
   };
-  boardImages: any[]; // 여기에 실제 boardImages 데이터 타입을 지정해야 합니다.
+
+  boardImages: {
+    id: number;
+    imageUrl: string;
+  }[];
 }

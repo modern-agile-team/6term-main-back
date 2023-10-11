@@ -24,21 +24,21 @@ export class BoardsController {
     private readonly boardImagesService: BoardImagesService,
   ) {}
 
-  @Post('/post')
+  @Post()
   async create(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
     return this.boardsService.create(createBoardDto);
   }
 
-  @Get('/getall')
+  @Get()
   async findAll(): Promise<BoardResponseDTO[]> {
     return this.boardsService.findAll();
   }
-  @Get(':id/getone')
+  @Get(':id')
   async findOne(@Param('id') id: string): Promise<Board | undefined> {
     return this.boardsService.findOne(+id);
   }
 
-  @Put(':id/update')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() boardData: Partial<Board>,
@@ -46,7 +46,7 @@ export class BoardsController {
     return this.boardsService.update(+id, boardData);
   }
 
-  @Delete(':id/delete')
+  @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     return this.boardsService.remove(+id);
   }
