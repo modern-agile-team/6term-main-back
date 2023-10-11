@@ -23,6 +23,11 @@ export class User {
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
+  @OneToOne(() => Token, (token) => token.user, {
+    onDelete: 'CASCADE',
+  })
+  token: Token;
+
   @Column({ length: 10 })
   provider: string;
 
