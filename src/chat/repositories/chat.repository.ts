@@ -17,15 +17,21 @@ export class ChatRepository {
   ) {}
 
   async getChatRooms(testUser: number) {
-    const chatRoom = await this.chatRoomModel
-      .find({
-        $and: [
-          { $or: [{ host_id: testUser }, { guest_id: testUser }] },
-          { deleted_at: null },
-        ],
-      })
-      .exec();
-    return chatRoom;
+    try {
+      const chatRoom = await this.chatRoomModel
+        .find({
+          $and: [
+            { $or: [{ host_id: testUser }, { guest_id: testUser }] },
+            { deleted_at: null },
+          ],
+        })
+        .exec();
+
+      return chatRoom;
+    } catch (error) {
+      console.error('채팅룸 조회 실패: ', error);
+      throw error;
+    }
   }
 
   async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
@@ -58,9 +64,18 @@ export class ChatRepository {
         host_id: myId,
         guest_id: guestId,
       });
+
       return chatRoomReturned;
     } catch (error) {
-      throw error;
+      console.error('채팅룸 생성 실패: ', error);
+
+      if (error.name === 'MongoError' && error.code === 11000) {
+        // 중복 키 에러 처리
+        throw new Error('채팅룸 ID 중복');
+      } else {
+        // 다른 에러 처리
+        throw new Error('채팅룸 생성 실패');
+      }
     }
   }
 
@@ -71,6 +86,7 @@ export class ChatRepository {
           _id: roomId,
         })
         .exec();
+
       const isUser = await this.chatRoomModel
         .find({
           $and: [
@@ -79,6 +95,7 @@ export class ChatRepository {
           ],
         })
         .exec();
+
       if (!isUser.length) {
         throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
       }
@@ -94,6 +111,64 @@ export class ChatRepository {
           '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
         );
       }
+    }
+  }
+
+  async getChats(roomId: mongoose.Types.ObjectId) {
+    try {
+      const returnedhChat = await this.chatModel
+        .find({ chatroom_id: roomId })
+        .exec();
+
+      return returnedhChat;
+    } catch (error) {
+      console.error('채팅 조회 실패: ', error);
+      throw error;
+    }
+  }
+
+  async createChat(
+    roomId: mongoose.Types.ObjectId,
+    content: string,
+    myId: number,
+    receiverId: number,
+  ) {
+    try {
+      return await this.chatModel.create({
+        chatroom_id: roomId,
+        content: content,
+        sender: myId,
+        receiver: receiverId,
+      });
+    } catch (error) {
+      console.error('채팅 생성 실패: ', error);
+      throw error;
+    }
+  }
+
+  async createChatImage(
+    roomId: mongoose.Types.ObjectId,
+    myId: number,
+    receiverId: number,
+    imageUrl: string,
+  ) {
+    try {
+      const returnedChat = await this.chatModel.create({
+        chatroom_id: roomId,
+        sender: myId,
+        receiver: receiverId,
+        content: imageUrl,
+      });
+
+      await this.chatImageModel.create({
+        chat_id: returnedChat.id,
+        image_url: returnedChat.content,
+      });
+
+      return returnedChat;
+    } catch (error) {
+      console.error('채팅 이미지 생성 실패: ', error);
+      throw error;
     }
   }
 }

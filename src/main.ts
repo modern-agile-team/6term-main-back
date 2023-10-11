@@ -1,13 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './config/swagger';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   const logger = new Logger();
+  app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
   setupSwagger(app);
   app.useLogger(logger);
@@ -17,8 +17,8 @@ async function bootstrap() {
     .setDescription('모던애자일 6기 메인프로젝트 API 문서')
     .setVersion('1.0')
     .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('swagger', app, document);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
 
   await app.listen(3000);
 }
