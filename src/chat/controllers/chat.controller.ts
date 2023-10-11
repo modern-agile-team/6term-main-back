@@ -32,13 +32,12 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방 단일 조회' })
-  @Get('room/:testUser/:roomId')
+  @Get('room/:roomId')
   async getOneChatRoom(
-    // @Users() user: User,
-    @Param('testUser') testUser: number,
+    @Users() user: User,
     @Param('roomId') roomId: mongoose.Types.ObjectId,
   ) {
-    return await this.chatService.getOneChatRoom(testUser, roomId);
+    return await this.chatService.getOneChatRoom(user.id, roomId);
   }
 
   @ApiOperation({ summary: '채팅방 생성' })
@@ -66,18 +65,16 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':testUser/:receiverId')
+  @Post(':receiverId')
   async createChat(
+    @Users() user: User,
     @Param('receiverId', ParseIntPipe) receiverId: number,
-    @Param('testUser', ParseIntPipe) testUser: number,
     @Body() body: PostChatDto,
-    // @Users() user: User,
   ) {
     return this.chatService.createChat(
       body.chatroom_id,
       body.content,
-      testUser,
-      // user.id,
+      user.id,
       receiverId,
     );
   }
@@ -91,7 +88,6 @@ export class ChatController {
     @Param('receiverId') receiverId: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(user);
     return this.chatService.createChatImage(roomId, user.id, receiverId, file);
   }
 }

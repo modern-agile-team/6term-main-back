@@ -1,5 +1,9 @@
 import { ChatRepository } from '../repositories/chat.repository';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
@@ -22,9 +26,9 @@ export class ChatService {
     private readonly eventsGateway: EventsGateway,
   ) {}
 
-  async getChatRooms(testUser: number) {
+  async getChatRooms(myId: number) {
     try {
-      const chatRoom = await this.chatRepository.getChatRooms(testUser);
+      const chatRoom = await this.chatRepository.getChatRooms(myId);
 
       if (!chatRoom.length) {
         throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
@@ -37,15 +41,15 @@ export class ChatService {
     }
   }
 
-  async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
+  async getOneChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
     try {
       const returnedRoom = await this.chatRepository.getOneChatRoom(
-        testUser,
+        myId,
         roomId,
       );
 
       if (!returnedRoom) {
-        throw new NotFoundException('유저가 채팅방에 속해있지 않습니다.');
+        throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
       }
 
       return returnedRoom;
@@ -70,6 +74,9 @@ export class ChatService {
       return chatRoomReturned;
     } catch (error) {
       console.error('채팅룸 생성 실패: ', error);
+      if (error.code === 11000) {
+        throw new ConflictException('중복된 id값이 이미 존재합니다.');
+      }
       throw error;
     }
   }
