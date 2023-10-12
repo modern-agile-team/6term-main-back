@@ -198,7 +198,7 @@ export class AuthService {
     };
 
     axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
-    return { status: true, message: "네이버 연동 해제가 완료되었습니다." };
+    return { message: "네이버 연동 해제가 완료되었습니다." };
   }
 
   async accountDelete(userId: number) {
