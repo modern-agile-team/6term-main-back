@@ -14,34 +14,69 @@ export class AuthService {
     private readonly userImageRepository: UserImageRepository,
     ) {}
 
-  async naverLogin(req) {
-    const userInfo = req.user; // 네이버에서 전달받은 사용자 정보
-    const naverAccessToken = userInfo.accessToken;
-    const naverRefreshToken = userInfo.refreshToken;
+  async naverLogin(authorizeCode: string) {
+    const naverTokenUrl = 'https://nid.naver.com/oauth2.0/token';
+    const naverTokenHeader = {
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+    };
+    const naverTokenBody = {
+      grant_type: 'authorization_code',
+      client_id: process.env.NAVER_CLIENT_ID,
+      client_secret: process.env.NAVER_CLIENT_SECRET,
+      code: authorizeCode,
+      state: 'test',
+      redirect_uri: process.env.NAVER_CALLBACK_URL,
+    };
 
-    const checkUser = await this.userRepository.findUser(userInfo.user.email, userInfo.user.provider);
+    const naverToken = (await axios.post(naverTokenUrl, naverTokenBody, naverTokenHeader)).data;
+    
+    const naverAccessToken = naverToken.access_token;
+    const naverRefreshToken = naverToken.refresh_token;
+    
+    const naverUserInfoUrl = 'https://openapi.naver.com/v1/nid/me';
+    const naverUserInfoHeader = {
+      headers: {
+        Authorization: `Bearer ${naverAccessToken}`,
+      },
+    };
 
+    const naverUserInfo = (await axios.get(naverUserInfoUrl, naverUserInfoHeader)).data;
+    const nickname = naverUserInfo.response.nickname;
+    const email = naverUserInfo.response.email;
+    const profileImage = naverUserInfo.response.profile_image;
+    const gender = naverUserInfo.response.gender;
+    const provider = 'naver';
+    const userInfo = {
+      provider,
+      nickname,
+      email,
+      gender,
+    };
+
+    const checkUser = await this.userRepository.findUser(email, provider);
     if (checkUser) { // 이미 존재하는 사용자인 경우
       const userId = checkUser.id;
 
-      await this.userRepository.updateUserName(userId, userInfo.user.nickname); // 이름 업데이트
-      
+      await this.userRepository.updateUserName(userId, nickname); // 이름 업데이트
+
       const userImage = (await this.userImageRepository.checkUserImage(userId)).imageUrl; // DB 이미지
       const imageUrlParts = userImage.split('/');
       const dbImageProvider = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
-      
+
       if (dbImageProvider != 'ma6-main.s3.ap-northeast-2.amazonaws.com') { // S3에 업로드된 이미지가 아닌 경우
-        await this.userImageRepository.updateUserImage(userId, userInfo.user.profileImage); // DB에 이미지 URL 업데이트
+        await this.userImageRepository.updateUserImage(userId, profileImage); // DB에 이미지 URL 업데이트
       }
 
       return { userId, naverAccessToken, naverRefreshToken };
     } else { // 존재하지 않는 사용자인 경우
-      const newUser = await this.userRepository.createUser(userInfo.user);
+      const newUser = await this.userRepository.createUser(userInfo);
       const userId = newUser.id;
-      if (!userInfo.user.profileImage) {
+      if (!profileImage) {
         await this.userImageRepository.uploadUserImage(userId, process.env.DEFAULT_USER_IMAGE);
       } else {
-        await this.userImageRepository.uploadUserImage(userId, userInfo.user.profileImage);
+        await this.userImageRepository.uploadUserImage(userId, profileImage);
       }
       return { userId, naverAccessToken, naverRefreshToken };
     }
@@ -57,7 +92,7 @@ export class AuthService {
     const kakaoTokenBody = {
       grant_type: 'authorization_code',
       client_id: process.env.KAKAO_CLIENT_ID,
-      redirect_uri: 'http://localhost:3000/auth/kakao/callback',
+      redirect_uri: process.env.KAKAO_CALLBACK_URL,
       code: authorizeCode,
     };
 
@@ -191,7 +226,6 @@ export class AuthService {
   async newAccessToken(refreshToken: string) {
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
     const payload = jwt.verify(refreshToken, jwtSecretKey);
-    console.log(payload);
     
     const userId = payload['userId'];
     const newAccessToken = await this.createAccessToken(userId);
