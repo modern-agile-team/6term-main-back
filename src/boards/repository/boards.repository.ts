@@ -19,7 +19,7 @@ export class BoardRepository {
     board.body = boardData.body;
     board.main_category = boardData.main_category;
     board.sub_category = boardData.sub_category;
-    board.user = user;
+    board.userId = userId;
 
     return await this.entityManager.save(Board, board);
   }
@@ -27,6 +27,15 @@ export class BoardRepository {
   async findAllBoards(): Promise<Board[]> {
     return await this.entityManager.find(Board, {
       relations: ['user', 'user.userImage', 'boardImages'],
+    });
+  }
+
+  async findPagedBoards(page: number, limit: number): Promise<Board[]> {
+    const skip = (page - 1) * limit;
+    return await this.entityManager.find(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      take: limit,
+      skip: skip,
     });
   }
 

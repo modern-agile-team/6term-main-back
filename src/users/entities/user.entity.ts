@@ -35,9 +35,6 @@ export class User {
   @Column({ default: false })
   admin: boolean;
 
-  // @JoinColumn()
-  // userImage: UserImage;
-
   @OneToMany(() => Board, (board) => board.user)
   @JoinColumn({ name: 'board_id' })
   board: Board;

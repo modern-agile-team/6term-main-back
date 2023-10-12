@@ -8,6 +8,7 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
@@ -33,6 +34,16 @@ export class BoardsController {
   async findAll(): Promise<BoardResponseDTO[]> {
     return this.boardsService.findAll();
   }
+
+  @Get()
+  async findpPageBoards(
+
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+  ): Promise<BoardResponseDTO[]> {
+    return this.boardsService.findPagedBoards(page, limit);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Board | undefined> {
     return this.boardsService.findOne(+id);
@@ -54,7 +65,7 @@ export class BoardsController {
   @Post(':boardId/images')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @Param('boardId') boardId: number, // 보드의 ID를 받아옴
+    @Param('boardId') boardId: number,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<BoardImage> {
     return this.boardImagesService.create(boardId, file);
