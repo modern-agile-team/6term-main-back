@@ -1,9 +1,16 @@
-import { Comment } from "src/comments/entities/comment.entity";
-import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Comment } from 'src/comments/entities/comment.entity';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({
-  name: 'recomment'
+  name: 'recomment',
 })
 export class Recomment {
   @PrimaryGeneratedColumn()

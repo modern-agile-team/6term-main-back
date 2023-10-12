@@ -7,11 +7,13 @@ export class BoardLike {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   userId: User;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, (board) => board.boardLike, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'board_id' })
   boardId: Board;
 }

@@ -7,6 +7,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import { UserImage } from './user-image.entity';
+import { Token } from 'src/auth/entities/token.entity';
 import { Board } from 'src/boards/entities/board.entity';
 
 @Entity({
@@ -18,10 +19,6 @@ export class User {
 
   @OneToOne(() => UserImage, (userImage) => userImage.user)
   userImage: UserImage;
-
-  @OneToMany(() => Board, (board) => board.user)
-  @JoinColumn({ name: 'board_id' })
-  board: Board;
 
   @Column({ length: 10 })
   provider: string;
@@ -37,4 +34,13 @@ export class User {
 
   @Column({ default: false })
   admin: boolean;
+
+  @OneToMany(() => Board, (board) => board.user)
+  @JoinColumn({ name: 'board_id' })
+  board: Board;
+
+  @OneToOne(() => Token, (token) => token.user, {
+    onDelete: 'CASCADE',
+  })
+  token: Token;
 }
