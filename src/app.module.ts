@@ -16,7 +16,6 @@ import { FriendModule } from './friend/friend.module';
 import { NoticeModule } from './notice/notice.module';
 import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
-
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
 import { TokenRepository } from './auth/repositories/token.repository';

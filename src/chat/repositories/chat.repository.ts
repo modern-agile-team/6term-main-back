@@ -16,12 +16,12 @@ export class ChatRepository {
     private readonly chatImageModel: mongoose.Model<ChatImage>,
   ) {}
 
-  async getChatRooms(testUser: number) {
+  async getChatRooms(myId: number) {
     try {
       const chatRoom = await this.chatRoomModel
         .find({
           $and: [
-            { $or: [{ host_id: testUser }, { guest_id: testUser }] },
+            { $or: [{ host_id: myId }, { guest_id: myId }] },
             { deleted_at: null },
           ],
         })
@@ -34,13 +34,13 @@ export class ChatRepository {
     }
   }
 
-  async getOneChatRoom(testUser: number, roomId: mongoose.Types.ObjectId) {
+  async getOneChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
     try {
       const returnedRoom = await this.chatRoomModel
-        .find({
+        .findOne({
           $and: [
             {
-              $or: [{ host_id: testUser }, { guest_id: testUser }],
+              $or: [{ host_id: myId }, { guest_id: myId }],
             },
             { deleted_at: null },
             { _id: roomId },
@@ -50,11 +50,8 @@ export class ChatRepository {
 
       return returnedRoom;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
+      console.error('채팅방 단일 조회 실패: ', error);
+      throw error;
     }
   }
 
@@ -68,14 +65,7 @@ export class ChatRepository {
       return chatRoomReturned;
     } catch (error) {
       console.error('채팅룸 생성 실패: ', error);
-
-      if (error.name === 'MongoError' && error.code === 11000) {
-        // 중복 키 에러 처리
-        throw new Error('채팅룸 ID 중복');
-      } else {
-        // 다른 에러 처리
-        throw new Error('채팅룸 생성 실패');
-      }
+      throw error;
     }
   }
 

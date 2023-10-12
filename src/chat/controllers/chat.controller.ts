@@ -12,13 +12,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ChatService } from '../services/chat.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PostChatDto } from '../dto/post-chat.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
 
+@ApiTags('CHAT')
 @Controller('chat')
 @UsePipes(ValidationPipe)
 export class ChatController {
@@ -66,9 +67,9 @@ export class ChatController {
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
   @Post(':receiverId')
   async createChat(
+    @Users() user: User,
     @Param('receiverId', ParseIntPipe) receiverId: number,
     @Body() body: PostChatDto,
-    @Users() user: User,
   ) {
     return this.chatService.createChat(
       body.chatroom_id,
@@ -87,7 +88,6 @@ export class ChatController {
     @Param('receiverId') receiverId: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(user);
     return this.chatService.createChatImage(roomId, user.id, receiverId, file);
   }
 }
