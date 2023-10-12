@@ -1,4 +1,11 @@
-import { Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { BoardsLikeService } from './boards-like.service';
 
 @Controller('boards')
@@ -16,5 +23,13 @@ export class BoardsLikeController {
   @Get('like/:boardId')
   async getBoardLike(@Param('boardId', ParseIntPipe) boardId: number) {
     return await this.boardsLikeService.getBoardLike(boardId);
+  }
+
+  @Delete('like/:boardId/:userId')
+  async deleteBoardLike(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return await this.boardsLikeService.deleteBoardLike(boardId, userId);
   }
 }
