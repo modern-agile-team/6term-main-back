@@ -7,17 +7,19 @@ import {
   Post,
 } from '@nestjs/common';
 import { BoardsLikeService } from '../services/boards-like.service';
+import { Users } from 'src/common/decorators/user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Controller('boards')
 export class BoardsLikeController {
   constructor(private boardsLikeService: BoardsLikeService) {}
 
-  @Post('like/:boardId/:userId')
+  @Post('like/:boardId/')
   async addBoardLike(
+    @Users() user: User,
     @Param('boardId', ParseIntPipe) boardId: number,
-    @Param('userId', ParseIntPipe) userId: number,
   ) {
-    return await this.boardsLikeService.addBoardLike(boardId, userId);
+    return await this.boardsLikeService.addBoardLike(boardId, user.id);
   }
 
   @Get('like/:boardId')
@@ -25,11 +27,11 @@ export class BoardsLikeController {
     return await this.boardsLikeService.getBoardLike(boardId);
   }
 
-  @Delete('like/:boardId/:userId')
+  @Delete('like/:boardId/')
   async deleteBoardLike(
+    @Users() user: User,
     @Param('boardId', ParseIntPipe) boardId: number,
-    @Param('userId', ParseIntPipe) userId: number,
   ) {
-    return await this.boardsLikeService.deleteBoardLike(boardId, userId);
+    return await this.boardsLikeService.deleteBoardLike(boardId, user.id);
   }
 }
