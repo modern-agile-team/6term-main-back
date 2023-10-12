@@ -1,8 +1,8 @@
 import { AuthService } from '../services/auth.service';
-import { Controller, Delete, Get, Headers, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, Get, Headers, Post, Query, Res } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
 @ApiTags('auth API')
@@ -13,10 +13,16 @@ export class AuthController {
     private s3Service: S3Service
   ) {}
 
+  @ApiOperation({ summary: '네이버 로그인 API', description: '네이버 로그인 API' })
+  @ApiResponse({ status: 200, description: '성공적으로 로그인 된 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰', refreshToken: '여기에 리프레시 토큰' } } } })
+  @ApiResponse({ status: 400, description: '인가코드가 없는 경우', content: { JSON: { example: { message: '인가코드가 없습니다.', error:'Bad Request', statusCode: 400 } } } })
+  @ApiResponse({ status: 401, description: '유효하지 않은 인가코드인 경우', content: { JSON: { example: { statusCode: 401, message: '유효하지 않은 인가코드입니다.' } } } })
+  @ApiQuery({ name: 'code', description: '네이버 인가코드', required: true, example: 'aNUgOlLlmyxNehJjqW' })
+  @ApiQuery({ name: 'state', description: '네이버 인가 요청 시 전달한 상태 토큰', required: true, example: 'test' })
   @Get('naver/login')
   async naverLogin(@Query() { code }, @Res() res) {
     if (!code) {
-      return res.json({ status: false, message: '인가코드가 없습니다.' });
+      throw new BadRequestException('인가코드가 없습니다.');
     }
     
     const { userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(code);
@@ -29,10 +35,15 @@ export class AuthController {
     return res.json({ accessToken, refreshToken });
   }
 
+  @ApiOperation({ summary: '카카오 로그인 API', description: '카카오 로그인 API' })
+  @ApiResponse({ status: 200, description: '성공적으로 로그인 된 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰', refreshToken: '여기에 리프레시 토큰' } } } })
+  @ApiResponse({ status: 400, description: '인가코드가 없는 경우', content: { JSON: { example: { message: '인가코드가 없습니다.', error:'Bad Request', statusCode: 400 } } } })
+  @ApiResponse({ status: 401, description: '유효하지 않은 인가코드인 경우', content: { JSON: { example: { statusCode: 401, message: '유효하지 않은 인가코드입니다.' } } } })
+  @ApiQuery({ name: 'code', description: '카카오 인가코드', required: true, example: 'ksqUzF0XZfE7pz5vcyZ2m0GvdxXkwJ9mlgDDGo1_RPD55vvOeydu-Qx4xNjuz8gnUnUFPAo9cxgAAAGLIusfpw' })
   @Get('kakao/login')
   async kakaoLogin(@Query() { code }, @Res() res) {
     if (!code) {
-      return res.json({ status: false, message: '인가코드가 없습니다.' });
+      throw new BadRequestException('인가코드가 없습니다.');
     }
 
     const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(code);
