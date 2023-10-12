@@ -68,6 +68,7 @@ export class AuthController {
   @ApiOperation({ summary: '카카오 로그아웃 API', description: '카카오 로그아웃 API' })
   @ApiResponse({ status: 201, description: '성공적으로 로그아웃 된 경우', content: { JSON: { example: { message: "카카오 로그아웃이 완료되었습니다." } } } })
   @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
+  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
@@ -85,6 +86,10 @@ export class AuthController {
     return await this.authService.kakaoLogout(kakaoAccessToken);
   }
 
+  @ApiOperation({ summary: '카카오 회원탈퇴 API', description: '카카오 회원탈퇴 API' })
+  @ApiResponse({ status: 201, description: '성공적으로 회원탈퇴 된 경우', content: { JSON: { example: { message: "카카오 연결 끊기가 완료되었습니다." } } } })
+  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
+  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
   @Post('kakao/unlink')
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);

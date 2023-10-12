@@ -180,7 +180,7 @@ export class AuthService {
     };
 
     axios.post(kakaoUnlinkUrl, {}, kakaoUnlinkHeader);
-    return { status: true, message: "카카오 연결 끊기가 완료되었습니다." };
+    return { message: "카카오 연결 끊기가 완료되었습니다." };
   }
 
   async naverUnlink(accessToken: string) {

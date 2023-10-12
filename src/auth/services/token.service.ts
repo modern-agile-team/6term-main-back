@@ -10,7 +10,11 @@ export class TokenService {
   ) {}
 
   async getUserTokens(userId: number) {
-    return await this.tokenRepository.getUserTokens(userId);
+    const getUserTokens = await this.tokenRepository.getUserTokens(userId);
+    if (getUserTokens.length <= 0) {
+      throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    return getUserTokens;
   }
 
   async saveTokens(userId: number, refreshToken: string, socialAccessToken: string, socialRefreshToken: string) {
