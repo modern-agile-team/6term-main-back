@@ -56,7 +56,8 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '액세스 토큰 재발급 API', description: '액세스 토큰 재발급 API' })
-  // @ApiResponse()
+  @ApiResponse({ status: 200, description: '성공적으로 액세스 토큰을 재발급 받은 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰' } } } })
+  @ApiResponse({ status: 403, description: '유효하지 않은 리프레시 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '유효하지 않은 토큰입니다.' } } } })
   @Get('new-access-token')
   async newAccessToken(@Headers('refresh_token') refreshToken: string, @Res() res) {
     const userId = await this.tokenService.decodeToken(refreshToken);

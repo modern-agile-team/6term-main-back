@@ -107,9 +107,10 @@ export class TokenService {
       const userId = jwt.verify(token, jwtSecretKey)['userId'];
       const tokenType = jwt.verify(token, jwtSecretKey)['sub'];
       if (tokenType === 'refreshToken') {
-        const dbRefreshToken = await this.tokenRepository.getUserTokens(userId)[0].refreshToken;
+        const userToken = await this.tokenRepository.getUserTokens(userId);
+        const dbRefreshToken = userToken[0].refreshToken;
         if (token !== dbRefreshToken) {
-          throw new HttpException('유효하지 않은 토큰입니다.', HttpStatus.FORBIDDEN);
+          throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.FORBIDDEN);
         }
       }
       return { status: true, message: "유효한 토큰입니다." };
