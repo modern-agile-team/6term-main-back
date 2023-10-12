@@ -143,6 +143,11 @@ export class AuthController {
     return await this.authService.naverUnlink(naverAccessToken);
   }
 
+  @ApiOperation({ summary: '계정 삭제 API', description: '계정 삭제 API' })
+  @ApiResponse({ status: 200, description: '성공적으로 계정이 삭제 된 경우', content: { JSON: { example: { message: "사용자 계정 삭제에 성공했습니다." } } } })
+  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
+  @ApiResponse({ status: 404, description: 'DB에서 사용자를 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '사용자를 찾을 수 없습니다.' } } } })
+  @ApiHeaders([{ name: 'access_token', description: '액세스 토큰', required: true, example: '여기에 액세스 토큰' }])
   @Delete('account')
   async accountDelete(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
