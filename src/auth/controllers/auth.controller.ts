@@ -1,4 +1,3 @@
-import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
 import { Controller, Delete, Get, Headers, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
@@ -12,18 +11,22 @@ export class AuthController {
     private readonly authService: AuthService,
     private tokenService: TokenService,
     private s3Service: S3Service
-    ) {}
+  ) {}
 
-  @Get('naver/callback')
-  @UseGuards(AuthGuard('naver'))
-  async naverAuthRedirect(@Req() req) {
-    const {userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(req);
+  @Get('naver/login')
+  async naverLogin(@Query() { code }, @Res() res) {
+    if (!code) {
+      return res.json({ status: false, message: '인가코드가 없습니다.' });
+    }
+    
+    const { userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(code);
+    
     const accessToken = await this.authService.createAccessToken(userId);
     const refreshToken = await this.authService.createRefreshToken(userId);
 
     await this.tokenService.saveTokens(userId, refreshToken, naverAccessToken, naverRefreshToken);
 
-    return { accessToken, refreshToken };
+    return res.json({ accessToken, refreshToken });
   }
 
   @Get('kakao/login')
