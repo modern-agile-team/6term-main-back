@@ -30,6 +30,15 @@ export class BoardRepository {
     });
   }
 
+  async findPagedBoards(page: number, limit: number): Promise<Board[]> {
+    const skip = (page - 1) * limit;
+    return await this.entityManager.find(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      take: limit,
+      skip: skip,
+    });
+  }
+
   async findBoardById(id: number): Promise<Board | undefined> {
     return await this.entityManager.findOne(Board, { where: { id } });
   }

@@ -12,7 +12,6 @@ export class BoardResponseDTO {
     id: number;
     name: string;
     userImage: UserImage | UserImage[];
-    // userImage: string;
   };
 
   boardImages: {

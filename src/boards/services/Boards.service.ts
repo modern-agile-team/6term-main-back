@@ -21,7 +21,32 @@ export class BoardsService {
     return boards.map((board) => ({
       id: board.id,
       head: board.head,
-      body: board.body,
+      body: board.body.substring(0, 30),
+      main_category: board.main_category,
+      sub_category: board.sub_category,
+      createAt: board.createAt,
+      updateAt: board.updateAt,
+      userId: {
+        id: board.user.id,
+        name: board.user.name,
+        userImage: board.user.userImage ? board.user.userImage : [],
+      },
+      boardImages: board.boardImages.map((image) => ({
+        id: image.id,
+        imageUrl: image.imageUrl,
+      })),
+    }));
+  }
+
+  async findPagedBoards(
+    page: number,
+    limit: number,
+  ): Promise<BoardResponseDTO[]> {
+    const boards = await this.boardRepository.findPagedBoards(page, limit);
+    return boards.map((board) => ({
+      id: board.id,
+      head: board.head,
+      body: board.body.substring(0, 30),
       main_category: board.main_category,
       sub_category: board.sub_category,
       createAt: board.createAt,
