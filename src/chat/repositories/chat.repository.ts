@@ -50,7 +50,7 @@ export class ChatRepository {
 
       return returnedRoom;
     } catch (error) {
-      console.error('채팅방 단일 조회 실패: ', error);
+      console.error('채팅룸 단일 조회 실패: ', error);
       throw error;
     }
   }
@@ -96,11 +96,8 @@ export class ChatRepository {
         })
         .exec();
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
+      console.error('채팅룸 삭제 실패: ', error);
+      throw error;
     }
   }
 
