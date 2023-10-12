@@ -39,10 +39,10 @@ export class BoardsService {
   }
 
   async findPagedBoards(
-    page: number,
+    skip: number,
     limit: number,
   ): Promise<BoardResponseDTO[]> {
-    const boards = await this.boardRepository.findPagedBoards(page, limit);
+    const boards = await this.boardRepository.findPagedBoards(skip, limit);
     return boards.map((board) => ({
       id: board.id,
       head: board.head,

@@ -36,7 +36,8 @@ export class BoardsController {
   }
 
   @Get()
-  async findPagedBoards(
+  async findpPageBoards(
+
     @Query('page') page = 1,
     @Query('limit') limit = 20,
   ): Promise<BoardResponseDTO[]> {
