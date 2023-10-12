@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/users/repositories/user.repository';
-import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import { UserImageRepository } from 'src/users/repositories/user-image.repository';
 import axios from 'axios';
@@ -208,54 +207,5 @@ export class AuthService {
       return "사용자 계정 삭제에 실패했습니다.";
     }
     return "사용자 계정 삭제에 성공했습니다.";
-  }
-
-  async createAccessToken(userId: number) {
-    const jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const payload = {
-      sub: "accessToken",
-      userId,
-      exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1시간
-    };
-
-    const accessToken = jwt.sign(payload, jwtSecretKey);
-
-    return accessToken;
-  }
-
-  async createRefreshToken(userId: number) {
-    const jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const payload = {
-      sub: "refreshToken",
-      userId,
-      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7), // 7일
-    };
-    const refreshToken = jwt.sign(payload, jwtSecretKey);
-
-    return refreshToken;
-  }
-
-  async newAccessToken(refreshToken: string) {
-    const jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const payload = jwt.verify(refreshToken, jwtSecretKey);
-    
-    const userId = payload['userId'];
-    const newAccessToken = await this.createAccessToken(userId);
-    return newAccessToken;
-  }
-
-  async verifyToken(accessToken: string) {
-    const jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const verifyToken = jwt.verify(accessToken, jwtSecretKey);
-    if (verifyToken) {
-      return { status: true, message: "유효한 토큰입니다." };
-    }
-    return { status: false, message: "유효하지 않은 토큰입니다." };
-  }
-
-  async decodeToken(accessToken: string) {
-    const payload = jwt.decode(accessToken);
-    const userId = payload['userId'];
-    return userId;
   }
 }

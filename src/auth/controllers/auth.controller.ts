@@ -27,8 +27,8 @@ export class AuthController {
     
     const { userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(code);
     
-    const accessToken = await this.authService.createAccessToken(userId);
-    const refreshToken = await this.authService.createRefreshToken(userId);
+    const accessToken = await this.tokenService.createAccessToken(userId);
+    const refreshToken = await this.tokenService.createRefreshToken(userId);
 
     await this.tokenService.saveTokens(userId, refreshToken, naverAccessToken, naverRefreshToken);
 
@@ -47,23 +47,26 @@ export class AuthController {
     }
 
     const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(code);
-    const accessToken = await this.authService.createAccessToken(userId);
-    const refreshToken = await this.authService.createRefreshToken(userId);
+    const accessToken = await this.tokenService.createAccessToken(userId);
+    const refreshToken = await this.tokenService.createRefreshToken(userId);
 
     await this.tokenService.saveTokens(userId, refreshToken, kakaoAccessToken, kakaoRefreshToken);
 
     return res.json({ accessToken, refreshToken });
   }
 
+  @ApiOperation({ summary: '액세스 토큰 재발급 API', description: '액세스 토큰 재발급 API' })
+  // @ApiResponse()
   @Get('new-access-token')
-  async newAccessToken(@Headers('refresh_token') refreshToken: string) {
-    const userId = await this.authService.decodeToken(refreshToken);
-    return await this.authService.createAccessToken(userId);
+  async newAccessToken(@Headers('refresh_token') refreshToken: string, @Res() res) {
+    const userId = await this.tokenService.decodeToken(refreshToken);
+    const newAccessToken = await this.tokenService.createAccessToken(userId);
+    return res.json({ accessToken: newAccessToken });
   }
 
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
-    const userId = await this.authService.decodeToken(accessToken);
+    const userId = await this.tokenService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
     let kakaoAccessToken = tokens[0].socialAccessToken;
 
@@ -80,7 +83,7 @@ export class AuthController {
 
   @Post('kakao/unlink')
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
-    const userId = await this.authService.decodeToken(accessToken);
+    const userId = await this.tokenService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
     let kakaoAccessToken = tokens[0].socialAccessToken;
 
@@ -97,14 +100,14 @@ export class AuthController {
 
   @Post('naver/logout')
   async naverLogout(@Headers('access_token') accessToken: string) {
-    const userId = await this.authService.decodeToken(accessToken);
+    const userId = await this.tokenService.decodeToken(accessToken);
   
     return await this.tokenService.deleteTokens(userId);
   }
 
   @Post('naver/unlink')
   async naverUnlink(@Headers('access_token') accessToken: string) {
-    const userId = await this.authService.decodeToken(accessToken);
+    const userId = await this.tokenService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
     let naverAccessToken = tokens[0].socialAccessToken;
 
@@ -121,7 +124,7 @@ export class AuthController {
 
   @Delete('account')
   async accountDelete(@Headers('access_token') accessToken: string) {
-    const userId = await this.authService.decodeToken(accessToken);
+    const userId = await this.tokenService.decodeToken(accessToken);
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
     return await this.authService.accountDelete(userId);
   }
