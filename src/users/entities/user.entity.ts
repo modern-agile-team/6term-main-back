@@ -2,12 +2,12 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  OneToOne,
   JoinColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { UserImage } from './user-image.entity';
-import { Token } from "src/auth/entities/token.entity";
+import { Token } from 'src/auth/entities/token.entity';
 import { Board } from 'src/boards/entities/board.entity';
 
 @Entity({
@@ -16,6 +16,9 @@ import { Board } from 'src/boards/entities/board.entity';
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @OneToOne(() => UserImage, (userImage) => userImage.user)
+  userImage: UserImage;
 
   @Column({ length: 10 })
   provider: string;
@@ -32,8 +35,8 @@ export class User {
   @Column({ default: false })
   admin: boolean;
 
-  @JoinColumn()
-  userImage: UserImage;
+  // @JoinColumn()
+  // userImage: UserImage;
 
   @OneToMany(() => Board, (board) => board.user)
   @JoinColumn({ name: 'board_id' })
