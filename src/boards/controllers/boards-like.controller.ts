@@ -6,7 +6,7 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { BoardsLikeService } from './boards-like.service';
+import { BoardsLikeService } from '../services/boards-like.service';
 
 @Controller('boards')
 export class BoardsLikeController {

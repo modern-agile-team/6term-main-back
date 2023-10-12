@@ -8,8 +8,9 @@ import { BoardImagesService } from './services/BoardImage.service';
 import { S3Service } from 'src/common/s3/s3.service';
 import { BoardImage } from './entities/board-image.entity';
 import { BoardRepository } from './repository/boards.repository';
-import { BoardsLikeController } from './boards-like.controller';
-import { BoardsLikeService } from './boards-like.service';
+import { BoardsLikeController } from './controllers/boards-like.controller';
+import { BoardsLikeService } from './services/boards-like.service';
+import { BoardsLikeRepository } from './repository/boards-like.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board, BoardImage])],
@@ -21,6 +22,7 @@ import { BoardsLikeService } from './boards-like.service';
     BoardImagesService,
     S3Service,
     BoardRepository,
+    BoardsLikeRepository,
   ],
 })
 @Module({})

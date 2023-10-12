@@ -4,13 +4,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EntityManager, Equal } from 'typeorm';
-import { BoardLike } from './entities/board-like.entity';
+import { BoardLike } from '../entities/board-like.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Board } from './entities/board.entity';
+import { Board } from '../entities/board.entity';
+import { BoardsLikeRepository } from '../repository/boards-like.repository';
 
 @Injectable()
 export class BoardsLikeService {
-  constructor(private entityManager: EntityManager) {}
+  constructor(
+    private entityManager: EntityManager,
+    private boardsLikeRepositry: BoardsLikeRepository,
+  ) {}
 
   async addBoardLike(boardId: number, userId: number) {
     const board = await this.entityManager.findOne(Board, {
