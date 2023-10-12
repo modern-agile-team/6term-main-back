@@ -34,7 +34,7 @@ export class TokenService {
       return (await axios.get(kakaoUnlinkUrl, kakaoUnlinkHeader)).status;
     } catch (error) {
       console.error('카카오 토큰 유효성 검사 오류:', error);
-      return false;
+      throw new HttpException('카카오 토큰 유효성 검사 오류', HttpStatus.FORBIDDEN);
     }
   }
 

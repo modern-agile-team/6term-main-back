@@ -65,6 +65,9 @@ export class AuthController {
     return res.json({ accessToken: newAccessToken });
   }
 
+  @ApiOperation({ summary: '카카오 로그아웃 API', description: '카카오 로그아웃 API' })
+  @ApiResponse({ status: 201, description: '성공적으로 로그아웃 된 경우', content: { JSON: { example: { message: "카카오 로그아웃이 완료되었습니다." } } } })
+  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);

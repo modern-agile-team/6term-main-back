@@ -168,7 +168,7 @@ export class AuthService {
     };
 
     axios.post(kakaoLogoutUrl, {}, kakaoLogoutHeader);
-    return { status: true, message: "카카오 로그아웃이 완료되었습니다." };
+    return { message: "카카오 로그아웃이 완료되었습니다." };
   }
 
   async kakaoUnlink(accessToken: string) {
