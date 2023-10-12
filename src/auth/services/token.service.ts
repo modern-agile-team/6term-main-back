@@ -98,10 +98,9 @@ export class TokenService {
     try {
       await this.tokenRepository.deleteTokens(userId);
       
-      return { status: true, message: '토큰 삭제 성공' };
+      return { message: '토큰 삭제 성공' };
     } catch (error) {
-      console.error('토큰 삭제 오류:', error);
-      return { status: false, message: '토큰 삭제 실패' };
+      throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
   }
 

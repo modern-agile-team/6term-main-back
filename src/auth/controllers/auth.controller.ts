@@ -107,10 +107,13 @@ export class AuthController {
     return await this.authService.kakaoUnlink(kakaoAccessToken);
   }
 
+  @ApiOperation({ summary: '네이버 로그아웃 API', description: '네이버 로그아웃 API' })
+  @ApiResponse({ status: 201, description: '성공적으로 로그아웃 된 경우', content: { JSON: { example: { message: "토큰 삭제 성공." } } } })
+  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
+  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
   @Post('naver/logout')
   async naverLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-  
     return await this.tokenService.deleteTokens(userId);
   }
 
