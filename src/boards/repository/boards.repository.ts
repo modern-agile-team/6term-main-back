@@ -19,7 +19,7 @@ export class BoardRepository {
     board.body = boardData.body;
     board.main_category = boardData.main_category;
     board.sub_category = boardData.sub_category;
-    board.user = user;
+    board.userId = userId;
 
     return await this.entityManager.save(Board, board);
   }
