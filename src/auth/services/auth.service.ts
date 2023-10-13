@@ -184,16 +184,27 @@ export class AuthService {
     }
   }
 
-  async kakaoUnlink(accessToken: string) {
-    const kakaoUnlinkUrl = 'https://kapi.kakao.com/v1/user/unlink';
-    const kakaoUnlinkHeader = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
+  async kakaoUnlink(accessToken: string, dbAccessToken: string) {
+    try {
+      const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(accessToken);
+      if (checkValidKakaoToken === 401) {
+        const newKakaoToken = await this.tokenService.getNewKakaoToken(dbAccessToken);
+        accessToken = newKakaoToken.access_token;
+      }
 
-    axios.post(kakaoUnlinkUrl, {}, kakaoUnlinkHeader);
-    return { message: "카카오 연결 끊기가 완료되었습니다." };
+      const kakaoUnlinkUrl = 'https://kapi.kakao.com/v1/user/unlink';
+      const kakaoUnlinkHeader = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      axios.post(kakaoUnlinkUrl, {}, kakaoUnlinkHeader);
+      return { message: "카카오 연결 끊기가 완료되었습니다." };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async naverUnlink(accessToken: string) {
