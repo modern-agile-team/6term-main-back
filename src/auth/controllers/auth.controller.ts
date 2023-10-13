@@ -3,6 +3,14 @@ import { BadRequestException, Controller, Delete, Get, Headers, Post, Query, Res
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
 import { ApiHeaders, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiNaverLogin } from '../swagger-decorators.ts/naver-login.decorator';
+import { ApiKakaoLogin } from '../swagger-decorators.ts/kakao-login.decorator';
+import { ApiNewAccessToken } from '../swagger-decorators.ts/new-access-token.decorator';
+import { ApiKakaoLogout } from '../swagger-decorators.ts/kakao-logout.decorator';
+import { ApiKakaoUnlink } from '../swagger-decorators.ts/kakao-unlink.decorator';
+import { ApiNaverLogout } from '../swagger-decorators.ts/naver-logout.decorator';
+import { ApiNaverUnlink } from '../swagger-decorators.ts/naver-unlink.decorator';
+import { ApiDeleteAccount } from '../swagger-decorators.ts/delete-account.decorator';
 
 @Controller('auth')
 @ApiTags('auth API')
@@ -13,12 +21,7 @@ export class AuthController {
     private s3Service: S3Service
   ) {}
 
-  @ApiOperation({ summary: '네이버 로그인 API', description: '네이버 로그인 API' })
-  @ApiResponse({ status: 200, description: '성공적으로 로그인 된 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰', refreshToken: '여기에 리프레시 토큰' } } } })
-  @ApiResponse({ status: 400, description: '인가코드가 없는 경우', content: { JSON: { example: { message: '인가코드가 없습니다.', error:'Bad Request', statusCode: 400 } } } })
-  @ApiResponse({ status: 401, description: '유효하지 않은 인가코드인 경우', content: { JSON: { example: { statusCode: 401, message: '유효하지 않은 인가코드입니다.' } } } })
-  @ApiQuery({ name: 'code', description: '네이버 인가코드', required: true, example: 'aNUgOlLlmyxNehJjqW' })
-  @ApiQuery({ name: 'state', description: '네이버 인가 요청 시 전달한 상태 토큰', required: true, example: 'test' })
+  @ApiNaverLogin()
   @Get('naver/login')
   async naverLogin(@Query() { code }, @Res() res) {
     if (!code) {
@@ -26,7 +29,6 @@ export class AuthController {
     }
     
     const { userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(code);
-    
     const accessToken = await this.tokenService.createAccessToken(userId);
     const refreshToken = await this.tokenService.createRefreshToken(userId);
 
@@ -35,11 +37,7 @@ export class AuthController {
     return res.json({ accessToken, refreshToken });
   }
 
-  @ApiOperation({ summary: '카카오 로그인 API', description: '카카오 로그인 API' })
-  @ApiResponse({ status: 200, description: '성공적으로 로그인 된 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰', refreshToken: '여기에 리프레시 토큰' } } } })
-  @ApiResponse({ status: 400, description: '인가코드가 없는 경우', content: { JSON: { example: { message: '인가코드가 없습니다.', error:'Bad Request', statusCode: 400 } } } })
-  @ApiResponse({ status: 401, description: '유효하지 않은 인가코드인 경우', content: { JSON: { example: { statusCode: 401, message: '유효하지 않은 인가코드입니다.' } } } })
-  @ApiQuery({ name: 'code', description: '카카오 인가코드', required: true, example: 'ksqUzF0XZfE7pz5vcyZ2m0GvdxXkwJ9mlgDDGo1_RPD55vvOeydu-Qx4xNjuz8gnUnUFPAo9cxgAAAGLIusfpw' })
+  @ApiKakaoLogin()
   @Get('kakao/login')
   async kakaoLogin(@Query() { code }, @Res() res) {
     if (!code) {
@@ -55,10 +53,7 @@ export class AuthController {
     return res.json({ accessToken, refreshToken });
   }
 
-  @ApiOperation({ summary: '액세스 토큰 재발급 API', description: '다른 API 요청에서 403 에러가 발생된 경우 이 API로 액세스 토큰을 재발급 받아주세요.' })
-  @ApiResponse({ status: 200, description: '성공적으로 액세스 토큰을 재발급 받은 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰' } } } })
-  @ApiResponse({ status: 403, description: '유효하지 않은 리프레시 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '유효하지 않은 토큰입니다.' } } } })
-  @ApiHeaders([{ name: 'refresh_token', description: '리프레시 토큰', required: true, example: '여기에 리프레시 토큰' }])
+  @ApiNewAccessToken()
   @Get('new-access-token')
   async newAccessToken(@Headers('refresh_token') refreshToken: string, @Res() res) {
     const userId = await this.tokenService.decodeToken(refreshToken);
@@ -66,11 +61,7 @@ export class AuthController {
     return res.json({ accessToken: newAccessToken });
   }
 
-  @ApiOperation({ summary: '카카오 로그아웃 API', description: '카카오 로그아웃 API' })
-  @ApiResponse({ status: 201, description: '성공적으로 로그아웃 된 경우', content: { JSON: { example: { message: "카카오 로그아웃이 완료되었습니다." } } } })
-  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
-  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
-  @ApiHeaders([{ name: 'access_token', description: '액세스 토큰', required: true, example: '여기에 액세스 토큰' }])
+  @ApiKakaoLogout()
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
@@ -79,11 +70,7 @@ export class AuthController {
     return await this.authService.kakaoLogout(kakaoAccessToken, kakaoRefreshToken);
   }
 
-  @ApiOperation({ summary: '카카오 회원탈퇴 API', description: '카카오 회원탈퇴 API' })
-  @ApiResponse({ status: 201, description: '성공적으로 회원탈퇴 된 경우', content: { JSON: { example: { message: "카카오 연결 끊기가 완료되었습니다." } } } })
-  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
-  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
-  @ApiHeaders([{ name: 'access_token', description: '액세스 토큰', required: true, example: '여기에 액세스 토큰' }])
+  @ApiKakaoUnlink()
   @Post('kakao/unlink')
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
@@ -92,22 +79,14 @@ export class AuthController {
     return await this.authService.kakaoUnlink(kakaoAccessToken, kakaoRefreshToken);
   }
 
-  @ApiOperation({ summary: '네이버 로그아웃 API', description: '네이버 로그아웃 API' })
-  @ApiResponse({ status: 201, description: '성공적으로 로그아웃 된 경우', content: { JSON: { example: { message: "토큰 삭제 성공." } } } })
-  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
-  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
-  @ApiHeaders([{ name: 'access_token', description: '액세스 토큰', required: true, example: '여기에 액세스 토큰' }])
+  @ApiNaverLogout()
   @Post('naver/logout')
   async naverLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.tokenService.deleteTokens(userId);
   }
 
-  @ApiOperation({ summary: '네이버 회원탈퇴 API', description: '네이버 회원탈퇴 API' })
-  @ApiResponse({ status: 201, description: '성공적으로 회원탈퇴 된 경우', content: { JSON: { example: { message: "네이버 연동 해제가 완료되었습니다." } } } })
-  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
-  @ApiResponse({ status: 404, description: 'DB에서 토큰을 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '토큰을 찾을 수 없습니다.' } } } })
-  @ApiHeaders([{ name: 'access_token', description: '액세스 토큰', required: true, example: '여기에 액세스 토큰' }])
+  @ApiNaverUnlink()
   @Post('naver/unlink')
   async naverUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
@@ -116,11 +95,7 @@ export class AuthController {
     return await this.authService.naverUnlink(naverAccessToken, naverRefreshToken);
   }
 
-  @ApiOperation({ summary: '계정 삭제 API', description: '소셜 계정 회원탈퇴가 완료되면 이 API로 계정을 삭제해주세요.' })
-  @ApiResponse({ status: 200, description: '성공적으로 계정이 삭제 된 경우', content: { JSON: { example: { message: "사용자 계정 삭제에 성공했습니다." } } } })
-  @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
-  @ApiResponse({ status: 404, description: 'DB에서 사용자를 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '사용자를 찾을 수 없습니다.' } } } })
-  @ApiHeaders([{ name: 'access_token', description: '액세스 토큰', required: true, example: '여기에 액세스 토큰' }])
+  @ApiDeleteAccount()
   @Delete('account')
   async accountDelete(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);

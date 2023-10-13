@@ -125,7 +125,7 @@ export class TokenService {
       } else if (error.message == 'jwt must be provided') {
         throw new HttpException('토큰이 제공되지 않았습니다.', HttpStatus.LENGTH_REQUIRED);
       } else {
-        throw new HttpException('토큰 검증에 실패했습니다.', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('토큰 검증에 실패했습니다.', HttpStatus.BAD_REQUEST);
       }
     }
   }

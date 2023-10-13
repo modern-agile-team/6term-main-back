@@ -180,7 +180,7 @@ export class AuthService {
       return { message: "카카오 로그아웃이 완료되었습니다." };
     } catch (error) {
       console.log(error);
-      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException('카카오 로그아웃 중 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -203,7 +203,7 @@ export class AuthService {
       return { message: "카카오 연결 끊기가 완료되었습니다." };
     } catch (error) {
       console.log(error);
-      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException('카카오 연결 끊기 중 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -232,7 +232,7 @@ export class AuthService {
       return { message: "네이버 연동 해제가 완료되었습니다." };
     } catch (error) {
       console.log(error);
-      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException('네이버 연결 끊기 중 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
