@@ -36,7 +36,7 @@ export class UserImageRepository {
       return userImage;
     } catch (error) {
       console.error('이미지 업데이트 오류:', error);
-      return null;
+      throw new NotFoundException('이미지 업데이트 오류');
     }
   }
 }

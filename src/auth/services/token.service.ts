@@ -113,32 +113,28 @@ export class TokenService {
         const userToken = await this.tokenRepository.getUserTokens(userId);
         const dbRefreshToken = userToken[0].refreshToken;
         if (token !== dbRefreshToken) {
-          throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.FORBIDDEN);
+          throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
         }
       }
-      return { status: true, message: "유효한 토큰입니다." };
+      return { message: "유효한 토큰입니다." };
     } catch (error) {
       if (error.message == 'jwt expired') {
         throw new HttpException('만료된 토큰입니다.', HttpStatus.FORBIDDEN);
       } else if (error.message == 'invalid token' || error.message == 'invalid signature') {
-        throw new HttpException('유효하지 않은 토큰입니다.', HttpStatus.FORBIDDEN);
+        throw new HttpException('유효하지 않은 토큰입니다.', HttpStatus.UNAUTHORIZED);
       } else if (error.message == 'jwt must be provided') {
-        throw new HttpException('토큰이 제공되지 않았습니다.', HttpStatus.FORBIDDEN);
+        throw new HttpException('토큰이 제공되지 않았습니다.', HttpStatus.LENGTH_REQUIRED);
       } else {
-        throw new HttpException('토큰 검증에 실패했습니다.', HttpStatus.FORBIDDEN);
+        throw new HttpException('토큰 검증에 실패했습니다.', HttpStatus.UNAUTHORIZED);
       }
     }
   }
 
   async decodeToken(token: string) {
-    try {
-      await this.verifyToken(token);
-      const payload = jwt.decode(token);
-      const userId = payload['userId'];
-      return userId;
-    } catch (error) {
-      throw new HttpException('토큰 디코딩에 실패했습니다.', HttpStatus.FORBIDDEN);
-    }
+    await this.verifyToken(token);
+    const payload = jwt.decode(token);
+    const userId = payload['userId'];
+    return userId;
   }
 
   async createAccessToken(userId: number) {
