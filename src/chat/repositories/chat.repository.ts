@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
 import { Chat } from '../schemas/chat.schemas';
@@ -69,29 +69,10 @@ export class ChatRepository {
     }
   }
 
-  async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
+  async deleteChatRoom(roomId: mongoose.Types.ObjectId) {
     try {
-      const chatRoom = await this.chatRoomModel
-        .findById({
-          _id: roomId,
-        })
-        .exec();
-
-      const isUser = await this.chatRoomModel
-        .find({
-          $and: [
-            { $or: [{ host_id: myId }, { guest_id: myId }] },
-            { _id: roomId },
-          ],
-        })
-        .exec();
-
-      if (!isUser.length) {
-        throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
-      }
-
       return await this.chatRoomModel
-        .findByIdAndUpdate(chatRoom.id, {
+        .findByIdAndUpdate(roomId, {
           deleted_at: new Date(),
         })
         .exec();

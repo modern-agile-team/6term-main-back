@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 import mongoose from 'mongoose';
 
@@ -16,5 +16,7 @@ export class PostChatDto {
     example: '650bde3798dd4c34439c30dc',
     description: 'chatroom 아이디',
   })
+  @IsMongoId()
+  @IsNotEmpty()
   chatroom_id: mongoose.Types.ObjectId;
 }

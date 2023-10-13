@@ -83,9 +83,26 @@ export class ChatService {
 
   async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
     try {
+      const chatRoom = await this.chatRoomModel
+        .findById({
+          _id: roomId,
+        })
+        .exec();
+
+      const isUser = await this.chatRoomModel
+        .find({
+          $and: [
+            { $or: [{ host_id: myId }, { guest_id: myId }] },
+            { _id: roomId },
+          ],
+        })
+        .exec();
+
+      if (!isUser.length) {
+        throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
+      }
       const returnedChatRoom = await this.chatRepository.deleteChatRoom(
-        myId,
-        roomId,
+        chatRoom.id,
       );
 
       return returnedChatRoom;
