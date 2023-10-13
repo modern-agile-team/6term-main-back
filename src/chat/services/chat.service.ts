@@ -113,6 +113,7 @@ export class ChatService {
           '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
         );
       }
+      throw error;
     }
   }
 

@@ -17,82 +17,49 @@ export class ChatRepository {
   ) {}
 
   async getChatRooms(myId: number) {
-    try {
-      const chatRoom = await this.chatRoomModel
-        .find({
-          $and: [
-            { $or: [{ host_id: myId }, { guest_id: myId }] },
-            { deleted_at: null },
-          ],
-        })
-        .exec();
-
-      return chatRoom;
-    } catch (error) {
-      console.error('채팅룸 조회 실패: ', error);
-      throw error;
-    }
+    return this.chatRoomModel
+      .find({
+        $and: [
+          { $or: [{ host_id: myId }, { guest_id: myId }] },
+          { deleted_at: null },
+        ],
+      })
+      .exec();
   }
 
   async getOneChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
-    try {
-      const returnedRoom = await this.chatRoomModel
-        .findOne({
-          $and: [
-            {
-              $or: [{ host_id: myId }, { guest_id: myId }],
-            },
-            { deleted_at: null },
-            { _id: roomId },
-          ],
-        })
-        .exec();
-
-      return returnedRoom;
-    } catch (error) {
-      console.error('채팅룸 단일 조회 실패: ', error);
-      throw error;
-    }
+    return this.chatRoomModel
+      .findOne({
+        $and: [
+          {
+            $or: [{ host_id: myId }, { guest_id: myId }],
+          },
+          { deleted_at: null },
+          { _id: roomId },
+        ],
+      })
+      .exec();
   }
 
   async createChatRoom(myId: number, guestId: number) {
-    try {
-      const chatRoomReturned = await this.chatRoomModel.create({
-        host_id: myId,
-        guest_id: guestId,
-      });
-
-      return chatRoomReturned;
-    } catch (error) {
-      console.error('채팅룸 생성 실패: ', error);
-      throw error;
-    }
+    return this.chatRoomModel.create({
+      host_id: myId,
+      guest_id: guestId,
+    });
   }
 
   async deleteChatRoom(roomId: mongoose.Types.ObjectId) {
-    try {
-      return await this.chatRoomModel
-        .findByIdAndUpdate(roomId, {
-          deleted_at: new Date(),
-        })
-        .exec();
-    } catch (error) {
-      console.error('채팅룸 삭제 실패: ', error);
-      throw error;
-    }
+    await this.chatRoomModel
+      .findByIdAndUpdate(roomId, {
+        deleted_at: new Date(),
+      })
+      .exec();
+
+    return { success: true, msg: '게시글 삭제 성공' };
   }
 
   async getChats(roomId: mongoose.Types.ObjectId) {
-    try {
-      const returnedhChat = await this.chatModel
-        .find({ chatroom_id: roomId })
-        .exec();
-
-      return returnedhChat;
-    } catch (error) {
-      console.error('채팅 조회 실패: ', error);
-      throw error;
-    }
+    return this.chatModel.find({ chatroom_id: roomId }).exec();
   }
 
   async createChat(
@@ -101,17 +68,12 @@ export class ChatRepository {
     myId: number,
     receiverId: number,
   ) {
-    try {
-      return await this.chatModel.create({
-        chatroom_id: roomId,
-        content: content,
-        sender: myId,
-        receiver: receiverId,
-      });
-    } catch (error) {
-      console.error('채팅 생성 실패: ', error);
-      throw error;
-    }
+    return this.chatModel.create({
+      chatroom_id: roomId,
+      content: content,
+      sender: myId,
+      receiver: receiverId,
+    });
   }
 
   async createChatImage(
@@ -120,23 +82,18 @@ export class ChatRepository {
     receiverId: number,
     imageUrl: string,
   ) {
-    try {
-      const returnedChat = await this.chatModel.create({
-        chatroom_id: roomId,
-        sender: myId,
-        receiver: receiverId,
-        content: imageUrl,
-      });
+    const returnedChat = await this.chatModel.create({
+      chatroom_id: roomId,
+      sender: myId,
+      receiver: receiverId,
+      content: imageUrl,
+    });
 
-      await this.chatImageModel.create({
-        chat_id: returnedChat.id,
-        image_url: returnedChat.content,
-      });
+    await this.chatImageModel.create({
+      chat_id: returnedChat.id,
+      image_url: returnedChat.content,
+    });
 
-      return returnedChat;
-    } catch (error) {
-      console.error('채팅 이미지 생성 실패: ', error);
-      throw error;
-    }
+    return returnedChat;
   }
 }

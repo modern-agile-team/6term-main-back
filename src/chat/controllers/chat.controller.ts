@@ -13,11 +13,13 @@ import {
 } from '@nestjs/common';
 import { ChatService } from '../services/chat.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ReceivedUserDto } from '../dto/received-user.dto';
 import { PostChatDto } from '../dto/post-chat.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { ParseObjectIdPipe } from '../parse-object-id.pipe';
 
 @ApiTags('CHAT')
 @Controller('chat')
@@ -28,66 +30,71 @@ export class ChatController {
   @ApiOperation({ summary: '채팅방 전체 조회' })
   @Get('room')
   async getChatRooms(@Users() user: User) {
-    return await this.chatService.getChatRooms(user.id);
+    return this.chatService.getChatRooms(user.id);
   }
 
   @ApiOperation({ summary: '채팅방 단일 조회' })
   @Get('room/:roomId')
   async getOneChatRoom(
     @Users() user: User,
-    @Param('roomId') roomId: mongoose.Types.ObjectId,
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return await this.chatService.getOneChatRoom(user.id, roomId);
+    return this.chatService.getOneChatRoom(user.id, roomId);
   }
 
   @ApiOperation({ summary: '채팅방 생성' })
-  @Post('room/:guestId')
-  async createChatRoom(
-    @Users() user: User,
-    @Param('guestId', ParseIntPipe) guestId: number,
-  ) {
-    return await this.chatService.createChatRoom(user.id, guestId);
+  @Post('room')
+  async createChatRoom(@Users() user: User, @Body() body: ReceivedUserDto) {
+    return this.chatService.createChatRoom(user.id, body.receiverId);
   }
 
   @ApiOperation({ summary: '해당 채팅방 삭제' })
-  @Delete('room/:roomId')
+  @Delete('room/:roomId/:testUser')
   async deleteChatRoom(
     @Users() user: User,
-    @Param('roomId') roomId: mongoose.Types.ObjectId,
+    @Param('testUser', ParseIntPipe) testUser: number,
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return await this.chatService.deleteChatRoom(user.id, roomId);
+    return this.chatService.deleteChatRoom(testUser, roomId);
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
-  @Get(':roomId')
-  async getChats(@Param('roomId') roomId: mongoose.Types.ObjectId) {
-    return await this.chatService.getChats(roomId);
+  @Get('room/:roomId/chat')
+  async getChats(
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+  ) {
+    return this.chatService.getChats(roomId);
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':receiverId')
+  @Post('room/:roomId/chat')
   async createChat(
     @Users() user: User,
-    @Param('receiverId', ParseIntPipe) receiverId: number,
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
     @Body() body: PostChatDto,
   ) {
     return this.chatService.createChat(
-      body.chatroom_id,
+      roomId,
       body.content,
       user.id,
-      receiverId,
+      body.receiverId,
     );
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 이미지 생성' })
-  @Post('/image/:roomId/:receiverId')
+  @Post('room/:roomId/chat/image')
   @UseInterceptors(FileInterceptor('file'))
   async createChatImage(
-    @Param('roomId') roomId: mongoose.Types.ObjectId,
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
     @Users() user: User,
-    @Param('receiverId') receiverId: number,
+    @Body() body: ReceivedUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.chatService.createChatImage(roomId, user.id, receiverId, file);
+    return this.chatService.createChatImage(
+      roomId,
+      user.id,
+      body.receiverId,
+      file,
+    );
   }
 }
