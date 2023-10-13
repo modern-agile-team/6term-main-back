@@ -75,17 +75,9 @@ export class AuthController {
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
     const tokens = await this.tokenService.getUserTokens(userId);
-    let kakaoAccessToken = tokens[0].socialAccessToken;
-
-    const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(kakaoAccessToken);
-
-    if (checkValidKakaoToken === 401) {
-      const kakaoRefreshToken = tokens[0].socialRefreshToken;
-      const newKakaoToken = await this.tokenService.getNewKakaoToken(kakaoRefreshToken);
-      kakaoAccessToken = newKakaoToken.access_token;
-    }
+    const dbAccessToken = tokens[0].socialAccessToken;
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.kakaoLogout(kakaoAccessToken);
+    return await this.authService.kakaoLogout(accessToken, dbAccessToken);
   }
 
   @ApiOperation({ summary: '카카오 회원탈퇴 API', description: '카카오 회원탈퇴 API' })

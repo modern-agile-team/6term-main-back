@@ -131,10 +131,14 @@ export class TokenService {
   }
 
   async decodeToken(token: string) {
-    await this.verifyToken(token);
-    const payload = jwt.decode(token);
-    const userId = payload['userId'];
-    return userId;
+    try {
+      await this.verifyToken(token);
+      const payload = jwt.decode(token);
+      const userId = payload['userId'];
+      return userId;
+    } catch (error) {
+      throw new HttpException('토큰 디코딩에 실패했습니다.', HttpStatus.FORBIDDEN);
+    }
   }
 
   async createAccessToken(userId: number) {

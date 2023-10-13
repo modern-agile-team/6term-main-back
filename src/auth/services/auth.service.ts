@@ -1,3 +1,4 @@
+import { TokenService } from './token.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/users/repositories/user.repository';
 import * as dotenv from 'dotenv';
@@ -11,6 +12,7 @@ export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userImageRepository: UserImageRepository,
+    private readonly tokenService: TokenService,
     ) {}
 
   async naverLogin(authorizeCode: string) {
@@ -159,16 +161,27 @@ export class AuthService {
     }
   }
 
-  async kakaoLogout(accessToken: string) {
-    const kakaoLogoutUrl = 'https://kapi.kakao.com/v1/user/logout';
-    const kakaoLogoutHeader = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
+  async kakaoLogout(accessToken: string, dbAccessToken: string) {
+    try {
+      const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(accessToken);
+      if (checkValidKakaoToken === 401) {
+        const newKakaoToken = await this.tokenService.getNewKakaoToken(dbAccessToken);
+        accessToken = newKakaoToken.access_token;
+      }
 
-    axios.post(kakaoLogoutUrl, {}, kakaoLogoutHeader);
-    return { message: "카카오 로그아웃이 완료되었습니다." };
+      const kakaoLogoutUrl = 'https://kapi.kakao.com/v1/user/logout';
+      const kakaoLogoutHeader = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      axios.post(kakaoLogoutUrl, {}, kakaoLogoutHeader);
+      return { message: "카카오 로그아웃이 완료되었습니다." };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async kakaoUnlink(accessToken: string) {
