@@ -2,15 +2,15 @@ import { AuthService } from '../services/auth.service';
 import { BadRequestException, Controller, Delete, Get, Headers, Post, Query, Res } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
-import { ApiHeaders, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiNaverLogin } from '../swagger-decorators.ts/naver-login.decorator';
-import { ApiKakaoLogin } from '../swagger-decorators.ts/kakao-login.decorator';
-import { ApiNewAccessToken } from '../swagger-decorators.ts/new-access-token.decorator';
-import { ApiKakaoLogout } from '../swagger-decorators.ts/kakao-logout.decorator';
-import { ApiKakaoUnlink } from '../swagger-decorators.ts/kakao-unlink.decorator';
-import { ApiNaverLogout } from '../swagger-decorators.ts/naver-logout.decorator';
-import { ApiNaverUnlink } from '../swagger-decorators.ts/naver-unlink.decorator';
-import { ApiDeleteAccount } from '../swagger-decorators.ts/delete-account.decorator';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiNaverLogin } from '../swagger-decorators/naver-login.decorator';
+import { ApiKakaoLogin } from '../swagger-decorators/kakao-login.decorator';
+import { ApiNewAccessToken } from '../swagger-decorators/new-access-token.decorator';
+import { ApiKakaoLogout } from '../swagger-decorators/kakao-logout.decorator';
+import { ApiKakaoUnlink } from '../swagger-decorators/kakao-unlink.decorator';
+import { ApiNaverLogout } from '../swagger-decorators/naver-logout.decorator';
+import { ApiNaverUnlink } from '../swagger-decorators/naver-unlink.decorator';
+import { ApiDeleteAccount } from '../swagger-decorators/delete-account.decorator';
 
 @Controller('auth')
 @ApiTags('auth API')
