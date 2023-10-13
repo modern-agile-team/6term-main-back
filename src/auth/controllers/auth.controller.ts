@@ -55,7 +55,7 @@ export class AuthController {
     return res.json({ accessToken, refreshToken });
   }
 
-  @ApiOperation({ summary: '액세스 토큰 재발급 API', description: '액세스 토큰 재발급 API' })
+  @ApiOperation({ summary: '액세스 토큰 재발급 API', description: '다른 API 요청에서 403 에러가 발생된 경우 이 API로 액세스 토큰을 재발급 받아주세요.' })
   @ApiResponse({ status: 200, description: '성공적으로 액세스 토큰을 재발급 받은 경우', content: { JSON: { example: { accessToken: '여기에 액세스 토큰' } } } })
   @ApiResponse({ status: 403, description: '유효하지 않은 리프레시 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '유효하지 않은 토큰입니다.' } } } })
   @ApiHeaders([{ name: 'refresh_token', description: '리프레시 토큰', required: true, example: '여기에 리프레시 토큰' }])
@@ -116,7 +116,7 @@ export class AuthController {
     return await this.authService.naverUnlink(naverAccessToken, naverRefreshToken);
   }
 
-  @ApiOperation({ summary: '계정 삭제 API', description: '계정 삭제 API' })
+  @ApiOperation({ summary: '계정 삭제 API', description: '소셜 계정 회원탈퇴가 완료되면 이 API로 계정을 삭제해주세요.' })
   @ApiResponse({ status: 200, description: '성공적으로 계정이 삭제 된 경우', content: { JSON: { example: { message: "사용자 계정 삭제에 성공했습니다." } } } })
   @ApiResponse({ status: 403, description: '만료된 액세스 토큰인 경우', content: { JSON: { example: { statusCode: 403, message: '만료된 토큰입니다.' } } } })
   @ApiResponse({ status: 404, description: 'DB에서 사용자를 찾을 수 없는 경우', content: { JSON: { example: { statusCode: 404, message: '사용자를 찾을 수 없습니다.' } } } })
