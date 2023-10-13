@@ -74,10 +74,9 @@ export class AuthController {
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const tokens = await this.tokenService.getUserTokens(userId);
-    const dbAccessToken = tokens[0].socialAccessToken;
+    const { kakaoAccessToken, kakaoRefreshToken } = await this.tokenService.getUserTokens(userId)[0];
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.kakaoLogout(accessToken, dbAccessToken);
+    return await this.authService.kakaoLogout(kakaoAccessToken, kakaoRefreshToken);
   }
 
   @ApiOperation({ summary: '카카오 회원탈퇴 API', description: '카카오 회원탈퇴 API' })
@@ -88,10 +87,9 @@ export class AuthController {
   @Post('kakao/unlink')
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const tokens = await this.tokenService.getUserTokens(userId);
-    const dbAccessToken = tokens[0].socialAccessToken;
+    const { kakaoAccessToken, kakaoRefreshToken } = await this.tokenService.getUserTokens(userId)[0];
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.kakaoUnlink(accessToken, dbAccessToken);
+    return await this.authService.kakaoUnlink(kakaoAccessToken, kakaoRefreshToken);
   }
 
   @ApiOperation({ summary: '네이버 로그아웃 API', description: '네이버 로그아웃 API' })
@@ -113,18 +111,9 @@ export class AuthController {
   @Post('naver/unlink')
   async naverUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const tokens = await this.tokenService.getUserTokens(userId);
-    let naverAccessToken = tokens[0].socialAccessToken;
-
-    const checkValidNaverToken = await this.tokenService.checkValidNaverToken(naverAccessToken);
-
-    if (checkValidNaverToken === 401) {
-      const naverRefreshToken = tokens[0].socialRefreshToken;
-      const newNaverToken = await this.tokenService.getNewNaverToken(naverRefreshToken);      
-      naverAccessToken = newNaverToken.access_token;
-    }
+    const { naverAccessToken, naverRefreshToken } = await this.tokenService.getUserTokens(userId)[0];
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.naverUnlink(naverAccessToken);
+    return await this.authService.naverUnlink(naverAccessToken, naverRefreshToken);
   }
 
   @ApiOperation({ summary: '계정 삭제 API', description: '계정 삭제 API' })

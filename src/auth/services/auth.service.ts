@@ -161,11 +161,11 @@ export class AuthService {
     }
   }
 
-  async kakaoLogout(accessToken: string, dbAccessToken: string) {
+  async kakaoLogout(accessToken: string, refreshToken: string) {
     try {
       const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(accessToken);
       if (checkValidKakaoToken === 401) {
-        const newKakaoToken = await this.tokenService.getNewKakaoToken(dbAccessToken);
+        const newKakaoToken = await this.tokenService.getNewKakaoToken(refreshToken);
         accessToken = newKakaoToken.access_token;
       }
 
@@ -184,11 +184,11 @@ export class AuthService {
     }
   }
 
-  async kakaoUnlink(accessToken: string, dbAccessToken: string) {
+  async kakaoUnlink(accessToken: string, refreshToken: string) {
     try {
       const checkValidKakaoToken = await this.tokenService.checkValidKakaoToken(accessToken);
       if (checkValidKakaoToken === 401) {
-        const newKakaoToken = await this.tokenService.getNewKakaoToken(dbAccessToken);
+        const newKakaoToken = await this.tokenService.getNewKakaoToken(refreshToken);
         accessToken = newKakaoToken.access_token;
       }
 
@@ -207,22 +207,33 @@ export class AuthService {
     }
   }
 
-  async naverUnlink(accessToken: string) {
-    const naverUnlinkUrl = 'https://nid.naver.com/oauth2.0/token';
-    const naverUnlinkHeader = {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-    const naverUnlinkBody = {
-      client_id: process.env.NAVER_CLIENT_ID,
-      client_secret: process.env.NAVER_CLIENT_SECRET,
-      grant_type: 'delete',
-      service_provider: 'NAVER',
-    };
+  async naverUnlink(accessToken: string, refreshToken: string) {
+    try {
+      const checkValidNaverToken = await this.tokenService.checkValidNaverToken(accessToken);
+      if (checkValidNaverToken === 401) {
+        const newNaverToken = await this.tokenService.getNewNaverToken(refreshToken);
+        accessToken = newNaverToken.access_token;
+      }
 
-    axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
-    return { message: "네이버 연동 해제가 완료되었습니다." };
+      const naverUnlinkUrl = 'https://nid.naver.com/oauth2.0/token';
+      const naverUnlinkHeader = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+      const naverUnlinkBody = {
+        client_id: process.env.NAVER_CLIENT_ID,
+        client_secret: process.env.NAVER_CLIENT_SECRET,
+        grant_type: 'delete',
+        service_provider: 'NAVER',
+      };
+
+      axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
+      return { message: "네이버 연동 해제가 완료되었습니다." };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async accountDelete(userId: number) {
