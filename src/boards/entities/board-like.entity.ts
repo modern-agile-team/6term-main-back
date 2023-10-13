@@ -16,4 +16,7 @@ export class BoardLike {
   })
   @JoinColumn({ name: 'board_id' })
   boardId: Board;
+
+  @CreateDateColumn({ name: 'create_at' })
+  createAt: Date;
 }
