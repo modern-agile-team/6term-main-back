@@ -14,7 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 export class BoardsLikeController {
   constructor(private boardsLikeService: BoardsLikeService) {}
 
-  @Post('like/:boardId/')
+  @Post('like/:boardId')
   async addBoardLike(
     @Users() user: User,
     @Param('boardId', ParseIntPipe) boardId: number,
@@ -27,7 +27,7 @@ export class BoardsLikeController {
     return await this.boardsLikeService.getBoardLike(boardId);
   }
 
-  @Delete('like/:boardId/')
+  @Delete('like/:boardId')
   async deleteBoardLike(
     @Users() user: User,
     @Param('boardId', ParseIntPipe) boardId: number,
