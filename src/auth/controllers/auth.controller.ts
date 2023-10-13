@@ -2,7 +2,7 @@ import { AuthService } from '../services/auth.service';
 import { BadRequestException, Controller, Delete, Get, Headers, Post, Query, Res } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
-import { ApiHeader, ApiHeaders, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiHeaders, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
 @ApiTags('auth API')
