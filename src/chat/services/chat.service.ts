@@ -137,10 +137,8 @@ export class ChatService {
     };
 
     const socketRoomId = returnedChat.chatroom_id.toString();
-    // this.eventsGateway.handleConnection(user);
     this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
 
-    // this.eventsGateway.server.to('/ch123').emit('message', chat);
     return chat;
   }
 
