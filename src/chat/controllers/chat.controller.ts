@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -22,19 +21,19 @@ import { User } from 'src/users/entities/user.entity';
 import { ParseObjectIdPipe } from '../parse-object-id.pipe';
 
 @ApiTags('CHAT')
-@Controller('chat')
+@Controller('chat-room')
 @UsePipes(ValidationPipe)
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
-  @Get('room')
+  @Get()
   async getChatRooms(@Users() user: User) {
     return this.chatService.getChatRooms(user.id);
   }
 
   @ApiOperation({ summary: '채팅방 단일 조회' })
-  @Get('room/:roomId')
+  @Get(':roomId')
   async getOneChatRoom(
     @Users() user: User,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
@@ -43,23 +42,22 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '채팅방 생성' })
-  @Post('room')
+  @Post()
   async createChatRoom(@Users() user: User, @Body() body: ReceivedUserDto) {
     return this.chatService.createChatRoom(user.id, body.receiverId);
   }
 
   @ApiOperation({ summary: '해당 채팅방 삭제' })
-  @Delete('room/:roomId/:testUser')
+  @Delete(':roomId')
   async deleteChatRoom(
     @Users() user: User,
-    @Param('testUser', ParseIntPipe) testUser: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.deleteChatRoom(testUser, roomId);
+    return this.chatService.deleteChatRoom(user.id, roomId);
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 전체 조회' })
-  @Get('room/:roomId/chat')
+  @Get(':roomId/chat')
   async getChats(
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
@@ -67,7 +65,7 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post('room/:roomId/chat')
+  @Post(':roomId/chat')
   async createChat(
     @Users() user: User,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
@@ -82,7 +80,7 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 이미지 생성' })
-  @Post('room/:roomId/chat/image')
+  @Post(':roomId/chat/image')
   @UseInterceptors(FileInterceptor('file'))
   async createChatImage(
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,

@@ -17,28 +17,24 @@ export class ChatRepository {
   ) {}
 
   async getChatRooms(myId: number) {
-    return this.chatRoomModel
-      .find({
-        $and: [
-          { $or: [{ host_id: myId }, { guest_id: myId }] },
-          { deleted_at: null },
-        ],
-      })
-      .exec();
+    return this.chatRoomModel.find({
+      $and: [
+        { $or: [{ host_id: myId }, { guest_id: myId }] },
+        { deleted_at: null },
+      ],
+    });
   }
 
   async getOneChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
-    return this.chatRoomModel
-      .findOne({
-        $and: [
-          {
-            $or: [{ host_id: myId }, { guest_id: myId }],
-          },
-          { deleted_at: null },
-          { _id: roomId },
-        ],
-      })
-      .exec();
+    return this.chatRoomModel.findOne({
+      $and: [
+        {
+          $or: [{ host_id: myId }, { guest_id: myId }],
+        },
+        { deleted_at: null },
+        { _id: roomId },
+      ],
+    });
   }
 
   async createChatRoom(myId: number, guestId: number) {
@@ -49,17 +45,15 @@ export class ChatRepository {
   }
 
   async deleteChatRoom(roomId: mongoose.Types.ObjectId) {
-    await this.chatRoomModel
-      .findByIdAndUpdate(roomId, {
-        deleted_at: new Date(),
-      })
-      .exec();
+    this.chatRoomModel.findByIdAndUpdate(roomId, {
+      deleted_at: new Date(),
+    });
 
     return { success: true, msg: '게시글 삭제 성공' };
   }
 
   async getChats(roomId: mongoose.Types.ObjectId) {
-    return this.chatModel.find({ chatroom_id: roomId }).exec();
+    return this.chatModel.find({ chatroom_id: roomId });
   }
 
   async createChat(

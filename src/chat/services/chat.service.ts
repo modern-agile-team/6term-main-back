@@ -7,9 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
-import { Chat } from '../schemas/chat.schemas';
 import { EventsGateway } from 'src/events/events.gateway';
-import { ChatImage } from '../schemas/chat-image.schemas';
 import { S3Service } from 'src/common/s3/s3.service';
 
 @Injectable()
@@ -19,117 +17,87 @@ export class ChatService {
     private readonly chatRepository: ChatRepository,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
-    @InjectModel(Chat.name)
-    private readonly chatModel: mongoose.Model<Chat>,
-    @InjectModel(ChatImage.name)
-    private readonly chatImageModel: mongoose.Model<ChatImage>,
     private readonly eventsGateway: EventsGateway,
   ) {}
 
   async getChatRooms(myId: number) {
-    try {
-      const chatRoom = await this.chatRepository.getChatRooms(myId);
+    const chatRoom = await this.chatRepository.getChatRooms(myId);
 
-      if (!chatRoom.length) {
-        throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
-      }
-
-      return chatRoom;
-    } catch (error) {
-      console.error('채팅룸 조회 실패', error);
-      throw error;
+    if (!chatRoom.length) {
+      throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
     }
+
+    return chatRoom;
   }
 
   async getOneChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
-    try {
-      const returnedRoom = await this.chatRepository.getOneChatRoom(
-        myId,
-        roomId,
-      );
+    const returnedRoom = await this.chatRepository.getOneChatRoom(myId, roomId);
 
-      if (!returnedRoom) {
-        throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
-      }
-
-      return returnedRoom;
-    } catch (error) {
-      console.error('채팅룸 단일 조회 실패: ', error);
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
-      throw error;
+    if (!returnedRoom) {
+      throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
     }
+
+    return returnedRoom;
   }
 
   async createChatRoom(myId: number, guestId: number) {
     try {
-      const chatRoomReturned = await this.chatRepository.createChatRoom(
-        myId,
-        guestId,
-      );
+      const isChatRoom = await this.chatRoomModel.findOne({
+        $or: [
+          { $and: [{ host_id: myId }, { guest_id: guestId }] },
+          { $and: [{ host_id: guestId }, { guest_id: myId }] },
+        ],
+      });
 
-      return chatRoomReturned;
+      if (isChatRoom) {
+        throw new ConflictException('해당 유저들의 채팅방이 이미 존재합니다.');
+      }
+
+      return await this.chatRepository.createChatRoom(myId, guestId);
     } catch (error) {
       console.error('채팅룸 생성 실패: ', error);
       if (error.code === 11000) {
-        throw new ConflictException('중복된 id값이 이미 존재합니다.');
+        throw new ConflictException(
+          '채팅룸 생성 실패. 서버에서 에러가 발생했습니다.',
+        );
       }
       throw error;
     }
   }
 
   async deleteChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
-    try {
-      const chatRoom = await this.chatRoomModel
-        .findById({
-          _id: roomId,
-        })
-        .exec();
+    const chatRoom = await this.chatRoomModel.findOne({
+      $and: [{ _id: roomId }, { deleted_at: null }],
+    });
 
-      const isUser = await this.chatRoomModel
-        .find({
-          $and: [
-            { $or: [{ host_id: myId }, { guest_id: myId }] },
-            { _id: roomId },
-          ],
-        })
-        .exec();
-
-      if (!isUser.length) {
-        throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
-      }
-      const returnedChatRoom = await this.chatRepository.deleteChatRoom(
-        chatRoom.id,
-      );
-
-      return returnedChatRoom;
-    } catch (error) {
-      console.error('채팅룸 삭제 실패: ', error);
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(
-          '올바른 ObjectId 형식이 아니거나, 존재하지 않습니다.',
-        );
-      }
-      throw error;
+    if (!chatRoom) {
+      throw new NotFoundException('해당 채팅룸이 없습니다.');
     }
+
+    const isUser = await this.chatRoomModel.find({
+      $and: [
+        { $or: [{ host_id: myId }, { guest_id: myId }] },
+        { _id: chatRoom.id },
+      ],
+    });
+
+    if (!isUser.length) {
+      throw new NotFoundException('해당 유저는 채팅방에 속해있지 않습니다.');
+    }
+
+    return this.chatRepository.deleteChatRoom(roomId);
   }
 
   async getChats(roomId: mongoose.Types.ObjectId) {
-    try {
-      const returnedChat = await this.chatRepository.getChats(roomId);
+    const returnedChat = await this.chatRepository.getChats(roomId);
 
-      if (!returnedChat.length) {
-        throw new NotFoundException('해당 채팅방이 없습니다.');
-      }
-
-      return returnedChat;
-    } catch (error) {
-      console.error('채팅 조회 실패: ', error);
-      throw error;
+    if (!returnedChat.length) {
+      throw new NotFoundException(
+        '해당 채팅룸이 없거나 채팅이 존재하지 않습니다.',
+      );
     }
+
+    return returnedChat;
   }
 
   async createChat(
@@ -138,32 +106,42 @@ export class ChatService {
     myId: number,
     receiverId: number,
   ) {
-    try {
-      await this.getOneChatRoom(myId, roomId);
+    await this.getOneChatRoom(myId, roomId);
 
-      const returnedChat = await this.chatRepository.createChat(
-        roomId,
-        content,
-        myId,
-        receiverId,
-      );
+    const isChatRoom = await this.chatRoomModel.findOne({
+      $or: [
+        {
+          $and: [{ host_id: myId }, { guest_id: receiverId }],
+        },
+        {
+          $and: [{ host_id: receiverId }, { guest_id: myId }],
+        },
+      ],
+    });
 
-      const chat = {
-        content: returnedChat.content,
-        sender: returnedChat.sender,
-        receiver: returnedChat.receiver,
-      };
-
-      const socketRoomId = returnedChat.chatroom_id.toString();
-      // this.eventsGateway.handleConnection(user);
-      this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
-
-      // this.eventsGateway.server.to('/ch123').emit('message', chat);
-      return chat;
-    } catch (error) {
-      console.error('채팅 생성 실패: ', error);
-      throw error;
+    if (!isChatRoom) {
+      throw new NotFoundException('채팅을 전송할 유저가 채팅방에 없습니다');
     }
+
+    const returnedChat = await this.chatRepository.createChat(
+      roomId,
+      content,
+      myId,
+      receiverId,
+    );
+
+    const chat = {
+      content: returnedChat.content,
+      sender: returnedChat.sender,
+      receiver: returnedChat.receiver,
+    };
+
+    const socketRoomId = returnedChat.chatroom_id.toString();
+    // this.eventsGateway.handleConnection(user);
+    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+
+    // this.eventsGateway.server.to('/ch123').emit('message', chat);
+    return chat;
   }
 
   async createChatImage(
@@ -172,31 +150,41 @@ export class ChatService {
     receiverId: number,
     file: Express.Multer.File,
   ) {
-    try {
-      await this.getOneChatRoom(myId, roomId);
+    await this.getOneChatRoom(myId, roomId);
 
-      const imageUrl = await this.s3Service.imgUpload(file, myId);
+    const isChatRoom = await this.chatRoomModel.findOne({
+      $or: [
+        {
+          $and: [{ host_id: myId }, { guest_id: receiverId }],
+        },
+        {
+          $and: [{ host_id: receiverId }, { guest_id: myId }],
+        },
+      ],
+    });
 
-      const returnedChat = await this.chatRepository.createChatImage(
-        roomId,
-        myId,
-        receiverId,
-        imageUrl.url,
-      );
-
-      const chat = {
-        content: returnedChat.content,
-        sender: returnedChat.sender,
-        receiver: returnedChat.receiver,
-      };
-
-      const socketRoomId = returnedChat.chatroom_id.toString();
-      this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
-
-      return chat;
-    } catch (error) {
-      console.error('채팅 이미지 생성 실패: ', error);
-      throw error;
+    if (!isChatRoom) {
+      throw new NotFoundException('채팅을 전송할 유저가 채팅방에 없습니다');
     }
+
+    const imageUrl = await this.s3Service.imgUpload(file, myId);
+
+    const returnedChat = await this.chatRepository.createChatImage(
+      roomId,
+      myId,
+      receiverId,
+      imageUrl.url,
+    );
+
+    const chat = {
+      content: returnedChat.content,
+      sender: returnedChat.sender,
+      receiver: returnedChat.receiver,
+    };
+
+    const socketRoomId = returnedChat.chatroom_id.toString();
+    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+
+    return chat;
   }
 }
