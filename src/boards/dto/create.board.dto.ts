@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
+
 // import { IsString, IsInstance, isNumber } from 'class-validator';
 // import { User } from 'src/users/entities/user.entity';
 
@@ -17,6 +18,6 @@ export class CreateBoardDto {
 
   // @IsInstance(User)
   // userId: User;
-  // @IsNumber()
-  // userId: number;
+  @IsNumber()
+  userId: number;
 }

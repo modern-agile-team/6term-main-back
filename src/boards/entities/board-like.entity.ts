@@ -1,5 +1,11 @@
 import { User } from 'src/users/entities/user.entity';
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Board } from './board.entity';
 
 @Entity({ name: 'board_like' })
@@ -16,4 +22,7 @@ export class BoardLike {
   })
   @JoinColumn({ name: 'board_id' })
   boardId: Board;
+
+  @CreateDateColumn({ name: 'create_at' })
+  createAt: Date;
 }
