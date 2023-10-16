@@ -2,7 +2,7 @@ import { EntityManager } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class BoardRepository {
@@ -24,34 +24,57 @@ export class BoardRepository {
     return await this.entityManager.save(Board, board);
   }
 
-  async findAllBoards(): Promise<Board[]> {
+  async findPagedBoards(skip: number, limit: number): Promise<Board[]> {
     return await this.entityManager.find(Board, {
       relations: ['user', 'user.userImage', 'boardImages'],
-    });
-  }
-
-  async findPagedBoards(page: number, limit: number): Promise<Board[]> {
-    const skip = (page - 1) * limit;
-    return await this.entityManager.find(Board, {
-      relations: ['user', 'user.userImage', 'boardImages'],
-      take: limit,
       skip: skip,
+      take: limit,
     });
   }
 
-  async findBoardById(id: number): Promise<Board | undefined> {
-    return await this.entityManager.findOne(Board, { where: { id } });
+  async findBoardById(id: number): Promise<Board> {
+    return await this.entityManager.findOne(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      where: { id },
+    });
   }
 
-  async updateBoard(
-    id: number,
-    boardData: Partial<Board>,
-  ): Promise<Board | undefined> {
-    await this.entityManager.update(Board, id, boardData);
-    return await this.findBoardById(id);
+  // async updateBoard(id: number, boardData: Partial<Board>): Promise<Board> {
+  //   await this.entityManager.update(Board, id, boardData);
+  //   return await this.findBoardById(id);
+  // }
+
+  async updateBoard(id: number, boardData: Partial<Board>): Promise<Board> {
+    // 먼저 게시물을 찾습니다.
+    const existingBoard = await this.entityManager.findOne(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      where: { id },
+    });
+    if (!existingBoard) {
+      throw new NotFoundException(`Board with ID ${id} not found`);
+    }
+
+    if (boardData.head) {
+      existingBoard.head = boardData.head;
+    }
+    if (boardData.body) {
+      existingBoard.body = boardData.body;
+    }
+    if (boardData.main_category) {
+      existingBoard.main_category = boardData.main_category;
+    }
+    if (boardData.sub_category) {
+      existingBoard.sub_category = boardData.sub_category;
+    }
+    await this.entityManager.save(Board, existingBoard);
+    return existingBoard;
   }
 
-  async deleteBoard(id: number): Promise<void> {
-    await this.entityManager.delete(Board, id);
+  async deleteBoard(boardId: number, userId: number) {
+    await this.entityManager.delete(Board, {
+      boardId: boardId,
+      userId: userId,
+    });
+    // await this.entityManager.delete(Board, id);
   }
 }
