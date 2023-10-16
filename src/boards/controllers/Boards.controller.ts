@@ -9,7 +9,6 @@ import {
   UploadedFile,
   UseInterceptors,
   Query,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
@@ -18,8 +17,6 @@ import { BoardImagesService } from '../services/BoardImage.service';
 import { BoardImage } from '../entities/board-image.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
-import { Users } from 'src/common/decorators/decorators';
-import { User } from 'src/users/entities/user.entity';
 
 @Controller('boards')
 export class BoardsController {
@@ -39,7 +36,7 @@ export class BoardsController {
     @Param('boardId') boardId: number,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<BoardImage> {
-    return this.boardImagesService.create(boardId, file);
+    return this.boardImagesService.createBoardImages(boardId, file);
   }
 
   @Get()
@@ -69,11 +66,9 @@ export class BoardsController {
     return updatedBoard;
   }
 
-  @Delete()
-  async deleteBoardbyId(
-    @Users() user: User,
-    @Param('boardId', ParseIntPipe) boardId: number,
-  ): Promise<void> {
-    return await this.boardsService.deleteBoard(boardId, user.id);
+  @Delete(':boardId')
+  async deleteBoard(@Param('boardId') boardId: number): Promise<void> {
+    const userId = 1; // 임시로 1 받아오는겁니다 (토큰 완성되면 수정예정)
+    await this.boardsService.deleteBoard(boardId, userId);
   }
 }

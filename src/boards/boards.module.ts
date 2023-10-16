@@ -8,12 +8,18 @@ import { BoardImagesService } from './services/BoardImage.service';
 import { S3Service } from 'src/common/s3/s3.service';
 import { BoardImage } from './entities/board-image.entity';
 import { BoardRepository } from './repository/boards.repository';
+import { BoardImageRepository } from './repository/boardImage.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board, BoardImage])],
-  // controller와 service가 모듈에 정의되어야 컨트롤러,서비스 안에서 이용가능합니다.
   controllers: [BoardsController],
-  providers: [BoardsService, BoardImagesService, S3Service, BoardRepository],
+  providers: [
+    BoardsService,
+    BoardImagesService,
+    S3Service,
+    BoardRepository,
+    BoardImageRepository,
+  ],
 })
 @Module({})
 export class BoardsModule {}

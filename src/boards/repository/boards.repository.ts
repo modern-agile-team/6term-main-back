@@ -50,10 +50,7 @@ export class BoardRepository {
     return existingBoard;
   }
 
-  async deleteBoard(boardId: number, userId: number) {
-    await this.entityManager.delete(Board, {
-      boardId: boardId,
-      userId: userId,
-    });
+  async deleteBoard(board: Board): Promise<void> {
+    await this.entityManager.remove(Board, board);
   }
 }
