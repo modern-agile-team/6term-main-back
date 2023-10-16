@@ -10,48 +10,50 @@ export class BoardRepository {
 
   async createBoard(boardData: CreateBoardDto): Promise<Board> {
     const userId = 1; // 임시로 1 쓴거야, 준혁아 여기 수정하면 된다.
-
     const user = new User();
     user.id = userId;
-
     const board = new Board();
     board.head = boardData.head;
     board.body = boardData.body;
     board.main_category = boardData.main_category;
     board.sub_category = boardData.sub_category;
     board.userId = userId;
-
     return await this.entityManager.save(Board, board);
   }
 
-  async findAllBoards(): Promise<Board[]> {
+  async findPagedBoards(skip: number, limit: number): Promise<Board[]> {
     return await this.entityManager.find(Board, {
       relations: ['user', 'user.userImage', 'boardImages'],
-    });
-  }
-
-  async findPagedBoards(page: number, limit: number): Promise<Board[]> {
-    const skip = (page - 1) * limit;
-    return await this.entityManager.find(Board, {
-      relations: ['user', 'user.userImage', 'boardImages'],
-      take: limit,
       skip: skip,
+      take: limit,
     });
   }
 
-  async findBoardById(id: number): Promise<Board | undefined> {
-    return await this.entityManager.findOne(Board, { where: { id } });
+  async findBoardById(id: number): Promise<Board> {
+    return await this.entityManager.findOne(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      where: { id },
+    });
   }
 
-  async updateBoard(
-    id: number,
-    boardData: Partial<Board>,
-  ): Promise<Board | undefined> {
-    await this.entityManager.update(Board, id, boardData);
-    return await this.findBoardById(id);
+  async updateBoard(id: number, boardData: Partial<Board>): Promise<Board> {
+    const existingBoard = await this.entityManager.findOne(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      where: { id },
+    });
+    for (const key in boardData) {
+      if (boardData.hasOwnProperty(key)) {
+        existingBoard[key] = boardData[key];
+      }
+    }
+    await this.entityManager.save(Board, existingBoard);
+    return existingBoard;
   }
 
-  async deleteBoard(id: number): Promise<void> {
-    await this.entityManager.delete(Board, id);
+  async deleteBoard(boardId: number, userId: number) {
+    await this.entityManager.delete(Board, {
+      boardId: boardId,
+      userId: userId,
+    });
   }
 }

@@ -1,14 +1,23 @@
-import { Controller, Param, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { TokenService } from './../../auth/services/token.service';
+import { Controller, Headers, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserImageService } from '../services/user-image.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiUploadUserImage } from '../swagger-decorators/upload-user-image.decorator';
 
 @Controller('user/image')
+@ApiTags('user API')
 export class UserImageController {
-  constructor(private readonly userImageService: UserImageService) {}
+  constructor(
+    private readonly userImageService: UserImageService,
+    private readonly tokenService: TokenService
+    ) {}
 
-  @Patch(':userId')
+  @ApiUploadUserImage()
+  @Patch()
   @UseInterceptors(FileInterceptor('file'))
-  async uploadImage(@Param('userId') userId: number, @UploadedFile() file: Express.Multer.File) {
-    return this.userImageService.uploadImage(userId, file);
+  async uploadUserImage(@Headers('access_token') accessToken: string, @UploadedFile() file: Express.Multer.File) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.userImageService.uploadImage(userId, file);
   }
 }
