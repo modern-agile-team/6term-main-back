@@ -1,17 +1,21 @@
-import { Board } from "src/boards/entities/board.entity";
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Board } from 'src/boards/entities/board.entity';
+import {
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity({ name: 'board_notification'})
+@Entity({ name: 'board_notification' })
 export class BoardNotification {
-    
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => Board)
-    @JoinColumn({ name: 'board_id' })
-    boardId: Board;
+  @ManyToOne(() => Board)
+  @JoinColumn({ name: 'board_id' })
+  boardId: Board;
 
-    @CreateDateColumn({ name: 'create_at' })
-    createAt: Date;
-
+  @CreateDateColumn({ name: 'create_at' })
+  createAt: Date;
 }

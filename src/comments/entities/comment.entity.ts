@@ -1,9 +1,16 @@
-import { Board } from "src/boards/entities/board.entity";
-import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Board } from 'src/boards/entities/board.entity';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({
-  name: 'comment'
+  name: 'comment',
 })
 export class Comment {
   @PrimaryGeneratedColumn()
@@ -14,7 +21,7 @@ export class Comment {
   userId: User;
 
   @ManyToOne(() => Board)
-  @JoinColumn({ name: 'board_id'})
+  @JoinColumn({ name: 'board_id' })
   boardId: Board;
 
   @Column()

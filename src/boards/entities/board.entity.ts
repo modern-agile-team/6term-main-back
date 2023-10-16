@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { BoardLike } from './board-like.entity';
 
 @Entity({
   name: 'board',
@@ -27,6 +28,11 @@ export class Board {
 
   @OneToMany(() => BoardImage, (boardImage) => boardImage.board)
   boardImages: BoardImage[];
+
+  @OneToMany(() => BoardLike, (boardLike) => boardLike.boardId, {
+    onDelete: 'CASCADE',
+  })
+  boardLike: BoardLike;
 
   @Column()
   head: string;
