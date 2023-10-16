@@ -19,6 +19,7 @@ import { EventsModule } from './events/events.module';
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
 import { TokenRepository } from './auth/repositories/token.repository';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { TokenRepository } from './auth/repositories/token.repository';
     FriendModule,
     NoticeModule,
     EventsModule,
+    NotificationModule,
   ], //
   providers: [
     TokenService,
