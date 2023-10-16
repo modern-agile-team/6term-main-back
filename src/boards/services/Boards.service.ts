@@ -68,28 +68,15 @@ export class BoardsService {
     return undefined;
   }
 
-  async update(
+  async updateBoard(
     id: number,
     boardData: Partial<Board>,
   ): Promise<Board | undefined> {
     const existingBoard = await this.boardRepository.findBoardById(id);
-    if (!existingBoard) {
-      return undefined; // 게시물을 찾을 수 없는 경우 undefined 반환
-    }
-    if (boardData.head) {
-      existingBoard.head = boardData.head;
-    }
-    if (boardData.body) {
-      existingBoard.body = boardData.body;
-    }
-    if (boardData.main_category) {
-      existingBoard.main_category = boardData.main_category;
-    }
-    if (boardData.sub_category) {
-      existingBoard.sub_category = boardData.sub_category;
-    }
-    if (boardData.updateAt) {
-      existingBoard.updateAt = boardData.updateAt;
+    for (const key in boardData) {
+      if (boardData.hasOwnProperty(key)) {
+        existingBoard[key] = boardData[key];
+      }
     }
     const updatedBoard = await this.boardRepository.updateBoard(
       id,
@@ -102,12 +89,8 @@ export class BoardsService {
     try {
       return await this.boardRepository.deleteBoard(boardId, userId);
     } catch (error) {
-      console.error('좋아요 취소 실패: ', error);
+      console.error('삭제실패: ', error);
       throw error;
     }
   }
-
-  // async deleteBoard(id: number): Promise<void> {
-  //   await this.boardRepository.deleteBoard(id);
-  // }
 }

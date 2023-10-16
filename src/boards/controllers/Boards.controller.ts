@@ -58,11 +58,14 @@ export class BoardsController {
   }
 
   @Patch(':boardId')
-  async update(
+  async editBoard(
     @Param('boardId') boardId: string,
     @Body() boardData: Partial<Board>,
   ): Promise<Board> {
-    const updatedBoard = await this.boardsService.update(+boardId, boardData);
+    const updatedBoard = await this.boardsService.updateBoard(
+      +boardId,
+      boardData,
+    );
     return updatedBoard;
   }
 

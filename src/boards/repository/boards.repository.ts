@@ -2,7 +2,7 @@ import { EntityManager } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BoardRepository {
@@ -10,17 +10,14 @@ export class BoardRepository {
 
   async createBoard(boardData: CreateBoardDto): Promise<Board> {
     const userId = 1; // 임시로 1 쓴거야, 준혁아 여기 수정하면 된다.
-
     const user = new User();
     user.id = userId;
-
     const board = new Board();
     board.head = boardData.head;
     board.body = boardData.body;
     board.main_category = boardData.main_category;
     board.sub_category = boardData.sub_category;
     board.userId = userId;
-
     return await this.entityManager.save(Board, board);
   }
 
@@ -39,32 +36,15 @@ export class BoardRepository {
     });
   }
 
-  // async updateBoard(id: number, boardData: Partial<Board>): Promise<Board> {
-  //   await this.entityManager.update(Board, id, boardData);
-  //   return await this.findBoardById(id);
-  // }
-
   async updateBoard(id: number, boardData: Partial<Board>): Promise<Board> {
-    // 먼저 게시물을 찾습니다.
     const existingBoard = await this.entityManager.findOne(Board, {
       relations: ['user', 'user.userImage', 'boardImages'],
       where: { id },
     });
-    if (!existingBoard) {
-      throw new NotFoundException(`Board with ID ${id} not found`);
-    }
-
-    if (boardData.head) {
-      existingBoard.head = boardData.head;
-    }
-    if (boardData.body) {
-      existingBoard.body = boardData.body;
-    }
-    if (boardData.main_category) {
-      existingBoard.main_category = boardData.main_category;
-    }
-    if (boardData.sub_category) {
-      existingBoard.sub_category = boardData.sub_category;
+    for (const key in boardData) {
+      if (boardData.hasOwnProperty(key)) {
+        existingBoard[key] = boardData[key];
+      }
     }
     await this.entityManager.save(Board, existingBoard);
     return existingBoard;
@@ -75,6 +55,5 @@ export class BoardRepository {
       boardId: boardId,
       userId: userId,
     });
-    // await this.entityManager.delete(Board, id);
   }
 }
