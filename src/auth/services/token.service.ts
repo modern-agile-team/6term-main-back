@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TokenRepository } from '../repositories/token.repository';
+import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 
 @Injectable()
@@ -9,7 +10,11 @@ export class TokenService {
   ) {}
 
   async getUserTokens(userId: number) {
-    return await this.tokenRepository.getUserTokens(userId);
+    const getUserTokens = await this.tokenRepository.getUserTokens(userId);
+    if (getUserTokens.length <= 0) {
+      throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    return getUserTokens;
   }
 
   async saveTokens(userId: number, refreshToken: string, socialAccessToken: string, socialRefreshToken: string) {
@@ -33,7 +38,7 @@ export class TokenService {
       return (await axios.get(kakaoUnlinkUrl, kakaoUnlinkHeader)).status;
     } catch (error) {
       console.error('카카오 토큰 유효성 검사 오류:', error);
-      return false;
+      throw new HttpException('카카오 토큰 유효성 검사 오류', HttpStatus.FORBIDDEN);
     }
   }
 
@@ -93,10 +98,76 @@ export class TokenService {
     try {
       await this.tokenRepository.deleteTokens(userId);
       
-      return { status: true, message: '토큰 삭제 성공' };
+      return { message: '토큰 삭제 성공' };
     } catch (error) {
-      console.error('토큰 삭제 오류:', error);
-      return { status: false, message: '토큰 삭제 실패' };
+      throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
+  }
+
+  async verifyToken(token: string) {
+    try {
+      const jwtSecretKey = process.env.JWT_SECRET_KEY;
+      const userId = jwt.verify(token, jwtSecretKey)['userId'];
+      const tokenType = jwt.verify(token, jwtSecretKey)['sub'];
+      if (tokenType === 'refreshToken') {
+        const userToken = await this.tokenRepository.getUserTokens(userId);
+        const dbRefreshToken = userToken[0].refreshToken;
+        if (token !== dbRefreshToken) {
+          throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+        }
+      }
+      return { message: "유효한 토큰입니다." };
+    } catch (error) {
+      if (error.message == 'jwt expired') {
+        throw new HttpException('만료된 토큰입니다.', HttpStatus.FORBIDDEN);
+      } else if (error.message == 'invalid token' || error.message == 'invalid signature') {
+        throw new HttpException('유효하지 않은 토큰입니다.', HttpStatus.UNAUTHORIZED);
+      } else if (error.message == 'jwt must be provided') {
+        throw new HttpException('토큰이 제공되지 않았습니다.', HttpStatus.LENGTH_REQUIRED);
+      } else {
+        throw new HttpException('토큰 검증에 실패했습니다.', HttpStatus.BAD_REQUEST);
+      }
+    }
+  }
+
+  async decodeToken(token: string) {
+    await this.verifyToken(token);
+    const payload = jwt.decode(token);
+    const userId = payload['userId'];
+    return userId;
+  }
+
+  async createAccessToken(userId: number) {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const payload = {
+      sub: "accessToken",
+      userId,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1시간
+    };
+
+    const accessToken = jwt.sign(payload, jwtSecretKey);
+
+    return accessToken;
+  }
+
+  async createRefreshToken(userId: number) {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const payload = {
+      sub: "refreshToken",
+      userId,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7), // 7일
+    };
+    const refreshToken = jwt.sign(payload, jwtSecretKey);
+
+    return refreshToken;
+  }
+
+  async newAccessToken(refreshToken: string) {
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const payload = jwt.verify(refreshToken, jwtSecretKey);
+    
+    const userId = payload['userId'];
+    const newAccessToken = await this.createAccessToken(userId);
+    return newAccessToken;
   }
 }

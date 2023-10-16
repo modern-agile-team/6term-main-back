@@ -10,7 +10,7 @@ export class UserImageService {
     private readonly userImageRepository: UserImageRepository,
   ) {}
 
-  async uploadImage(userId: number, file: Express.Multer.File): Promise<{ status: string; message: string }> {
+  async uploadImage(userId: number, file: Express.Multer.File): Promise<{ message: string }> {
     try {
       const res = await this.s3Service.imgUpload(file, userId); // S3에 이미지 업로드
       if (!res) {
@@ -32,7 +32,7 @@ export class UserImageService {
       if (!updateUserImage) {
         throw new InternalServerErrorException('사용자 이미지 업데이트에 실패했습니다.');
       } else {
-        return { status: 'success', message: '이미지 업데이트에 성공했습니다.' };
+        return { message: '이미지 업데이트에 성공했습니다.' };
       }
     } catch (error) {
       throw new InternalServerErrorException('이미지 업로드 및 처리 중 오류가 발생했습니다.');
