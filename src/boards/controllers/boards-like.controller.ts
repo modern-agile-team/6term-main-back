@@ -11,7 +11,10 @@ import {
 import { BoardsLikeService } from '../services/boards-like.service';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiAddBoardLike } from '../swagger-descorators/add-board-like.decorator';
+import { ApiGetBoardLikeCount } from '../swagger-descorators/get-board-like-count.decorator';
+import { ApiDeleteBoardLike } from '../swagger-descorators/delete-board-like.decorator';
 
 @ApiTags('BOARDS-LIKE')
 @UsePipes(ValidationPipe)
@@ -19,27 +22,28 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export class BoardsLikeController {
   constructor(private boardsLikeService: BoardsLikeService) {}
 
-  @ApiOperation({ summary: '좋아요 생성' })
+  @ApiAddBoardLike()
   @Post('like/:boardId')
   async addBoardLike(
     @Users() user: User,
     @Param('boardId', ParseIntPipe) boardId: number,
   ) {
-    return await this.boardsLikeService.addBoardLike(boardId, user.id);
+    return this.boardsLikeService.addBoardLike(boardId, user.id);
   }
 
-  @ApiOperation({ summary: '해당 게시글 좋아요 개수 조회' })
+  @ApiGetBoardLikeCount()
   @Get('like/:boardId')
   async getBoardLike(@Param('boardId', ParseIntPipe) boardId: number) {
-    return await this.boardsLikeService.getBoardLike(boardId);
+    return this.boardsLikeService.getBoardLike(boardId);
   }
 
-  @ApiOperation({ summary: '해당 게시글 좋아요 삭제' })
+  @ApiDeleteBoardLike()
   @Delete('like/:boardId')
   async deleteBoardLike(
     @Users() user: User,
-    @Param('boardId', ParseIntPipe) boardId: number,
+    @Param('boardId', ParseIntPipe)
+    boardId: number,
   ) {
-    return await this.boardsLikeService.deleteBoardLike(boardId, user.id);
+    return this.boardsLikeService.deleteBoardLike(boardId, user.id);
   }
 }
