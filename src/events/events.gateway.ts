@@ -9,9 +9,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { onlineMap } from './onlineMap';
 import mongoose from 'mongoose';
-import { User } from 'src/users/entities/user.entity';
 
 @WebSocketGateway({ namespace: /\/ch-\d+/, cors: true })
 // @WebSocketGateway({ namespace: '/ch123' })
@@ -28,19 +26,14 @@ export class EventsGateway
   @SubscribeMessage('login')
   handleLogin(
     // @MessageBody() data: { id: number; roomId: number[] },
-    @MessageBody() data: { id: string; channel: number[] },
+    @MessageBody() data: { id: number; rooms: mongoose.Types.ObjectId[] },
     @ConnectedSocket() socket: Socket,
   ) {
-    const userName = data.id;
-    // const rooms = data.roomId;
-    const rooms = data.channel;
-    console.log('login', userName);
-    console.log('join', rooms);
-    socket.join(`${rooms}`);
-    // rooms.forEach((channels: number) => {
-    //   console.log('join', channels);
-    //   socket.join(`${channel}`);
-    // });
+    console.log('login', data.id);
+    data.rooms.forEach((room) => {
+      socket.join(`${room}`);
+      console.log('join', room);
+    });
   }
 
   afterInit(server: Server): any {

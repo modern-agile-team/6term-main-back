@@ -19,18 +19,5 @@ export function ApiGetBoardLikeCount() {
         },
       },
     }),
-    ApiResponse({
-      status: 404,
-      description: '해당 게시글의 좋아요가 존재하지 않는 경우',
-      content: {
-        JSON: {
-          example: {
-            success: false,
-            code: 404,
-            data: '해당 게시글이 없습니다.',
-          },
-        },
-      },
-    }),
   );
 }

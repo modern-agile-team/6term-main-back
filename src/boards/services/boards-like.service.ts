@@ -52,13 +52,7 @@ export class BoardsLikeService {
     if (!board) {
       throw new NotFoundException('해당 게시글이 없습니다.');
     }
-    const boardLike = await this.boardsLikeRepositry.getBoardLike(boardId);
-
-    if (!boardLike) {
-      throw new NotFoundException('좋아요가 없습니다');
-    }
-
-    return boardLike;
+    return this.boardsLikeRepositry.getBoardLike(boardId);
   }
 
   async deleteBoardLike(boardId: number, userId: number) {

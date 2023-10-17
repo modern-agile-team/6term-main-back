@@ -12,7 +12,9 @@ export class BoardsLikeRepository {
     boardLike.boardId = boardId;
     boardLike.userId = userId;
 
-    return this.entityManager.save(boardLike);
+    await this.entityManager.save(boardLike);
+
+    return { success: true, msg: '좋아요 생성 성공', isLike: true };
   }
 
   async getBoardLike(boardId: number) {
@@ -29,6 +31,6 @@ export class BoardsLikeRepository {
       userId: userId,
     });
 
-    return { success: true, msg: '좋아요 삭제 성공' };
+    return { success: true, msg: '좋아요 삭제 성공', isLike: false };
   }
 }

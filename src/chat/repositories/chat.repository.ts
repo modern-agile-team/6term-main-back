@@ -45,7 +45,7 @@ export class ChatRepository {
   }
 
   async deleteChatRoom(roomId: mongoose.Types.ObjectId) {
-    this.chatRoomModel.findByIdAndUpdate(roomId, {
+    await this.chatRoomModel.findByIdAndUpdate(roomId, {
       deleted_at: new Date(),
     });
 
