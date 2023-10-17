@@ -54,10 +54,6 @@ export class BoardsLikeService {
     }
     const boardLike = await this.boardsLikeRepositry.getBoardLike(boardId);
 
-    if (!boardLike) {
-      throw new NotFoundException('좋아요가 없습니다');
-    }
-
     return boardLike;
   }
 
