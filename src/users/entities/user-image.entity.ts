@@ -12,11 +12,11 @@ export class UserImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'image_url' })
-  imageUrl: string;
-
   @Column({ name: 'user_id' })
   userId: number;
+
+  @Column({ name: 'image_url' })
+  imageUrl: string;
 
   @OneToOne(() => User, (userId: User) => userId.userImage, {
     onDelete: 'CASCADE',
