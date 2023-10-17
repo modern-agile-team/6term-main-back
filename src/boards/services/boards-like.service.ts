@@ -41,16 +41,7 @@ export class BoardsLikeService {
       throw new ConflictException('이미 좋아요가 있습니다');
     }
 
-    const returnedBoardLike = this.boardsLikeRepositry.addBoardLike(
-      board,
-      user,
-    );
-
-    if (!returnedBoardLike) {
-      return { success: false, msg: '좋아요 생성 실패', state: false };
-    }
-
-    return { success: true, msg: '좋아요 생성 성공', state: true };
+    return this.boardsLikeRepositry.addBoardLike(board, user);
   }
 
   async getBoardLike(boardId: number) {
@@ -61,9 +52,7 @@ export class BoardsLikeService {
     if (!board) {
       throw new NotFoundException('해당 게시글이 없습니다.');
     }
-    const boardLike = await this.boardsLikeRepositry.getBoardLike(boardId);
-
-    return boardLike;
+    return this.boardsLikeRepositry.getBoardLike(boardId);
   }
 
   async deleteBoardLike(boardId: number, userId: number) {
