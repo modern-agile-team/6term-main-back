@@ -9,9 +9,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { onlineMap } from './onlineMap';
 import mongoose from 'mongoose';
-import { User } from 'src/users/entities/user.entity';
 
 @WebSocketGateway({ namespace: /\/ch-\d+/, cors: true })
 // @WebSocketGateway({ namespace: '/ch123' })
