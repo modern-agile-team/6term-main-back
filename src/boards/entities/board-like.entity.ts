@@ -11,7 +11,7 @@ import { Board } from './board.entity';
 @Entity({ name: 'board_like' })
 export class BoardLike {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
