@@ -6,6 +6,7 @@ export function setupSwagger(app: INestApplication): void {
     .setTitle('ma6-main API')
     .setDescription('모던애자일 6기 메인프로젝트 API 문서')
     .setVersion('1.0')
+    .addCookieAuth('connect.sid')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', name: 'JWT', description: '여기에 토큰 입력', in: 'header' }, 'access-token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
