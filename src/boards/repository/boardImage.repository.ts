@@ -12,6 +12,6 @@ export class BoardImageRepository {
     newBoardImage.boardId = boardImage.boardId;
     newBoardImage.imageUrl = boardImage.imageUrl;
     const savedImage = await this.entityManager.save(BoardImage, newBoardImage);
-    return savedImage;
+    return savedImage; //test
   }
 }
