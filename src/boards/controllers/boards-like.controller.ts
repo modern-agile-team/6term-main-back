@@ -23,13 +23,12 @@ export class BoardsLikeController {
   constructor(private boardsLikeService: BoardsLikeService) {}
 
   @ApiAddBoardLike()
-  @Post('like/:boardId/:userId')
+  @Post('like/:boardId')
   async addBoardLike(
-    @Param('userId') userId: number,
     @Users() user: User,
     @Param('boardId', ParseIntPipe) boardId: number,
   ) {
-    return this.boardsLikeService.addBoardLike(boardId, userId);
+    return this.boardsLikeService.addBoardLike(boardId, user.id);
   }
 
   @ApiGetBoardLikeCount()
