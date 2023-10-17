@@ -15,7 +15,7 @@ export function ApiAddBoardLike() {
           example: {
             success: true,
             msg: '좋아요 생성 성공',
-            state: true,
+            isLike: true,
           },
         },
       },

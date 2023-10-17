@@ -15,6 +15,7 @@ export function ApiDeleteBoardLike() {
           example: {
             success: true,
             msg: '좋아요 삭제 성공',
+            isLike: false,
           },
         },
       },

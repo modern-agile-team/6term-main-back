@@ -12,7 +12,7 @@ export class BoardsLikeRepository {
     boardLike.boardId = boardId;
     boardLike.userId = userId;
 
-    this.entityManager.save(boardLike);
+    await this.entityManager.save(boardLike);
 
     return { success: true, msg: '좋아요 생성 성공', isLike: true };
   }
