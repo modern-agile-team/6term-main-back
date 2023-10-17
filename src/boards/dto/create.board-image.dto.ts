@@ -1,10 +1,9 @@
-import { IsString, IsInstance } from 'class-validator';
-import { Board } from '../entities/board.entity';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateBoardImageDto {
-  @IsInstance(Board)
-  boardId: Board;
+  @IsNumber()
+  boardId: number;
 
   @IsString()
-  image_url: string;
+  imageUrl: string;
 }

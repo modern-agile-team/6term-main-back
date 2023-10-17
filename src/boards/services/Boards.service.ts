@@ -3,6 +3,7 @@ import { BoardRepository } from '../repository/boards.repository';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { Board } from '../entities/board.entity';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
+import { error } from 'console';
 
 @Injectable()
 export class BoardsService {
@@ -85,12 +86,14 @@ export class BoardsService {
     return updatedBoard;
   }
 
-  async deleteBoard(boardId: number, userId: number) {
-    try {
-      return await this.boardRepository.deleteBoard(boardId, userId);
-    } catch (error) {
-      console.error('삭제실패: ', error);
-      throw error;
+  async deleteBoard(boardId: number, userId: number): Promise<void> {
+    const board = await this.boardRepository.findBoardById(boardId);
+    if (board.userId !== userId) {
+      throw new error('작성한 게시물이 아닙니다.');
     }
+    if (!board) {
+      throw new error('존재하지 않는 게시물입니다.');
+    }
+    await this.boardRepository.deleteBoard(board);
   }
 }
