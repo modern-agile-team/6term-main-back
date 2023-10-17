@@ -41,7 +41,16 @@ export class BoardsLikeService {
       throw new ConflictException('이미 좋아요가 있습니다');
     }
 
-    return this.boardsLikeRepositry.addBoardLike(board, user);
+    const returnedBoardLike = this.boardsLikeRepositry.addBoardLike(
+      board,
+      user,
+    );
+
+    if (!returnedBoardLike) {
+      return { success: false, msg: '좋아요 생성 실패', state: false };
+    }
+
+    return { success: true, msg: '좋아요 생성 성공', state: true };
   }
 
   async getBoardLike(boardId: number) {

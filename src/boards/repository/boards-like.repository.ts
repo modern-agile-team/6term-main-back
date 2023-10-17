@@ -29,6 +29,6 @@ export class BoardsLikeRepository {
       userId: userId,
     });
 
-    return { success: true, msg: '좋아요 삭제 성공' };
+    return { success: true, msg: '좋아요 삭제 성공', state: 'false' };
   }
 }

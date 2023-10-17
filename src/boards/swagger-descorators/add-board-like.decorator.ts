@@ -13,26 +13,9 @@ export function ApiAddBoardLike() {
       content: {
         JSON: {
           example: {
-            boardId: {
-              id: 87,
-              userId: 1,
-              head: 'test1',
-              body: '<p>test1 2023.10.09 자유 잡담 게시판</p>',
-              main_category: '자유',
-              sub_category: '잡담',
-              createAt: '2023-10-08T20:58:47.564Z',
-              updateAt: '2023-10-08T20:58:47.564Z',
-            },
-            userId: {
-              id: 1,
-              provider: '',
-              name: 'test',
-              email: 'test@email.com',
-              gender: 'M',
-              admin: false,
-            },
-            id: 10,
-            createAt: '2023-10-15T23:56:19.506Z',
+            success: true,
+            msg: '좋아요 생성 성공',
+            state: true,
           },
         },
       },
