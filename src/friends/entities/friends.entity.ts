@@ -23,7 +23,7 @@ export class Friend {
   requesterId: User;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'requrested_id' })
+  @JoinColumn({ name: 'respondent_id' })
   respondentId: User;
 
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
