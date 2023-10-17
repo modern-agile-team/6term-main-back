@@ -13,8 +13,6 @@ export class FriendsController {
   @Post()
   async friendRequest(@Headers('access_token') accessToken: string, @Headers('friend_id') friendId:User) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    console.log(userId, friendId);
-    
     return await this.friendsService.friendRequest(userId, friendId);
   }
 }
