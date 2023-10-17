@@ -14,9 +14,9 @@ import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { BoardImagesService } from '../services/BoardImage.service';
-import { BoardImage } from '../entities/board-image.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
+import { CreateBoardImageDto } from '../dto/create.board-image.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -35,7 +35,7 @@ export class BoardsController {
   async uploadImage(
     @Param('boardId') boardId: number,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<BoardImage> {
+  ): Promise<CreateBoardImageDto> {
     return this.boardImagesService.createBoardImages(boardId, file);
   }
 
