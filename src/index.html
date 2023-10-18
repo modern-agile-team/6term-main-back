@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket Example</title>
+  </head>
+  <body>
+    <div id="output"></div>
+    <input type="text" id="message" placeholder="Enter your message" />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+      // WebSocket 연결을 설정
+      const socket = new WebSocket('ws://localhost:3000/ch-650bde3798dd4c34439c30dc'); // 서버 URL을 업데이트하세요.
+
+      // 서버로부터 메시지를 받았을 때 실행되는 이벤트 핸들러
+      socket.addEventListener('message', (event) => {
+        const output = document.getElementById('output');
+        output.innerHTML += '<p>' + event.data + '</p>';
+      });
+
+      // WebSocket 연결이 열렸을 때 실행되는 이벤트 핸들러
+      socket.addEventListener('open', (event) => {
+        console.log('WebSocket 연결이 열렸습니다.');
+      });
+
+      // WebSocket 연결이 닫혔을 때 실행되는 이벤트 핸들러
+      socket.addEventListener('close', (event) => {
+        if (event.wasClean) {
+          console.log('WebSocket 연결이 정상적으로 닫혔습니다.');
+        } else {
+          console.error('WebSocket 연결이 끊겼습니다.');
+        }
+      });
+
+      // WebSocket 연결 중 오류가 발생했을 때 실행되는 이벤트 핸들러
+      socket.addEventListener('error', (event) => {
+        console.error('WebSocket 오류:', event);
+      });
+
+      // 메시지를 서버로 전송하는 함수
+      function sendMessage() {
+        const messageInput = document.getElementById('message');
+        const message = messageInput.value;
+        socket.send(message);
+        messageInput.value = '';
+      }
+    </script>
+  </body>
+</html>

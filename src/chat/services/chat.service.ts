@@ -177,8 +177,6 @@ export class ChatService {
     if (notification) this.subject.next(notification);
 
     return chat;
-
-    return { message: 'notification sent successfully' };
   }
 
   async createChatImage(
