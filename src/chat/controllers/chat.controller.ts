@@ -33,7 +33,7 @@ export class ChatController {
 
   @Sse('listener')
   notificationListener() {
-    return this.notificationService.notificationListener();
+    return this.chatService.notificationListener();
   }
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
@@ -75,8 +75,9 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':roomId/chat')
+  @Post(':roomId/chat/:testUser')
   async createChat(
+    @Param('testUser') testUser: number,
     @Users() user: User,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
     @Body() body: PostChatDto,
@@ -84,7 +85,7 @@ export class ChatController {
     return this.chatService.createChat(
       roomId,
       body.content,
-      user.id,
+      testUser,
       body.receiverId,
     );
   }

@@ -11,7 +11,7 @@ export class NotificationService {
 
   constructor(
     @InjectModel(ChatNotification.name)
-    private readonly chatNotification: mongoose.Model<ChatNotification>,
+    private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
   ) {}
 
   notificationListener() {
@@ -23,6 +23,28 @@ export class NotificationService {
         );
     } catch (error) {
       this.logger.error('notificationListener : ' + error.message);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async createNotification(createNotificationsDto: number) {
+    try {
+      const notification = await new this.chatNotificationModel({
+        // description: createNotificationsDto.description,
+        // title: createNotificationsDto.title,
+        isSeen: false,
+      })
+        .save()
+        .catch((error) => {
+          throw new Error(error);
+        });
+
+      // send notification
+      if (notification) this.subject.next(notification);
+
+      return { message: 'notification sent successfully' };
+    } catch (error) {
+      this.logger.error('createNotification : ' + error.message);
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
