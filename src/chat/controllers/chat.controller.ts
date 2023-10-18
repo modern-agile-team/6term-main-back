@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Sse,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -19,12 +20,21 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { ParseObjectIdPipe } from '../parse-object-id.pipe';
+import { NotificationService } from '../services/notification.service';
 
 @ApiTags('CHAT')
 @Controller('chat-room')
 @UsePipes(ValidationPipe)
 export class ChatController {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private notificationService: NotificationService,
+  ) {}
+
+  @Sse('listener')
+  notificationListener() {
+    return this.notificationService.notificationListener();
+  }
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
   @Get()
