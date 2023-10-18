@@ -23,9 +23,9 @@ export class Friend {
   requesterId: User;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'requrested_id' })
-  requestedId: User;
+  @JoinColumn({ name: 'respondent_id' })
+  respondentId: User;
 
-  @Column({ type: 'enum', enum: Status })
+  @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status!: Status;
 }
