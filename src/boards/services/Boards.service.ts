@@ -73,17 +73,17 @@ export class BoardsService {
   }
 
   async updateBoard(
-    id: number,
+    boardId: number,
     boardData: Partial<Board>,
   ): Promise<Board | undefined> {
-    const existingBoard = await this.boardRepository.findBoardById(id);
+    const existingBoard = await this.boardRepository.findBoardById(boardId);
     for (const key in boardData) {
       if (boardData.hasOwnProperty(key)) {
         existingBoard[key] = boardData[key];
       }
     }
     const updatedBoard = await this.boardRepository.updateBoard(
-      id,
+      boardId,
       existingBoard,
     );
     return updatedBoard;

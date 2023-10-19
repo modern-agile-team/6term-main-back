@@ -63,6 +63,7 @@ export class BoardsController {
 
   @Patch(':boardId')
   async editBoard(
+    // @Headers('accesstoken')
     @Param('boardId') boardId: string,
     @Body() boardData: Partial<Board>,
   ): Promise<Board> {
