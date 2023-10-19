@@ -161,7 +161,9 @@ export class ChatService {
     };
 
     const socketRoomId = returnedChat.chatroom_id.toString();
-    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+    this.eventsGateway.server
+      .to(`/ch-${socketRoomId}-${socketRoomId}`)
+      .emit('message', chat);
 
     const notification = await new this.chatNotificationModel({
       chat_id: returnedChat.id,

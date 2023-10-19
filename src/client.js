@@ -5,7 +5,10 @@ socket.on('connect', () => {
   console.log('Connected to WebSocket server');
 
   // 예제로 'login' 이벤트를 보내는 방법
-  socket.emit('login', { id: 1, rooms: [`ch-650bde3798dd4c34439c30dc`] });
+  socket.emit('login', {
+    id: 1,
+    rooms: ['650bde3798dd4c34439c30dc'.toString()],
+  });
 });
 
 socket.on('hello', (data) => {
