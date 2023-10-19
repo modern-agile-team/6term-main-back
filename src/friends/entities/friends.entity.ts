@@ -24,13 +24,13 @@ export class Friend {
   @Column({ name: 'respondent_id' })
   respondentId: number;
 
-  @ManyToOne(() => User, (userId: User) => userId.requesterId, {
+  @ManyToOne(() => User, (userId: User) => userId.requester, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'requester_id' })
   requester: User;
 
-  @ManyToOne(() => User, (userId: User) => userId.respondentId, {
+  @ManyToOne(() => User, (userId: User) => userId.respondent, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'respondent_id' })

@@ -49,11 +49,11 @@ export class User {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'requester_id' })
-  requesterId: Friend;
+  requester: Friend;
 
   @OneToMany(() => Friend, (friend) => friend.respondentId, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'respondent_id' })
-  respondentId: Friend;
+  respondent: Friend;
 }
