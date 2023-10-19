@@ -1,14 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import { FriendsRepository } from "../repositories/friends.repository";
-import { User } from "src/users/entities/user.entity";
+import { Injectable } from '@nestjs/common';
+import { FriendsRepository } from '../repositories/friends.repository';
 
 @Injectable()
 export class FriendsService {
-  constructor(
-    private readonly friendsRepository: FriendsRepository,
-  ) {}
+  constructor(private readonly friendsRepository: FriendsRepository) {}
 
-  async friendRequest(userId: User, friendId: User) {
+  async friendRequest(userId: number, friendId: number) {
     return await this.friendsRepository.friendRequest(userId, friendId);
   }
 }

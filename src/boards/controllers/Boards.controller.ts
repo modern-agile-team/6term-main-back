@@ -30,7 +30,7 @@ export class BoardsController {
 
   @Post()
   async create(
-    @Headers('accessToken') accessToken: string,
+    @Headers('access_token') accessToken: string,
     @Body() createBoardDto: CreateBoardDto,
   ): Promise<Board> {
     const userId = await this.tokenService.decodeToken(accessToken);
@@ -76,7 +76,7 @@ export class BoardsController {
 
   @Delete(':boardId')
   async deleteBoard(
-    @Headers('accessToken') accessToken: string,
+    @Headers('access_token') accessToken: string,
     @Param('boardId') boardId: number,
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
