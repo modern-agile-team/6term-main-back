@@ -8,13 +8,13 @@ export class FriendsService {
     private readonly friendsRepository: FriendsRepository,
   ) {}
 
-  async getFriendsReqStatus(userId: number) {
-    return await this.friendsRepository.getFriendsReqStatus(userId);
+  async getFriendsReqPending(userId: number) {
+    return await this.friendsRepository.getFriendsReqPending(userId);
   }
 
   async friendRequest(userId: number, friendId: number) {
     try {
-      const getFriendsReqStatus = await this.getFriendsReqStatus(userId);
+      const getFriendsReqStatus = await this.getFriendsReqPending(userId);
       
       const isFriend = getFriendsReqStatus.find((friend) => {
         return ((userId === friend.requesterId && friendId == friend.respondentId) || (userId === friend.respondentId && friendId == friend.requesterId)) && friend.status === Status.ACCEPT;

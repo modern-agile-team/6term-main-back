@@ -10,9 +10,9 @@ export class FriendsController {
   ) {}
 
   @Get()
-  async getFriendsReqStatus(@Headers('access_token') accessToken: string) {
+  async getFriendsReqPending(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    return await this.friendsService.getFriendsReqStatus(userId);
+    return await this.friendsService.getFriendsReqPending(userId);
   }
 
   @Post('requests/:friend_id')

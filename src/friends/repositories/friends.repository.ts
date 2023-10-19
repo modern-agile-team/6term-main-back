@@ -8,14 +8,13 @@ export class FriendsRepository {
     private readonly entityManager: EntityManager,
   ) {}
 
-  async getFriendsReqStatus(userId: number): Promise<Friend[]> {
-    const friends = await this.entityManager.find(Friend, {
-      where: [
-        { requesterId: userId },
-      ],
+  async getFriendsReqPending(userId: number): Promise<Friend[]> {
+    return await this.entityManager.find(Friend, {
+      where: {
+        requesterId: userId,
+        status: Status.PENDING,
+      },
     });
-
-    return friends;
   }
 
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
