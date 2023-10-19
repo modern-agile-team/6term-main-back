@@ -6,6 +6,15 @@ import { Friend, Status } from '../entities/friends.entity';
 export class FriendsRepository {
   constructor(private readonly entityManager: EntityManager) {}
 
+  async getFriendsReqPending(userId: number): Promise<Friend[]> {
+    return await this.entityManager.find(Friend, {
+      where: {
+        requesterId: userId,
+        status: Status.PENDING,
+      },
+    });
+  }
+  
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
     const friend = new Friend();
     friend.requesterId = userId;

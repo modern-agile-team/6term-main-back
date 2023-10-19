@@ -1,4 +1,4 @@
-import { Controller, Headers, Post } from '@nestjs/common';
+import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
 import { FriendsService } from '../services/friends.service';
 import { TokenService } from 'src/auth/services/token.service';
 
@@ -9,11 +9,14 @@ export class FriendsController {
     private readonly tokenService: TokenService,
   ) {}
 
-  @Post()
-  async friendRequest(
-    @Headers('access_token') accessToken: string,
-    @Headers('friend_id') friendId: number,
-  ) {
+  @Get()
+  async getFriendsReqPending(@Headers('access_token') accessToken: string) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.getFriendsReqPending(userId);
+  }
+
+  @Post('requests/:friend_id')
+  async friendRequest(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.friendsService.friendRequest(userId, friendId);
   }
