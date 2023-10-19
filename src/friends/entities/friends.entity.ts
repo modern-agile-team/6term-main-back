@@ -18,13 +18,23 @@ export class Friend {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'requester_id' })
-  requesterId: User;
+  @Column({ name: 'requester_id' })
+  requesterId: number;
 
-  @ManyToOne(() => User)
+  @Column({ name: 'respondent_id' })
+  respondentId: number;
+
+  @ManyToOne(() => User, (userId: User) => userId.requesterId, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'requester_id' })
+  requester: User;
+
+  @ManyToOne(() => User, (userId: User) => userId.respondentId, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'respondent_id' })
-  respondentId: User;
+  respondent: User;
 
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status!: Status;

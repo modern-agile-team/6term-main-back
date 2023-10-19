@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
 import { Friend, Status } from "../entities/friends.entity";
-import { User } from "src/users/entities/user.entity";
 
 @Injectable()
 export class FriendsRepository {
@@ -9,17 +8,17 @@ export class FriendsRepository {
     private readonly entityManager: EntityManager,
   ) {}
 
-  async getFriendsReqStatus(userId: User): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: { requesterId: userId },
-      select: ['id', 'status'],
-      relations: ['requesterId', 'respondentId'],
+  async getFriendsReqStatus(userId: number): Promise<Friend[]> {
+    const friends = await this.entityManager.find(Friend, {
+      where: [
+        { requesterId: userId },
+      ],
     });
-  }
-  
-  
 
-  async friendRequest(userId: User, friendId: User): Promise<Friend> {
+    return friends;
+  }
+
+  async friendRequest(userId: number, friendId: number): Promise<Friend> {
     const friend = new Friend();
     friend.requesterId = userId;
     friend.respondentId = friendId;
