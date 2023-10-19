@@ -1,12 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { EntityManager } from "typeorm";
-import { Friend, Status } from "../entities/friends.entity";
+import { Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { Friend, Status } from '../entities/friends.entity';
 
 @Injectable()
 export class FriendsRepository {
-  constructor(
-    private readonly entityManager: EntityManager,
-  ) {}
+  constructor(private readonly entityManager: EntityManager) {}
 
   async getFriendsReqPending(userId: number): Promise<Friend[]> {
     return await this.entityManager.find(Friend, {
@@ -16,7 +14,7 @@ export class FriendsRepository {
       },
     });
   }
-
+  
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
     const friend = new Friend();
     friend.requesterId = userId;

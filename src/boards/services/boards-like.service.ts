@@ -1,6 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { BoardsLikeRepository } from '../repository/boards-like.repository';
+import { EntityManager, Equal } from 'typeorm';
+import { Board } from '../entities/board.entity';
+import { User } from 'src/users/entities/user.entity';
+import { BoardLike } from '../entities/board-like.entity';
 
 @Injectable()
 export class BoardsLikeService {
@@ -10,35 +17,53 @@ export class BoardsLikeService {
   ) {}
 
   async addBoardLike(boardId: number, userId: number) {
-    try {
-      return await this.boardsLikeRepositry.addBoardLike(boardId, userId);
-    } catch (error) {
-      console.error('좋아요 추가 실패: ', error);
-      throw error;
+    const board = await this.entityManager.findOne(Board, {
+      where: { id: boardId },
+    });
+
+    if (!board) {
+      throw new NotFoundException('해당 게시글이 없습니다.');
     }
+
+    const user = await this.entityManager.findOne(User, {
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('해당 유저가 없습니다');
+    }
+
+    const isBoardLike = await this.entityManager.find(BoardLike, {
+      where: { boardId: Equal(boardId), userId: Equal(userId) },
+    });
+
+    if (isBoardLike.length) {
+      throw new ConflictException('이미 좋아요가 있습니다');
+    }
+
+    return this.boardsLikeRepositry.addBoardLike(board, user);
   }
 
   async getBoardLike(boardId: number) {
-    try {
-      const boardLike = await this.boardsLikeRepositry.getBoardLike(boardId);
+    const board = await this.entityManager.findOne(Board, {
+      where: { id: boardId },
+    });
 
-      if (!boardLike) {
-        throw new NotFoundException('좋아요가 없습니다');
-      }
-
-      return boardLike;
-    } catch (error) {
-      console.error('좋아요 개수 조회 실패: ', error);
-      throw error;
+    if (!board) {
+      throw new NotFoundException('해당 게시글이 없습니다.');
     }
+    return this.boardsLikeRepositry.getBoardLike(boardId);
   }
 
   async deleteBoardLike(boardId: number, userId: number) {
-    try {
-      return await this.boardsLikeRepositry.deleteBoardLike(boardId, userId);
-    } catch (error) {
-      console.error('좋아요 취소 실패: ', error);
-      throw error;
+    const isBoardLike = await this.entityManager.find(BoardLike, {
+      where: { boardId: Equal(boardId), userId: Equal(userId) },
+    });
+
+    if (!isBoardLike.length) {
+      throw new NotFoundException('이미 좋아요가 없습니다.');
     }
+
+    return this.boardsLikeRepositry.deleteBoardLike(boardId, userId);
   }
 }

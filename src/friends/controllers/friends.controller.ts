@@ -1,6 +1,6 @@
-import { Controller, Get, Headers, Param, Post } from "@nestjs/common";
-import { FriendsService } from "../services/friends.service";
-import { TokenService } from "src/auth/services/token.service";
+import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import { FriendsService } from '../services/friends.service';
+import { TokenService } from 'src/auth/services/token.service';
 
 @Controller('friends')
 export class FriendsController {

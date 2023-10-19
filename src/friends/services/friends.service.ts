@@ -1,12 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { FriendsRepository } from "../repositories/friends.repository";
-import { Status } from "../entities/friends.entity";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { FriendsRepository } from '../repositories/friends.repository';
+import { Status } from '../entities/friends.entity';
 
 @Injectable()
 export class FriendsService {
-  constructor(
-    private readonly friendsRepository: FriendsRepository,
-  ) {}
+  constructor(private readonly friendsRepository: FriendsRepository) {}
 
   async getFriendsReqPending(userId: number) {
     return await this.friendsRepository.getFriendsReqPending(userId);
