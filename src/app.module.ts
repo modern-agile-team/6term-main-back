@@ -12,7 +12,7 @@ import { ChatModule } from './chat/chat.module';
 import { S3Module } from './common/s3/s3.module';
 import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
-import { FriendModule } from './friend/friend.module';
+import { FriendsModule } from './friends/friends.module';
 import { NoticeModule } from './notice/notice.module';
 import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
@@ -38,7 +38,7 @@ import { TokenRepository } from './auth/repositories/token.repository';
     ChatModule,
     S3Module,
     BoardsModule,
-    FriendModule,
+    FriendsModule,
     NoticeModule,
     EventsModule,
   ], //

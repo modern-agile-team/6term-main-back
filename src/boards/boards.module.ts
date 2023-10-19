@@ -11,6 +11,8 @@ import { BoardImageRepository } from './repository/boardImage.repository';
 import { BoardsLikeController } from './controllers/boards-like.controller';
 import { BoardsLikeService } from './services/boards-like.service';
 import { BoardsLikeRepository } from './repository/boards-like.repository';
+import { TokenService } from 'src/auth/services/token.service';
+import { TokenRepository } from 'src/auth/repositories/token.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board, BoardImage])],
@@ -20,9 +22,11 @@ import { BoardsLikeRepository } from './repository/boards-like.repository';
     BoardsLikeService,
     BoardImagesService,
     S3Service,
+    TokenService,
     BoardRepository,
     BoardsLikeRepository,
     BoardImageRepository,
+    TokenRepository,
   ],
 })
 @Module({})
