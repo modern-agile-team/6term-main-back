@@ -8,9 +8,9 @@ import { error } from 'console';
 @Injectable()
 export class BoardsService {
   constructor(private boardRepository: BoardRepository) {}
-  async create(boardData: CreateBoardDto): Promise<Board> {
+  async create(boardData: CreateBoardDto, userId: number): Promise<Board> {
     try {
-      return await this.boardRepository.createBoard(boardData);
+      return await this.boardRepository.createBoard(boardData, userId);
     } catch (error) {
       console.log(error);
     }
@@ -32,6 +32,7 @@ export class BoardsService {
       createAt: board.createAt,
       updateAt: board.updateAt,
       userId: {
+        // userid 중복으로 보내지는거 수정해야함.추후 수정예정
         id: board.user.id,
         name: board.user.name,
         userImage: board.user.userImage ? board.user.userImage : [],
@@ -46,6 +47,8 @@ export class BoardsService {
   async findOneBoard(id: number): Promise<BoardResponseDTO | undefined> {
     const board = await this.boardRepository.findBoardById(id);
     if (board) {
+      // userId를 haeder에 토큰에서 뽑아오고, param값으로 들어온 boardid안에 userid와 비교해서 ture,fasle 표현해주는거 작성.
+      // isowner = ture, false (프론트쪽이랑 얘기 다 된거!)
       return {
         id: board.id,
         head: board.head,
@@ -94,6 +97,6 @@ export class BoardsService {
     if (!board) {
       throw new error('존재하지 않는 게시물입니다.');
     }
-    await this.boardRepository.deleteBoard(board);
+    await this.boardRepository.deleteBoard(board, userId);
   }
 }
