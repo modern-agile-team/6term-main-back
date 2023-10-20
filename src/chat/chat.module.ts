@@ -12,6 +12,7 @@ import {
 import { EventsModule } from 'src/events/events.module';
 import { S3Module } from 'src/common/s3/s3.module';
 import { ChatRepository } from './repositories/chat.repository';
+import { NotificationService } from './services/notification.service';
 
 @Module({
   imports: [
@@ -25,6 +26,6 @@ import { ChatRepository } from './repositories/chat.repository';
     S3Module,
   ],
   controllers: [ChatController],
-  providers: [ChatService, ChatRepository],
+  providers: [ChatService, ChatRepository, NotificationService],
 })
 export class ChatModule {}

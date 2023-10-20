@@ -27,7 +27,7 @@ import { TokenRepository } from './auth/repositories/token.repository';
     UserModule,
     TypeOrmModule.forRoot({
       ...TypeORMconfig, // TypeORM 설정 객체 확장
-      synchronize: true, // DB 동기화 여부 설정
+      synchronize: false, // DB 동기화 여부 설정
     }),
     // TypeOrmModule.forFeature([Image]),
     ConfigModule.forRoot({

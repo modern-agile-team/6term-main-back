@@ -1,7 +1,10 @@
 import { ChatRepository } from '../repositories/chat.repository';
 import {
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,16 +12,37 @@ import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
 import { EventsGateway } from 'src/events/events.gateway';
 import { S3Service } from 'src/common/s3/s3.service';
+import { NotificationService } from './notification.service';
+import { ChatNotification } from '../schemas/chat-notifiation.schemas';
+import { Subject, map } from 'rxjs';
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
+  private readonly subject = new Subject();
   constructor(
     private readonly s3Service: S3Service,
+    private readonly notificationService: NotificationService,
     private readonly chatRepository: ChatRepository,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
     private readonly eventsGateway: EventsGateway,
+    @InjectModel(ChatNotification.name)
+    private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
   ) {}
+
+  notificationListener() {
+    try {
+      return this.subject
+        .asObservable()
+        .pipe(
+          map((notification: Notification) => JSON.stringify(notification)),
+        );
+    } catch (error) {
+      this.logger.error('notificationListener : ' + error.message);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   async getChatRooms(myId: number) {
     const chatRoom = await this.chatRepository.getChatRooms(myId);
@@ -137,7 +161,23 @@ export class ChatService {
     };
 
     const socketRoomId = returnedChat.chatroom_id.toString();
-    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+    this.eventsGateway.server
+      .to(`/ch-${socketRoomId}-${socketRoomId}`)
+      .emit('message', chat);
+    console.log(`Message sent to room: ch-${socketRoomId}-${socketRoomId}`);
+
+    const notification = await new this.chatNotificationModel({
+      chat_id: returnedChat.id,
+      sender: returnedChat.sender,
+      receiver: returnedChat.receiver,
+    })
+      .save()
+      .catch((error) => {
+        throw new Error(error);
+      });
+
+    // send notification
+    if (notification) this.subject.next(notification);
 
     return chat;
   }

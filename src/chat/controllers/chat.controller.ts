@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Sse,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -19,12 +20,21 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { ParseObjectIdPipe } from '../parse-object-id.pipe';
+import { NotificationService } from '../services/notification.service';
 
 @ApiTags('CHAT')
 @Controller('chat-room')
 @UsePipes(ValidationPipe)
 export class ChatController {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private notificationService: NotificationService,
+  ) {}
+
+  @Sse('listener')
+  notificationListener() {
+    return this.chatService.notificationListener();
+  }
 
   @ApiOperation({ summary: '채팅방 전체 조회' })
   @Get()
@@ -65,8 +75,9 @@ export class ChatController {
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':roomId/chat')
+  @Post(':roomId/chat/:testUser')
   async createChat(
+    @Param('testUser') testUser: number,
     @Users() user: User,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
     @Body() body: PostChatDto,
@@ -74,7 +85,7 @@ export class ChatController {
     return this.chatService.createChat(
       roomId,
       body.content,
-      user.id,
+      testUser,
       body.receiverId,
     );
   }

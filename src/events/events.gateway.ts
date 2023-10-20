@@ -11,8 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import mongoose from 'mongoose';
 
-@WebSocketGateway({ namespace: /\/ch-\d+/, cors: true })
-// @WebSocketGateway({ namespace: '/ch123' })
+@WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -25,14 +24,13 @@ export class EventsGateway
 
   @SubscribeMessage('login')
   handleLogin(
-    // @MessageBody() data: { id: number; roomId: number[] },
     @MessageBody() data: { id: number; rooms: mongoose.Types.ObjectId[] },
     @ConnectedSocket() socket: Socket,
   ) {
     console.log('login', data.id);
     data.rooms.forEach((room) => {
-      socket.join(`${room}`);
-      console.log('join', room);
+      console.log('join', socket.nsp.name, room);
+      socket.join(`${socket.nsp.name.toString()}-${room.toString()}`);
     });
   }
 
@@ -50,6 +48,7 @@ export class EventsGateway
       const userName = data.id;
       socket.data.userName = userName;
     });
+    socket.on('notification', () => {});
     socket.on('message', (data) => {
       const userId = data.id;
       const chat = data.message;
