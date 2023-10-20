@@ -14,6 +14,21 @@ export class FriendsRepository {
       },
     });
   }
+
+  async getFriends(userId: number): Promise<Friend[]> {
+    return await this.entityManager.find(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          status: Status.ACCEPT,
+        },
+        {
+          respondentId: userId,
+          status: Status.ACCEPT,
+        },
+      ],
+    });
+  }
   
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
     const friend = new Friend();
