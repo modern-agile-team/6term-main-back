@@ -38,11 +38,13 @@ export class EventsGateway
   }
 
   @SubscribeMessage('message')
-  handleMessage(
+  async handleMessage(
     @MessageBody() postChatDto: PostChatDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    this.chatService.createChat(postChatDto, socket);
+    const chat = await this.chatService.createChat(postChatDto, socket);
+    socket.to(postChatDto.roomId.toString()).emit('message', chat);
+    return chat;
     // this.chats;
     // const socketRoomId = data.roomId;
     // console.log(data.roomId);
