@@ -123,7 +123,7 @@ export class ChatService {
     return returnedChat;
   }
 
-  async createChat({ roomId, content, senderId, receiverId }, socket: Socket) {
+  async createChat({ roomId, content, senderId, receiverId }) {
     await this.getOneChatRoom(senderId, roomId);
 
     const isChatRoom = await this.chatRoomModel.findOne({

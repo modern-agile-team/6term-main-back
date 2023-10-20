@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import mongoose from 'mongoose';
 
 export class PostChatDto {
@@ -16,7 +22,7 @@ export class PostChatDto {
     description: '채팅 내용',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   content: string;
 
   @ApiProperty({
@@ -34,4 +40,7 @@ export class PostChatDto {
   @IsNumber()
   @IsNotEmpty()
   receiverId: number;
+
+  @IsOptional()
+  imageUrl: FormData[];
 }

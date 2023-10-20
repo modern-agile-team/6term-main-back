@@ -14,7 +14,6 @@ import {
 import { ChatService } from '../services/chat.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ReceivedUserDto } from '../dto/received-user.dto';
-import { PostChatDto } from '../dto/post-chat.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Users } from 'src/common/decorators/user.decorator';
