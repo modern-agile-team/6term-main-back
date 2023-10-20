@@ -154,8 +154,6 @@ export class ChatService {
       receiver: returnedChat.receiver,
     };
 
-    socket.to(returnedChat.chatroom_id.toString()).emit('message', chat);
-
     const notification = await new this.chatNotificationModel({
       chat_id: returnedChat.id,
       sender: returnedChat.sender,
