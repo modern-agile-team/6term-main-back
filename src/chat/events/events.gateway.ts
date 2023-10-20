@@ -10,11 +10,14 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import mongoose from 'mongoose';
+import { ChatService } from 'src/chat/services/chat.service';
+import { PostChatDto } from '../dto/post-chat.dto';
 
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  constructor(private chatService: ChatService) {}
   @WebSocketServer() public server: Server;
 
   @SubscribeMessage('test')
@@ -30,8 +33,21 @@ export class EventsGateway
     console.log('login', data.id);
     data.rooms.forEach((room) => {
       console.log('join', socket.nsp.name, room);
-      socket.join(`${socket.nsp.name.toString()}-${room.toString()}`);
+      socket.join(room.toString());
     });
+  }
+
+  @SubscribeMessage('message')
+  handleMessage(
+    @MessageBody() postChatDto: PostChatDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    this.chatService.createChat(postChatDto, socket);
+    // this.chats;
+    // const socketRoomId = data.roomId;
+    // console.log(data.roomId);
+    // socket.to(socketRoomId).emit('message', '설마성공?', data.message);
+    // this.server.to(socketRoomId).emit('message', '설마성공?', data.message);
   }
 
   afterInit(server: Server): any {
@@ -47,6 +63,10 @@ export class EventsGateway
     socket.on('login', (data) => {
       const userName = data.id;
       socket.data.userName = userName;
+    });
+    socket.on('asdf', (data) => {
+      console.log(data);
+      socket.to(`/ch-${socket.nsp.name}`).emit('message', data);
     });
     socket.on('notification', () => {});
     socket.on('message', (data) => {

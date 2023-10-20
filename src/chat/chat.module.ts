@@ -9,10 +9,10 @@ import {
   ChatNotification,
   ChatNotificationSchema,
 } from './schemas/chat-notifiation.schemas';
-import { EventsModule } from 'src/events/events.module';
 import { S3Module } from 'src/common/s3/s3.module';
 import { ChatRepository } from './repositories/chat.repository';
 import { NotificationService } from './services/notification.service';
+import { EventsGateway } from './events/events.gateway';
 
 @Module({
   imports: [
@@ -22,10 +22,9 @@ import { NotificationService } from './services/notification.service';
       { name: ChatImage.name, schema: ChatImageSchema },
       { name: ChatNotification.name, schema: ChatNotificationSchema },
     ]),
-    EventsModule,
     S3Module,
   ],
   controllers: [ChatController],
-  providers: [ChatService, ChatRepository, NotificationService],
+  providers: [ChatService, ChatRepository, NotificationService, EventsGateway],
 })
 export class ChatModule {}

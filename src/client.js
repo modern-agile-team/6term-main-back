@@ -9,7 +9,11 @@ socket.on('connect', () => {
     id: 1,
     rooms: ['650bde3798dd4c34439c30dc'],
   });
-  console.log(socket);
+  // socket.emit('messages', {
+  //   roomId: '650bde3798dd4c34439c30dc',
+  //   message: 'asdf',
+  // });
+  // console.log(socket);
 
   // 해당 네임스페이스의 이벤트를 수신
 });

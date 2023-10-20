@@ -74,21 +74,21 @@ export class ChatController {
     return this.chatService.getChats(roomId);
   }
 
-  @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
-  @Post(':roomId/chat/:testUser')
-  async createChat(
-    @Param('testUser') testUser: number,
-    @Users() user: User,
-    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-    @Body() body: PostChatDto,
-  ) {
-    return this.chatService.createChat(
-      roomId,
-      body.content,
-      testUser,
-      body.receiverId,
-    );
-  }
+  // @ApiOperation({ summary: '특정 채팅방 채팅 생성' })
+  // @Post(':roomId/chat/:testUser')
+  // async createChat(
+  //   @Param('testUser') testUser: number,
+  //   @Users() user: User,
+  //   @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+  //   @Body() body: PostChatDto,
+  // ) {
+  //   return this.chatService.createChat(
+  //     roomId,
+  //     body.content,
+  //     testUser,
+  //     body.receiverId,
+  //   );
+  // }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 이미지 생성' })
   @Post(':roomId/chat/image')

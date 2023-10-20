@@ -10,11 +10,11 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
-import { EventsGateway } from 'src/events/events.gateway';
 import { S3Service } from 'src/common/s3/s3.service';
 import { NotificationService } from './notification.service';
 import { ChatNotification } from '../schemas/chat-notifiation.schemas';
 import { Subject, map } from 'rxjs';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChatService {
@@ -26,7 +26,6 @@ export class ChatService {
     private readonly chatRepository: ChatRepository,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
-    private readonly eventsGateway: EventsGateway,
     @InjectModel(ChatNotification.name)
     private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
   ) {}
@@ -124,21 +123,16 @@ export class ChatService {
     return returnedChat;
   }
 
-  async createChat(
-    roomId: mongoose.Types.ObjectId,
-    content: string,
-    myId: number,
-    receiverId: number,
-  ) {
-    await this.getOneChatRoom(myId, roomId);
+  async createChat({ roomId, content, senderId, receiverId }, socket: Socket) {
+    await this.getOneChatRoom(senderId, roomId);
 
     const isChatRoom = await this.chatRoomModel.findOne({
       $or: [
         {
-          $and: [{ host_id: myId }, { guest_id: receiverId }],
+          $and: [{ host_id: senderId }, { guest_id: receiverId }],
         },
         {
-          $and: [{ host_id: receiverId }, { guest_id: myId }],
+          $and: [{ host_id: receiverId }, { guest_id: senderId }],
         },
       ],
     });
@@ -150,7 +144,7 @@ export class ChatService {
     const returnedChat = await this.chatRepository.createChat(
       roomId,
       content,
-      myId,
+      senderId,
       receiverId,
     );
 
@@ -160,11 +154,7 @@ export class ChatService {
       receiver: returnedChat.receiver,
     };
 
-    const socketRoomId = returnedChat.chatroom_id.toString();
-    this.eventsGateway.server
-      .to(`/ch-${socketRoomId}-${socketRoomId}`)
-      .emit('message', chat);
-    console.log(`Message sent to room: ch-${socketRoomId}-${socketRoomId}`);
+    socket.to(returnedChat.chatroom_id.toString()).emit('message', chat);
 
     const notification = await new this.chatNotificationModel({
       chat_id: returnedChat.id,
@@ -221,7 +211,7 @@ export class ChatService {
     };
 
     const socketRoomId = returnedChat.chatroom_id.toString();
-    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
+    // this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
 
     return chat;
   }
