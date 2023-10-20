@@ -3,7 +3,6 @@ import { BoardRepository } from '../repository/boards.repository';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { Board } from '../entities/board.entity';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
-import { error } from 'console';
 
 @Injectable()
 export class BoardsService {
@@ -44,8 +43,8 @@ export class BoardsService {
     }));
   }
 
-  async findOneBoard(id: number): Promise<BoardResponseDTO | undefined> {
-    const board = await this.boardRepository.findBoardById(id);
+  async findOneBoard(boardId: number): Promise<BoardResponseDTO> {
+    const board = await this.boardRepository.findBoardById(boardId);
     if (board) {
       // userId를 haeder에 토큰에서 뽑아오고, param값으로 들어온 boardid안에 userid와 비교해서 ture,fasle 표현해주는거 작성.
       // isowner = ture, false (프론트쪽이랑 얘기 다 된거!)
@@ -92,10 +91,10 @@ export class BoardsService {
   async deleteBoard(boardId: number, userId: number): Promise<void> {
     const board = await this.boardRepository.findBoardById(boardId);
     if (board.userId !== userId) {
-      throw new error('작성한 게시물이 아닙니다.');
+      throw new Error('작성한 게시물이 아닙니다.');
     }
     if (!board) {
-      throw new error('존재하지 않는 게시물입니다.');
+      throw new Error('존재하지 않는 게시물입니다.');
     }
     await this.boardRepository.deleteBoard(board, userId);
   }

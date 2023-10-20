@@ -50,8 +50,9 @@ export class BoardRepository {
     return existingBoard;
   }
 
-  async deleteBoard(boardData: Board, userId: number): Promise<void> {
+  async deleteBoard(boardData: Partial<Board>, userId: number): Promise<void> {
     const board = new Board();
+    board.id = boardData.id;
     board.head = boardData.head;
     board.body = boardData.body;
     board.main_category = boardData.main_category;
