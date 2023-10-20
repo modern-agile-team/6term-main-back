@@ -7,8 +7,11 @@ socket.on('connect', () => {
   // 예제로 'login' 이벤트를 보내는 방법
   socket.emit('login', {
     id: 1,
-    rooms: ['650bde3798dd4c34439c30dc'.toString()],
+    rooms: ['650bde3798dd4c34439c30dc'],
   });
+  console.log(socket);
+
+  // 해당 네임스페이스의 이벤트를 수신
 });
 
 socket.on('hello', (data) => {
@@ -23,10 +26,7 @@ socket.on('disconnect', () => {
   console.log('Disconnected from WebSocket server');
 });
 
-// 해당 네임스페이스의 이벤트를 수신
 socket.on('message', (data) => {
-  console.log(
-    'Received message notification in the specified namespace:',
-    data,
-  );
+  console.log('Received message:', data);
+  // 여기에서 메시지를 처리하거나 화면에 표시하는 로직을 추가하세요.
 });

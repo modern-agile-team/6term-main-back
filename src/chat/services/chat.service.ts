@@ -164,11 +164,12 @@ export class ChatService {
     this.eventsGateway.server
       .to(`/ch-${socketRoomId}-${socketRoomId}`)
       .emit('message', chat);
+    console.log(`Message sent to room: ch-${socketRoomId}-${socketRoomId}`);
 
     const notification = await new this.chatNotificationModel({
       chat_id: returnedChat.id,
-      // title: createNotificationsDto.title,
-      // isSeen: false,
+      sender: returnedChat.sender,
+      receiver: returnedChat.receiver,
     })
       .save()
       .catch((error) => {

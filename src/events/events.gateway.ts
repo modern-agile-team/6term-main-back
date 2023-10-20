@@ -29,8 +29,8 @@ export class EventsGateway
   ) {
     console.log('login', data.id);
     data.rooms.forEach((room) => {
-      socket.join(room.toString());
-      console.log('join', room);
+      console.log('join', socket.nsp.name, room);
+      socket.join(`${socket.nsp.name.toString()}-${room.toString()}`);
     });
   }
 
