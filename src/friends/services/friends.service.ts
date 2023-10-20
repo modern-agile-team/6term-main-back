@@ -10,6 +10,10 @@ export class FriendsService {
     return await this.friendsRepository.getFriendsReqPending(userId);
   }
 
+  async getFriendsResPending(userId: number) {
+    return await this.friendsRepository.getFriendsResPending(userId);
+  }
+
   async getFriends(userId: number) {
     return await this.friendsRepository.getFriends(userId);
   }

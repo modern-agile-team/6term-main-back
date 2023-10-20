@@ -2,7 +2,7 @@ import { TokenService } from './../../auth/services/token.service';
 import { Controller, Headers, Patch, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserImageService } from '../services/user-image.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ApiUploadUserImage } from '../swagger-decorators/upload-user-image.decorator';
 
 @Controller('user/image')
