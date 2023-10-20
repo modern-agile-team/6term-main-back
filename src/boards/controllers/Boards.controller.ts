@@ -6,16 +6,16 @@ import {
   Patch,
   Param,
   Delete,
-  UploadedFile,
   UseInterceptors,
   Query,
   Headers,
+  UploadedFiles,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { BoardImagesService } from '../services/BoardImage.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
 import { TokenService } from 'src/auth/services/token.service';
@@ -38,12 +38,12 @@ export class BoardsController {
   }
 
   @Post(':boardId/images')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FilesInterceptor('files', 3))
   async uploadImage(
     @Param('boardId') boardId: number,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<CreateBoardImageDto> {
-    return await this.boardImagesService.createBoardImages(boardId, file);
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<CreateBoardImageDto[]> {
+    return await this.boardImagesService.createBoardImages(boardId, files);
   }
 
   @Get()

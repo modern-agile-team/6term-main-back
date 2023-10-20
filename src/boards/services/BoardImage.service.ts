@@ -12,17 +12,22 @@ export class BoardImagesService {
 
   async createBoardImages(
     boardId: number,
-    file: Express.Multer.File,
-  ): Promise<CreateBoardImageDto> {
-    const userId = 1; // 임시 사용자 id입니다
-    const uploadedImage = await this.s3Service.imgUpload(file, userId);
-    const boardImage = new CreateBoardImageDto();
-    boardImage.boardId = boardId;
-    boardImage.imageUrl = uploadedImage.url;
+    files: Express.Multer.File[],
+  ): Promise<CreateBoardImageDto[]> {
+    const savedImagesArray: CreateBoardImageDto[] = [];
+    for (const file of files) {
+      const userId = 1; // 임시 사용자 id입니다
+      const uploadedImage = await this.s3Service.imgUpload(file, userId);
 
-    const savedImage =
-      await this.boardImageRepository.saveBoardImage(boardImage);
+      const boardImage = new CreateBoardImageDto();
+      boardImage.boardId = boardId;
+      boardImage.imageUrl = uploadedImage.url;
 
-    return savedImage;
+      const savedImage =
+        await this.boardImageRepository.saveBoardImage(boardImage);
+
+      savedImagesArray.push(savedImage);
+    }
+    return savedImagesArray;
   }
 }
