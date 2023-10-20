@@ -4,6 +4,7 @@ import { TokenService } from 'src/auth/services/token.service';
 import { ApiGetFriendsReqPending } from '../swagger-decorators/get-friends-req-pending.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiFriendRequest } from '../swagger-decorators/friend-request.docorator';
+import { ApiGetFriends } from '../swagger-decorators/get-friends.docorator';
 
 @Controller('friends')
 @ApiTags('friends API')
@@ -20,6 +21,7 @@ export class FriendsController {
     return await this.friendsService.getFriendsReqPending(userId);
   }
 
+  @ApiGetFriends()
   @Get()
   async getFriends(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
