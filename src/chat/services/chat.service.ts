@@ -157,9 +157,6 @@ export class ChatService {
       receiver: returnedChat.receiver,
     })
       .save()
-      .catch((error) => {
-        throw new Error(error);
-      });
 
     // send notification
     if (notification) this.subject.next(notification);
