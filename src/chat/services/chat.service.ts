@@ -207,9 +207,6 @@ export class ChatService {
       receiver: returnedChat.receiver,
     };
 
-    const socketRoomId = returnedChat.chatroom_id.toString();
-    // this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
-
     return chat;
   }
 }
