@@ -37,13 +37,13 @@ export class BoardsController {
     return await this.boardsService.create(createBoardDto, userId);
   }
 
-  @Post(':boardId/images')
-  @UseInterceptors(FileInterceptor('file'))
+  @Post('/images')
+  @UseInterceptors(FileInterceptor('files'))
   async uploadImage(
     @Param('boardId') boardId: number,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() files: Express.Multer.File,
   ): Promise<CreateBoardImageDto> {
-    return await this.boardImagesService.createBoardImages(boardId, file);
+    return await this.boardImagesService.createBoardImages(boardId, files);
   }
 
   @Get()
@@ -54,11 +54,11 @@ export class BoardsController {
     return await this.boardsService.findPagedBoards(page, limit);
   }
 
-  @Get(':boardId')
+  @Get('/unit')
   async findOne(
-    @Param('boardId') boardId: string,
+    @Param('boardId') boardId: number,
   ): Promise<BoardResponseDTO | undefined> {
-    return await this.boardsService.findOneBoard(+boardId);
+    return await this.boardsService.findOneBoard(boardId);
   }
 
   @Patch(':boardId')

@@ -12,10 +12,10 @@ export class BoardImagesService {
 
   async createBoardImages(
     boardId: number,
-    file: Express.Multer.File,
+    files: Express.Multer.File,
   ): Promise<CreateBoardImageDto> {
     const userId = 1; // 임시 사용자 id입니다
-    const uploadedImage = await this.s3Service.imgUpload(file, userId);
+    const uploadedImage = await this.s3Service.imgUpload(files, userId);
     const boardImage = new CreateBoardImageDto();
     boardImage.boardId = boardId;
     boardImage.imageUrl = uploadedImage.url;
