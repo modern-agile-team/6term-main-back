@@ -37,7 +37,6 @@ export class PostChatDto {
     description: '채팅을 보내는 유저 아이디',
   })
   @IsNumber()
-  @IsNotEmpty()
   senderId: number;
 
   @ApiProperty({
