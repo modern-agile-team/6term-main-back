@@ -22,7 +22,14 @@ export class PostChatDto {
     description: '채팅 내용',
   })
   @IsString()
+    @ApiPropertyOptional({
+    example: '안녕하세요',
+    description: '채팅 내용',
+  })
+  @IsString()
+  @IsNotEmpty()
   @IsOptional()
+  content?: string;
   content: string;
 
   @ApiProperty({
