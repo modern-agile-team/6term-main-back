@@ -6,16 +6,16 @@ import {
   Patch,
   Param,
   Delete,
-  UploadedFile,
   UseInterceptors,
   Query,
   Headers,
+  UploadedFiles,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { BoardImagesService } from '../services/BoardImage.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
 import { TokenService } from 'src/auth/services/token.service';
@@ -38,12 +38,18 @@ export class BoardsController {
   }
 
   @Post('/images')
-  @UseInterceptors(FileInterceptor('files'))
+  @UseInterceptors(FilesInterceptor('files', 3))
   async uploadImage(
+    @Headers('access_token') accesstoken: string,
     @Param('boardId') boardId: number,
-    @UploadedFile() files: Express.Multer.File,
-  ): Promise<CreateBoardImageDto> {
-    return await this.boardImagesService.createBoardImages(boardId, files);
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<CreateBoardImageDto[]> {
+    const userId = await this.tokenService.decodeToken(accesstoken);
+    return await this.boardImagesService.createBoardImages(
+      boardId,
+      files,
+      userId,
+    );
   }
 
   @Get()
@@ -56,12 +62,12 @@ export class BoardsController {
 
   @Get('/unit')
   async findOne(
-    @Param('boardId') boardId: number,
+    @Param('boardId') boardId: string,
   ): Promise<BoardResponseDTO | undefined> {
-    return await this.boardsService.findOneBoard(boardId);
+    return await this.boardsService.findOneBoard(+boardId);
   }
 
-  @Patch(':boardId')
+  @Patch()
   async editBoard(
     // @Headers('accesstoken')
     @Param('boardId') boardId: string,
@@ -74,7 +80,7 @@ export class BoardsController {
     return updatedBoard;
   }
 
-  @Delete(':boardId')
+  @Delete()
   async deleteBoard(
     @Headers('access_token') accessToken: string,
     @Param('boardId') boardId: number,
