@@ -30,18 +30,16 @@ export class ChatService {
   ) {}
 
   notificationListener() {
-    try {
-      return this.subject
-        .asObservable()
-        .pipe(
-          map((notification: Notification) => JSON.stringify(notification)),
-        );
-    } catch (error) {
-      this.logger.error('notificationListener : ' + error.message);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
+    return this.subject
+      .asObservable()
+      .pipe(
+        map((notification: Notification) => JSON.stringify(notification)),
+      )
+      .catchError((err) => {
+            this.logger.error('notificationListener : ' + error.message);
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      })
+}
   async getChatRooms(myId: number) {
     const chatRoom = await this.chatRepository.getChatRooms(myId);
 
