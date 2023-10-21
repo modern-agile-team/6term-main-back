@@ -14,7 +14,6 @@ import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
 import { FriendsModule } from './friends/friends.module';
 import { NoticeModule } from './notice/notice.module';
-import { EventsGateway } from './chat/events/events.gateway';
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
 import { TokenRepository } from './auth/repositories/token.repository';

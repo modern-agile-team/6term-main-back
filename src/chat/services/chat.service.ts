@@ -14,7 +14,6 @@ import { S3Service } from 'src/common/s3/s3.service';
 import { NotificationService } from './notification.service';
 import { ChatNotification } from '../schemas/chat-notifiation.schemas';
 import { Subject, map } from 'rxjs';
-import { Socket } from 'socket.io';
 
 @Injectable()
 export class ChatService {

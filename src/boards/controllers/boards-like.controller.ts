@@ -12,9 +12,9 @@ import { BoardsLikeService } from '../services/boards-like.service';
 import { Users } from 'src/common/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiAddBoardLike } from '../swagger-descorators/add-board-like.decorator';
-import { ApiGetBoardLikeCount } from '../swagger-descorators/get-board-like-count.decorator';
-import { ApiDeleteBoardLike } from '../swagger-descorators/delete-board-like.decorator';
+import { ApiAddBoardLike } from '../swagger-decorators/add-board-like.decorator';
+import { ApiGetBoardLikeCount } from '../swagger-decorators/get-board-like-count.decorator';
+import { ApiDeleteBoardLike } from '../swagger-decorators/delete-board-like.decorator';
 
 @ApiTags('BOARDS-LIKE')
 @UsePipes(ValidationPipe)

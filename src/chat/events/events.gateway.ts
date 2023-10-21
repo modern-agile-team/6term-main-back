@@ -42,9 +42,7 @@ export class EventsGateway
     @MessageBody() postChatDto: PostChatDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    const chat = postChatDto.hasOwnProperty('imageUrl')
-      ? await this.chatService.createChat(postChatDto)
-      : await this.chatService.createChatImage(postChatDto);
+    const chat = await this.chatService.createChat(postChatDto);
     socket.to(postChatDto.roomId.toString()).emit('message', chat);
   }
 

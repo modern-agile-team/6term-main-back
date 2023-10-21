@@ -41,6 +41,10 @@ export class PostChatDto {
   @IsNotEmpty()
   receiverId: number;
 
+  @ApiProperty({
+    example: 'Key: file, Value: asd.png',
+    description: 'FormData. 이미지 파일',
+  })
   @IsOptional()
-  imageUrl: FormData[];
+  imageUrl: FormData;
 }
