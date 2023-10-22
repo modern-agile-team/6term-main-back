@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsMongoId,
   IsNotEmpty,
@@ -22,7 +22,7 @@ export class PostChatDto {
     description: '채팅 내용',
   })
   @IsString()
-    @ApiPropertyOptional({
+  @ApiPropertyOptional({
     example: '안녕하세요',
     description: '채팅 내용',
   })
@@ -30,7 +30,6 @@ export class PostChatDto {
   @IsNotEmpty()
   @IsOptional()
   content?: string;
-  content: string;
 
   @ApiProperty({
     example: '1',
@@ -52,5 +51,5 @@ export class PostChatDto {
     description: 'FormData. 이미지 파일',
   })
   @IsOptional()
-  imageUrl: FormData;
+  imageUrl?: FormData;
 }
