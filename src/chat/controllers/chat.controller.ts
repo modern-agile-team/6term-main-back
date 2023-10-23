@@ -4,7 +4,9 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
+  Query,
   Sse,
   UploadedFile,
   UseInterceptors,
@@ -91,5 +93,13 @@ export class ChatController {
       body.receiverId,
       file,
     );
+  }
+
+  @Get(':roomId/chat/unreads')
+  async getUnreadCounts(
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+    @Query('after', ParseIntPipe) after: number,
+  ) {
+    return this.chatService.getUnreadCounts(roomId, after);
   }
 }

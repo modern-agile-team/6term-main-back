@@ -205,4 +205,8 @@ export class ChatService {
 
     return chat;
   }
+
+  async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
+    return this.chatRepository.getUnreadCounts(roomId, after);
+  }
 }
