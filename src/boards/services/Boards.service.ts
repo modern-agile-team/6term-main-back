@@ -18,11 +18,12 @@ export class BoardsService {
   async findPagedBoards(
     page: number,
     limit: number,
-  ): Promise<BoardResponseDTO[]> {
+  ): Promise<{ data: BoardResponseDTO[]; total: number }> {
     const skip = (page - 1) * limit;
     const take = limit;
     const boards = await this.boardRepository.findPagedBoards(skip, take);
-    return boards.map((board) => ({
+    const total = await this.boardRepository.findTotalBoards();
+    const boardResponse: BoardResponseDTO[] = boards.map((board) => ({
       id: board.id,
       head: board.head,
       body: board.body.substring(0, 30),
@@ -31,7 +32,6 @@ export class BoardsService {
       createAt: board.createAt,
       updateAt: board.updateAt,
       userId: {
-        // userid 중복으로 보내지는거 수정해야함.추후 수정예정
         id: board.user.id,
         name: board.user.name,
         userImage: board.user.userImage ? board.user.userImage : [],
@@ -41,6 +41,8 @@ export class BoardsService {
         imageUrl: image.imageUrl,
       })),
     }));
+
+    return { data: boardResponse, total };
   }
 
   async findOneBoard(boardId: number): Promise<BoardResponseDTO> {
