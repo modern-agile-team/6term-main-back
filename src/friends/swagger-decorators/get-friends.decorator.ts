@@ -1,36 +1,36 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-export function ApiGetFriendsReqPending() {
+export function ApiGetFriends() {
   return applyDecorators(
     ApiOperation({
-      summary: '내가 보낸 친구 요청 목록 조회 API',
-      description: '내가 보낸 친구 요청 목록을 조회합니다.',
+      summary: '친구 목록 조회 API',
+      description: '내 친구 목록을 조회합니다.',
     }),
     ApiResponse({
       status: 200,
       description:
-        '성공적으로 친구 요청 목록을 조회한 경우 (배열 형태) , 내가 보낸 친구 요청이 없는 경우 빈 배열을 반환합니다.',
+        '성공적으로 친구 목록을 조회한 경우 (배열 형태) , 친구가 없는 경우 빈 배열을 반환합니다.',
       content: {
         Array: {
           example: [
             {
-              id: 1,
-              requesterId: 63,
-              respondentId: 57,
-              status: '대기 상태',
-            },
-            {
               id: 3,
               requesterId: 63,
               respondentId: 62,
-              status: '대기 상태',
+              status: '친구 수락',
             },
             {
               id: 4,
               requesterId: 63,
               respondentId: 64,
-              status: '대기 상태',
+              status: '친구 수락',
+            },
+            {
+              id: 18,
+              requesterId: 63,
+              respondentId: 1,
+              status: '친구 수락',
             },
           ],
         },

@@ -10,11 +10,10 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
-import { EventsGateway } from 'src/events/events.gateway';
 import { S3Service } from 'src/common/s3/s3.service';
 import { NotificationService } from './notification.service';
 import { ChatNotification } from '../schemas/chat-notifiation.schemas';
-import { Subject, map } from 'rxjs';
+import { Subject, catchError, map } from 'rxjs';
 
 @Injectable()
 export class ChatService {
@@ -26,24 +25,23 @@ export class ChatService {
     private readonly chatRepository: ChatRepository,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
-    private readonly eventsGateway: EventsGateway,
     @InjectModel(ChatNotification.name)
     private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
   ) {}
 
   notificationListener() {
-    try {
-      return this.subject
+    return (
+      this.subject
         .asObservable()
         .pipe(
           map((notification: Notification) => JSON.stringify(notification)),
-        );
-    } catch (error) {
-      this.logger.error('notificationListener : ' + error.message);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+        ),
+      catchError((err) => {
+        this.logger.error('notificationListener : ' + err.message);
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      })
+    );
   }
-
   async getChatRooms(myId: number) {
     const chatRoom = await this.chatRepository.getChatRooms(myId);
 
@@ -124,21 +122,16 @@ export class ChatService {
     return returnedChat;
   }
 
-  async createChat(
-    roomId: mongoose.Types.ObjectId,
-    content: string,
-    myId: number,
-    receiverId: number,
-  ) {
-    await this.getOneChatRoom(myId, roomId);
+  async createChat({ roomId, content, senderId, receiverId }) {
+    await this.getOneChatRoom(senderId, roomId);
 
     const isChatRoom = await this.chatRoomModel.findOne({
       $or: [
         {
-          $and: [{ host_id: myId }, { guest_id: receiverId }],
+          $and: [{ host_id: senderId }, { guest_id: receiverId }],
         },
         {
-          $and: [{ host_id: receiverId }, { guest_id: myId }],
+          $and: [{ host_id: receiverId }, { guest_id: senderId }],
         },
       ],
     });
@@ -150,7 +143,7 @@ export class ChatService {
     const returnedChat = await this.chatRepository.createChat(
       roomId,
       content,
-      myId,
+      senderId,
       receiverId,
     );
 
@@ -160,21 +153,11 @@ export class ChatService {
       receiver: returnedChat.receiver,
     };
 
-    const socketRoomId = returnedChat.chatroom_id.toString();
-    this.eventsGateway.server
-      .to(`/ch-${socketRoomId}-${socketRoomId}`)
-      .emit('message', chat);
-    console.log(`Message sent to room: ch-${socketRoomId}-${socketRoomId}`);
-
     const notification = await new this.chatNotificationModel({
       chat_id: returnedChat.id,
       sender: returnedChat.sender,
       receiver: returnedChat.receiver,
-    })
-      .save()
-      .catch((error) => {
-        throw new Error(error);
-      });
+    }).save();
 
     // send notification
     if (notification) this.subject.next(notification);
@@ -219,9 +202,6 @@ export class ChatService {
       sender: returnedChat.sender,
       receiver: returnedChat.receiver,
     };
-
-    const socketRoomId = returnedChat.chatroom_id.toString();
-    this.eventsGateway.server.to(`ch-${socketRoomId}`).emit('message', chat);
 
     return chat;
   }

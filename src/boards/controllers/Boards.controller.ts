@@ -4,18 +4,17 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
-  UploadedFile,
   UseInterceptors,
   Query,
   Headers,
+  UploadedFiles,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { BoardImagesService } from '../services/BoardImage.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
 import { TokenService } from 'src/auth/services/token.service';
@@ -28,7 +27,7 @@ export class BoardsController {
     private tokenService: TokenService,
   ) {}
 
-  @Post()
+  @Post('')
   async create(
     @Headers('access_token') accessToken: string,
     @Body() createBoardDto: CreateBoardDto,
@@ -37,16 +36,22 @@ export class BoardsController {
     return await this.boardsService.create(createBoardDto, userId);
   }
 
-  @Post(':boardId/images')
-  @UseInterceptors(FileInterceptor('file'))
+  @Post('/images')
+  @UseInterceptors(FilesInterceptor('files', 3))
   async uploadImage(
-    @Param('boardId') boardId: number,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<CreateBoardImageDto> {
-    return await this.boardImagesService.createBoardImages(boardId, file);
+    @Headers('access_token') accesstoken: string,
+    @Query('boardId') boardId: number,
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<CreateBoardImageDto[]> {
+    const userId = await this.tokenService.decodeToken(accesstoken);
+    return await this.boardImagesService.createBoardImages(
+      boardId,
+      files,
+      userId,
+    );
   }
 
-  @Get()
+  @Get('')
   async findPageBoards(
     @Query('page') page = 1,
     @Query('limit') limit = 30,
@@ -54,30 +59,28 @@ export class BoardsController {
     return await this.boardsService.findPagedBoards(page, limit);
   }
 
-  @Get(':boardId')
-  async findOne(
-    @Param('boardId') boardId: string,
-  ): Promise<BoardResponseDTO | undefined> {
-    return await this.boardsService.findOneBoard(+boardId);
+  @Get('/unit')
+  async findOne(@Query('boardId') boardId: number): Promise<BoardResponseDTO> {
+    return await this.boardsService.findOneBoard(boardId);
   }
 
-  @Patch(':boardId')
+  @Patch('')
   async editBoard(
     // @Headers('accesstoken')
-    @Param('boardId') boardId: string,
+    @Query('boardId') boardId: number,
     @Body() boardData: Partial<Board>,
   ): Promise<Board> {
     const updatedBoard = await this.boardsService.updateBoard(
-      +boardId,
+      boardId,
       boardData,
     );
     return updatedBoard;
   }
 
-  @Delete(':boardId')
+  @Delete('')
   async deleteBoard(
+    @Query('boardId') boardId: number,
     @Headers('access_token') accessToken: string,
-    @Param('boardId') boardId: number,
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);

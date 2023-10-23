@@ -1,10 +1,12 @@
-import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import { Controller, Get, Headers, Param, Patch, Post } from '@nestjs/common';
 import { FriendsService } from '../services/friends.service';
 import { TokenService } from 'src/auth/services/token.service';
 import { ApiGetFriendsReqPending } from '../swagger-decorators/get-friends-req-pending.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { ApiFriendRequest } from '../swagger-decorators/friend-request.docorator';
-import { ApiGetFriends } from '../swagger-decorators/get-friends.docorator';
+import { ApiFriendRequest } from '../swagger-decorators/friend-request.decorator';
+import { ApiGetFriends } from '../swagger-decorators/get-friends.decorator';
+import { ApiGetFriendsResPending } from '../swagger-decorators/get-friends-res-pending.decorator';
+import { ApiFriendResponseAccept } from '../swagger-decorators/friend-response-accept.decorator';
 
 @Controller('friends')
 @ApiTags('friends API')
@@ -21,6 +23,13 @@ export class FriendsController {
     return await this.friendsService.getFriendsReqPending(userId);
   }
 
+  @ApiGetFriendsResPending()
+  @Get('responses/pending')
+  async getFriendsResPending(@Headers('access_token') accessToken: string) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.getFriendsResPending(userId);
+  }
+
   @ApiGetFriends()
   @Get()
   async getFriends(@Headers('access_token') accessToken: string) {
@@ -33,5 +42,12 @@ export class FriendsController {
   async friendRequest(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.friendsService.friendRequest(userId, friendId);
+  }
+
+  @ApiFriendResponseAccept()
+  @Patch('responses/accept/:friend_id')
+  async friendResponseAccept(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.friendResponseAccept(userId, friendId);
   }
 }

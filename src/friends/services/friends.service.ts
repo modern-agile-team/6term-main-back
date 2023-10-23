@@ -10,6 +10,10 @@ export class FriendsService {
     return await this.friendsRepository.getFriendsReqPending(userId);
   }
 
+  async getFriendsResPending(userId: number) {
+    return await this.friendsRepository.getFriendsResPending(userId);
+  }
+
   async getFriends(userId: number) {
     return await this.friendsRepository.getFriends(userId);
   }
@@ -45,6 +49,23 @@ export class FriendsService {
       } else {
         console.log(error);
         throw new HttpException('친구 요청에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  async friendResponseAccept(userId: number, friendId: number) {
+    try {
+      const accept = await this.friendsRepository.friendResponseAccept(userId, friendId);
+      if (!accept) {
+        throw new HttpException('친구 요청을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+      return { message: '친구 요청을 수락했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException('친구 요청 수락에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
   }
