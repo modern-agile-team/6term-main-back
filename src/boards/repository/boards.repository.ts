@@ -9,9 +9,6 @@ export class BoardRepository {
   constructor(private readonly entityManager: EntityManager) {}
 
   async createBoard(boardData: CreateBoardDto, userId: number): Promise<Board> {
-    // const userId = 1; // 임시로 1 쓴거야, 준혁아 여기 수정하면 된다.
-    // const user = new User();
-    // user.id = userId;
     const board = new Board();
     board.head = boardData.head;
     board.body = boardData.body;
@@ -50,14 +47,7 @@ export class BoardRepository {
     return existingBoard;
   }
 
-  async deleteBoard(boardData: Partial<Board>, userId: number): Promise<void> {
-    const board = new Board();
-    board.id = boardData.id;
-    board.head = boardData.head;
-    board.body = boardData.body;
-    board.main_category = boardData.main_category;
-    board.sub_category = boardData.sub_category;
-    board.userId = userId;
+  async deleteBoard(board: Board): Promise<void> {
     await this.entityManager.remove(Board, board);
   }
 }
