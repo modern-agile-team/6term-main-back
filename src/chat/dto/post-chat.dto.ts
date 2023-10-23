@@ -28,7 +28,7 @@ export class PostChatDto {
   })
   @IsString()
   @IsOptional()
-  content?: string;
+  content: string;
 
   @ApiProperty({
     example: '1',
@@ -50,5 +50,5 @@ export class PostChatDto {
     description: 'FormData. 이미지 파일',
   })
   @IsOptional()
-  imageUrl?: FormData;
+  imageUrl: FormData;
 }
