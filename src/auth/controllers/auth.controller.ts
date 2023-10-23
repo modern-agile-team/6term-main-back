@@ -89,12 +89,12 @@ export class AuthController {
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const { kakaoAccessToken, kakaoRefreshToken } =
-      await this.tokenService.getUserTokens(userId)[0];
+    const { socialAccessToken, socialRefreshToken } =
+      await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
     return await this.authService.kakaoLogout(
-      kakaoAccessToken,
-      kakaoRefreshToken,
+      socialAccessToken,
+      socialRefreshToken,
     );
   }
 
@@ -102,12 +102,12 @@ export class AuthController {
   @Post('kakao/unlink')
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const { kakaoAccessToken, kakaoRefreshToken } =
-      await this.tokenService.getUserTokens(userId)[0];
+    const { socialAccessToken, socialRefreshToken } =
+      await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
     return await this.authService.kakaoUnlink(
-      kakaoAccessToken,
-      kakaoRefreshToken,
+      socialAccessToken,
+      socialRefreshToken,
     );
   }
 
@@ -122,12 +122,12 @@ export class AuthController {
   @Post('naver/unlink')
   async naverUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const { naverAccessToken, naverRefreshToken } =
-      await this.tokenService.getUserTokens(userId)[0];
+    const { socialAccessToken, socialRefreshToken } =
+      await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
     return await this.authService.naverUnlink(
-      naverAccessToken,
-      naverRefreshToken,
+      socialAccessToken,
+      socialRefreshToken,
     );
   }
 
