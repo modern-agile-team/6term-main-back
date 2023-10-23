@@ -50,5 +50,6 @@ export class PostChatDto {
     description: 'FormData. 이미지 파일',
   })
   @IsOptional()
-  imageUrl: FormData;
+  @IsString()
+  imageUrl: string;
 }
