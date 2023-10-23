@@ -27,7 +27,6 @@ export class PostChatDto {
     description: '채팅 내용',
   })
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   content?: string;
 
