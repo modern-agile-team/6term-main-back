@@ -47,4 +47,21 @@ export class FriendsRepository {
 
     return await this.entityManager.save(friend);
   }
+
+  async friendResponseAccept(userId: number, friendId: number): Promise<Friend> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: {
+        requesterId: friendId,
+        respondentId: userId,
+        status: Status.PENDING,
+      },
+    });
+
+    if (!friend) {
+      return null;
+    }
+    
+    friend.status = Status.ACCEPT;
+    return await this.entityManager.save(friend);
+  }
 }
