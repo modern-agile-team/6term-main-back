@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   UseInterceptors,
   Query,
@@ -28,7 +27,7 @@ export class BoardsController {
     private tokenService: TokenService,
   ) {}
 
-  @Post()
+  @Post('')
   async create(
     @Headers('access_token') accessToken: string,
     @Body() createBoardDto: CreateBoardDto,
@@ -41,7 +40,7 @@ export class BoardsController {
   @UseInterceptors(FilesInterceptor('files', 3))
   async uploadImage(
     @Headers('access_token') accesstoken: string,
-    @Param('boardId') boardId: number,
+    @Query('boardId') boardId: number,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<CreateBoardImageDto[]> {
     const userId = await this.tokenService.decodeToken(accesstoken);
@@ -52,7 +51,7 @@ export class BoardsController {
     );
   }
 
-  @Get()
+  @Get('')
   async findPageBoards(
     @Query('page') page = 1,
     @Query('limit') limit = 30,
@@ -61,29 +60,27 @@ export class BoardsController {
   }
 
   @Get('/unit')
-  async findOne(
-    @Param('boardId') boardId: string,
-  ): Promise<BoardResponseDTO | undefined> {
-    return await this.boardsService.findOneBoard(+boardId);
+  async findOne(@Query('boardId') boardId: number): Promise<BoardResponseDTO> {
+    return await this.boardsService.findOneBoard(boardId);
   }
 
-  @Patch()
+  @Patch('')
   async editBoard(
     // @Headers('accesstoken')
-    @Param('boardId') boardId: string,
+    @Query('boardId') boardId: number,
     @Body() boardData: Partial<Board>,
   ): Promise<Board> {
     const updatedBoard = await this.boardsService.updateBoard(
-      +boardId,
+      boardId,
       boardData,
     );
     return updatedBoard;
   }
 
-  @Delete()
+  @Delete('')
   async deleteBoard(
+    @Query('boardId') boardId: number,
     @Headers('access_token') accessToken: string,
-    @Param('boardId') boardId: number,
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);

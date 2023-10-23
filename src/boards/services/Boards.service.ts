@@ -45,30 +45,27 @@ export class BoardsService {
 
   async findOneBoard(boardId: number): Promise<BoardResponseDTO> {
     const board = await this.boardRepository.findBoardById(boardId);
-    if (board) {
-      // userId를 haeder에 토큰에서 뽑아오고, param값으로 들어온 boardid안에 userid와 비교해서 ture,fasle 표현해주는거 작성.
-      // isowner = ture, false (프론트쪽이랑 얘기 다 된거!)
-      return {
-        id: board.id,
-        head: board.head,
-        body: board.body,
-        main_category: board.main_category,
-        sub_category: board.sub_category,
-        createAt: board.createAt,
-        updateAt: board.updateAt,
-        userId: {
-          id: board.user.id,
-          name: board.user.name,
-          userImage: board.user.userImage ? board.user.userImage : [],
-        },
-        boardImages: board.boardImages.map((image) => ({
-          id: image.id,
-          imageUrl: image.imageUrl,
-        })),
-      };
+    if (!board) {
+      throw new Error('게시물을 찾을 수 없습니다.');
     }
-
-    return undefined;
+    return {
+      id: board.id,
+      head: board.head,
+      body: board.body,
+      main_category: board.main_category,
+      sub_category: board.sub_category,
+      createAt: board.createAt,
+      updateAt: board.updateAt,
+      userId: {
+        id: board.user.id,
+        name: board.user.name,
+        userImage: board.user.userImage ? board.user.userImage : [],
+      },
+      boardImages: board.boardImages.map((image) => ({
+        id: image.id,
+        imageUrl: image.imageUrl,
+      })),
+    };
   }
 
   async updateBoard(
@@ -90,12 +87,15 @@ export class BoardsService {
 
   async deleteBoard(boardId: number, userId: number): Promise<void> {
     const board = await this.boardRepository.findBoardById(boardId);
-    if (board.userId !== userId) {
-      throw new Error('작성한 게시물이 아닙니다.');
-    }
+
     if (!board) {
       throw new Error('존재하지 않는 게시물입니다.');
     }
-    await this.boardRepository.deleteBoard(board, userId);
+
+    if (board.userId !== userId) {
+      throw new Error('작성한 게시물이 아닙니다.');
+    }
+
+    await this.boardRepository.deleteBoard(board);
   }
 }
