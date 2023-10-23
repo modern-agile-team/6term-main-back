@@ -55,7 +55,7 @@ export class BoardsController {
   async findPageBoards(
     @Query('page') page = 1,
     @Query('limit') limit = 30,
-  ): Promise<BoardResponseDTO[]> {
+  ): Promise<{ data: BoardResponseDTO[]; total: number }> {
     return await this.boardsService.findPagedBoards(page, limit);
   }
 

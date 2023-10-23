@@ -1,7 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
-// import { User } from 'src/users/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -16,6 +15,10 @@ export class BoardRepository {
     board.sub_category = boardData.sub_category;
     board.userId = userId;
     return await this.entityManager.save(Board, board);
+  }
+
+  async findTotalBoards(): Promise<number> {
+    return this.entityManager.count(Board);
   }
 
   async findPagedBoards(skip: number, limit: number): Promise<Board[]> {
