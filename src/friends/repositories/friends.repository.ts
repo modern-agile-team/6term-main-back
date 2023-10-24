@@ -80,4 +80,27 @@ export class FriendsRepository {
     
     return await this.entityManager.delete(Friend, friend);
   }
+
+  async deleteFriend(userId: number, friendId: number): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.ACCEPT,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.ACCEPT,
+        },
+      ],
+    });
+
+    if (!friend) {
+      return null;
+    }
+    
+    return await this.entityManager.delete(Friend, friend);
+  }
 }

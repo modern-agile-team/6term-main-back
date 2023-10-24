@@ -86,4 +86,21 @@ export class FriendsService {
       }
     }
   }
+
+  async deleteFriend(userId: number, friendId: number) {
+    try {
+      const deleteFriend = await this.friendsRepository.deleteFriend(userId, friendId);
+      if (!deleteFriend) {
+        throw new HttpException('친구를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+      return { message: '친구를 삭제했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException('친구 삭제에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
 }

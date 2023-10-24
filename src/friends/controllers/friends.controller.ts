@@ -8,6 +8,7 @@ import { ApiGetFriends } from '../swagger-decorators/get-friends.decorator';
 import { ApiGetFriendsResPending } from '../swagger-decorators/get-friends-res-pending.decorator';
 import { ApiFriendResponseAccept } from '../swagger-decorators/friend-response-accept.decorator';
 import { ApiFriendResponseReject } from '../swagger-decorators/friend-response-reject.decorator';
+import { ApiDeleteFriend } from '../swagger-decorators/delete-friend.decorator';
 
 @Controller('friends')
 @ApiTags('friends API')
@@ -57,5 +58,12 @@ export class FriendsController {
   async friendResponseReject(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.friendsService.friendResponseReject(userId, friendId);
+  }
+
+  @ApiDeleteFriend()
+  @Delete(':friend_id')
+  async deleteFriend(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.deleteFriend(userId, friendId);
   }
 }
