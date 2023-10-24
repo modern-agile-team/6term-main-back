@@ -41,18 +41,17 @@ export class BoardsLikeService {
       throw new ConflictException('이미 좋아요가 있습니다');
     }
 
-    return this.boardsLikeRepositry.addBoardLike(board, user);
+    return this.boardsLikeRepositry.addBoardLike(boardId, userId);
   }
 
-  async getBoardLike(boardId: number) {
+  async getBoardLikes(boardId: number) {
     const board = await this.entityManager.findOne(Board, {
       where: { id: boardId },
     });
-
     if (!board) {
-      throw new NotFoundException('해당 게시글이 없습니다.');
+      throw new Error('해당 게시글이 없습니다. ');
     }
-    return this.boardsLikeRepositry.getBoardLike(boardId);
+    return this.boardsLikeRepositry.getBoardLikesCount(boardId);
   }
 
   async deleteBoardLike(boardId: number, userId: number) {
