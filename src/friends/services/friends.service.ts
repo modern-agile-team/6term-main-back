@@ -97,6 +97,22 @@ export class FriendsService {
       }
     }
   }
+  async friendResponseRejectPermanentCancel(userId: number, friendId: number) {
+    try {
+      const rejectPermanentCancel = await this.friendsRepository.friendResponseRejectPermanentCancel(userId, friendId);
+      if (!rejectPermanentCancel) {
+        throw new HttpException('영구 거절한 친구 요청을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+      return { message: '친구 요청 영구 거절을 취소했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException('친구 요청 영구 거절 취소에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
 
   async friendResponseRejectPermanent(userId: number, friendId: number) {
     try {

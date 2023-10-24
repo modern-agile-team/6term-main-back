@@ -90,6 +90,22 @@ export class FriendsRepository {
     return await this.entityManager.delete(Friend, friend);
   }
 
+  async friendResponseRejectPermanentCancel(userId: number, friendId: number): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: {
+        requesterId: friendId,
+        respondentId: userId,
+        status: Status.REJECT,
+      },
+    });
+
+    if (!friend) {
+      return null;
+    }
+    
+    return await this.entityManager.delete(Friend, friend);
+  }
+
   async friendResponseRejectPermanent(userId: number, friendId: number): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
