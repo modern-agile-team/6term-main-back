@@ -4,7 +4,6 @@ import { ChatRoom } from '../schemas/chat-room.schemas';
 import { Chat } from '../schemas/chat.schemas';
 import { ChatImage } from '../schemas/chat-image.schemas';
 import mongoose from 'mongoose';
-import { MoreThan } from 'typeorm';
 
 @Injectable()
 export class ChatRepository {
@@ -93,10 +92,8 @@ export class ChatRepository {
   }
 
   async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
-    const returnedRoom = await this.chatRoomModel.findOne(roomId);
     return this.chatModel.count({
-      chatroom_id: returnedRoom.id,
-      createdAt: MoreThan(new Date(after)),
+      $and: [{ chatroom_id: roomId }, { createdAt: { $gt: new Date(after) } }],
     });
   }
 }
