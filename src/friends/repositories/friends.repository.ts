@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { DeleteResult, EntityManager } from 'typeorm';
 import { Friend, Status } from '../entities/friends.entity';
 
 @Injectable()
@@ -63,5 +63,21 @@ export class FriendsRepository {
     
     friend.status = Status.ACCEPT;
     return await this.entityManager.save(friend);
+  }
+
+  async friendResponseReject(userId: number, friendId: number): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: {
+        requesterId: friendId,
+        respondentId: userId,
+        status: Status.PENDING,
+      },
+    });
+
+    if (!friend) {
+      return null;
+    }
+    
+    return await this.entityManager.delete(Friend, friend);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Param, Patch, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Headers, Param, Patch, Post } from '@nestjs/common';
 import { FriendsService } from '../services/friends.service';
 import { TokenService } from 'src/auth/services/token.service';
 import { ApiGetFriendsReqPending } from '../swagger-decorators/get-friends-req-pending.decorator';
@@ -7,6 +7,7 @@ import { ApiFriendRequest } from '../swagger-decorators/friend-request.decorator
 import { ApiGetFriends } from '../swagger-decorators/get-friends.decorator';
 import { ApiGetFriendsResPending } from '../swagger-decorators/get-friends-res-pending.decorator';
 import { ApiFriendResponseAccept } from '../swagger-decorators/friend-response-accept.decorator';
+import { ApiFriendResponseReject } from '../swagger-decorators/friend-response-reject.decorator';
 
 @Controller('friends')
 @ApiTags('friends API')
@@ -49,5 +50,12 @@ export class FriendsController {
   async friendResponseAccept(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.friendsService.friendResponseAccept(userId, friendId);
+  }
+
+  @ApiFriendResponseReject()
+  @Delete('responses/reject/:friend_id')
+  async friendResponseReject(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.friendResponseReject(userId, friendId);
   }
 }
