@@ -51,6 +51,18 @@ export function ApiFriendRequest() {
       },
     }),
     ApiResponse({
+      status: 410,
+      description: '상대방이 친구 요청을 영구적으로 거절한 경우',
+      content: {
+        JSON: {
+          example: {
+            statusCode: 410,
+            message: '상대방이 친구 요청을 영구적으로 거절했습니다.',
+          },
+        },
+      },
+    }),
+    ApiResponse({
       status: 411,
       description: '액세스 토큰이 제공되지 않은 경우',
       content: {

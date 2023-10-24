@@ -20,6 +20,11 @@ export class FriendsService {
 
   async friendRequest(userId: number, friendId: number) {
     try {
+      const checkRejectPermanent = await this.checkRejectPermanent(userId, friendId);
+      if (checkRejectPermanent) {
+        throw new HttpException('상대방이 친구 요청을 영구적으로 거절했습니다.', HttpStatus.GONE);
+      }
+
       const getFriendsReqStatus = await this.getFriendsReqPending(userId);
       
       const isFriend = getFriendsReqStatus.find((friend) => {
@@ -42,7 +47,9 @@ export class FriendsService {
       return { message: '친구 요청을 보냈습니다.' };
 
     } catch (error) {
-      if (error.getStatus() === HttpStatus.CONFLICT) {
+      if (error.getStatus() === HttpStatus.GONE) {
+        throw error;
+      } else if (error.getStatus() === HttpStatus.CONFLICT) {
         throw error;
       } else if (error.code === 'ER_NO_REFERENCED_ROW_2') {
         throw new HttpException('유저를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -84,6 +91,53 @@ export class FriendsService {
         console.log(error);
         throw new HttpException('친구 요청 거절에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
       }
+    }
+  }
+
+  async friendResponseRejectPermanent(userId: number, friendId: number) {
+    try {
+      const rejectPermanent = await this.friendsRepository.friendResponseRejectPermanent(userId, friendId);
+      if (!rejectPermanent) {
+        throw new HttpException('친구 요청을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+      return { message: '친구 요청을 영구적으로 거절했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException('친구 요청 영구 거절에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  async deleteFriend(userId: number, friendId: number) {
+    try {
+      const deleteFriend = await this.friendsRepository.deleteFriend(userId, friendId);
+      if (!deleteFriend) {
+        throw new HttpException('친구를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+      return { message: '친구를 삭제했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException('친구 삭제에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  async checkRejectPermanent(userId: number, friendId: number) {
+    try {
+      const checkRejectPermanent = await this.friendsRepository.checkRejectPermanent(userId, friendId);
+      if (!checkRejectPermanent) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException('영구 거절 체크에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
