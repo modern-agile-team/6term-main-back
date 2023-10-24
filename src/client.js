@@ -32,5 +32,5 @@ socket.on('disconnect', () => {
 
 socket.on('message', (data) => {
   console.log('Received message:', data);
-  // 여기에서 메시지를 처리하거나 화면에 표시하는 로직을 추가하세요.
+  // 여기에서 메시지를 처리하거나 화면에 표시하는 로직을 추가하세요..
 });
