@@ -39,6 +39,15 @@ export class FriendsRepository {
     });
   }
 
+  async getRejectPermanent(userId: number): Promise<Friend[]> {
+    return await this.entityManager.find(Friend, {
+      where: {
+        respondentId: userId,
+        status: Status.REJECT,
+      },
+    });
+  }
+
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
     const friend = new Friend();
     friend.requesterId = userId;

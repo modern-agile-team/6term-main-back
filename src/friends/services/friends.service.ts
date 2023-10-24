@@ -18,6 +18,10 @@ export class FriendsService {
     return await this.friendsRepository.getFriends(userId);
   }
 
+  async getRejectPermanent(userId: number) {
+    return await this.friendsRepository.getRejectPermanent(userId);
+  }
+
   async friendRequest(userId: number, friendId: number) {
     try {
       const checkRejectPermanent = await this.checkRejectPermanent(userId, friendId);
