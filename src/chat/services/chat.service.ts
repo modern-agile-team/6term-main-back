@@ -205,4 +205,12 @@ export class ChatService {
 
     return chat;
   }
+
+  async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
+    const returnedRoom = await this.chatRoomModel.findOne({ _id: roomId });
+    if (!returnedRoom) {
+      throw new NotFoundException('해당 채팅 룸을 찾지 못했습니다.');
+    }
+    return this.chatRepository.getUnreadCounts(roomId, after);
+  }
 }

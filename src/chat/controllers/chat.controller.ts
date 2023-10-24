@@ -4,7 +4,9 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
+  Query,
   Sse,
   UploadedFile,
   UseInterceptors,
@@ -25,6 +27,7 @@ import { ApiGetOneChatRoom } from '../swagger-decorators/get-one-chat-room.decor
 import { ApiDeleteChatRoom } from '../swagger-decorators/delete-chat-room.decorator';
 import { ApiGetChats } from '../swagger-decorators/get-chats.decorator';
 import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notification.decorator';
+import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
 
 @ApiTags('CHAT')
 @Controller('chat-room')
@@ -91,5 +94,14 @@ export class ChatController {
       body.receiverId,
       file,
     );
+  }
+
+  @ApiGetChatUnreadCounts()
+  @Get(':roomId/chat/unreads')
+  async getUnreadCounts(
+    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+    @Query('after', ParseIntPipe) after: number,
+  ) {
+    return this.chatService.getUnreadCounts(roomId, after);
   }
 }
