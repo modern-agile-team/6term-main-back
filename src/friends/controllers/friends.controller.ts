@@ -10,6 +10,8 @@ import { ApiFriendResponseAccept } from '../swagger-decorators/friend-response-a
 import { ApiFriendResponseReject } from '../swagger-decorators/friend-response-reject.decorator';
 import { ApiDeleteFriend } from '../swagger-decorators/delete-friend.decorator';
 import { ApiFriendResponseRejectPermanent } from '../swagger-decorators/friend-response-reject-permanent.decorator';
+import { ApiGetRejectPermanent } from '../swagger-decorators/get-reject-permanent.decorator';
+import { ApiDeleteRejectPermanentCancel } from '../swagger-decorators/delete-reject-permanent-cancel.decorator';
 
 @Controller('friends')
 @ApiTags('friends API')
@@ -40,6 +42,13 @@ export class FriendsController {
     return await this.friendsService.getFriends(userId);
   }
 
+  @ApiGetRejectPermanent()
+  @Get('responses/reject/permanent')
+  async getRejectPermanent(@Headers('access_token') accessToken: string) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.getRejectPermanent(userId);
+  }
+
   @ApiFriendRequest()
   @Post('requests/:friend_id')
   async friendRequest(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
@@ -59,6 +68,13 @@ export class FriendsController {
   async friendResponseReject(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.friendsService.friendResponseReject(userId, friendId);
+  }
+
+  @ApiDeleteRejectPermanentCancel()
+  @Delete('responses/reject/permanent/:friend_id')
+  async friendResponseRejectPermanentCancel(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.friendsService.friendResponseRejectPermanentCancel(userId, friendId);
   }
 
   @ApiFriendResponseRejectPermanent()
