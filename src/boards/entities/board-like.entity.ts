@@ -1,5 +1,6 @@
 import { User } from 'src/users/entities/user.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -15,13 +16,19 @@ export class BoardLike {
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  userId: User;
+  user: User;
+
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @ManyToOne(() => Board, (board) => board.boardLike, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'board_id' })
-  boardId: Board;
+  board: Board;
+
+  @Column({ name: 'board_id' })
+  boardId: number;
 
   @CreateDateColumn({ name: 'create_at' })
   createAt: Date;

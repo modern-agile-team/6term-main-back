@@ -7,6 +7,7 @@ import {
   Post,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { BoardsLikeService } from '../services/boards-like.service';
 import { Users } from 'src/common/decorators/user.decorator';
@@ -32,9 +33,9 @@ export class BoardsLikeController {
   }
 
   @ApiGetBoardLikeCount()
-  @Get('like/:boardId')
-  async getBoardLike(@Param('boardId', ParseIntPipe) boardId: number) {
-    return this.boardsLikeService.getBoardLike(boardId);
+  @Get('/like')
+  async getBoardsLike(@Query('boardId') boardId: number) {
+    return this.boardsLikeService.getBoardLikes(boardId);
   }
 
   @ApiDeleteBoardLike()
