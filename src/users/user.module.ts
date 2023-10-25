@@ -1,3 +1,5 @@
+import { UserService } from './services/user.service';
+import { UserController } from './controllers/user.controller';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -11,8 +13,8 @@ import { TokenRepository } from 'src/auth/repositories/token.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  controllers: [UserImageController],
+  controllers: [UserController, UserImageController],
   providers: [
-        S3Service, UserRepository, UserImageRepository, UserImageService, TokenService, TokenRepository],
+        S3Service, UserRepository, UserImageRepository, UserService, UserImageService, TokenService, TokenRepository],
 })
 export class UserModule {}
