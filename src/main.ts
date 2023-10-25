@@ -4,7 +4,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './config/swagger';
 import { AsyncApiDocumentBuilder, AsyncApiModule } from 'nestjs-asyncapi';
 import { HttpExceptionFilter } from './http-Exception.filter';
-import { setupAsyncApi } from './config/asyncapi';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -25,7 +24,6 @@ async function bootstrap() {
     asyncApiOptions,
   );
   await AsyncApiModule.setup('asyncapi', app, asyncapiDocument);
-  // setupAsyncApi(app);
   app.useLogger(logger);
 
   await app.listen(3000);
