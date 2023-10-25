@@ -4,6 +4,7 @@ import { CreateBoardDto } from '../dto/create.board.dto';
 import { Board } from '../entities/board.entity';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { BoardsLikeRepository } from '../repository/boards-like.repository';
+import { oneBoardResponseDTO } from '../dto/boards.one.response.dto';
 
 @Injectable()
 export class BoardsService {
@@ -43,7 +44,6 @@ export class BoardsService {
           createAt: board.createAt,
           updateAt: board.updateAt,
           userId: {
-            // id: board.user.id, (일단 주석처리 했습니다 이걸 없앨지 userImage에서의 userId를 없앨지)
             name: board.user.name,
             userImage: board.user.userImage ? board.user.userImage : [],
           },
@@ -59,8 +59,12 @@ export class BoardsService {
     return { data: boardResponse, total };
   }
 
-  async findOneBoard(boardId: number): Promise<BoardResponseDTO> {
+  async findOneBoard(
+    boardId: number,
+    userId: number,
+  ): Promise<oneBoardResponseDTO> {
     const board = await this.boardRepository.findBoardById(boardId);
+    const unitowner = board.userId == userId;
     if (!board) {
       throw new Error('게시물을 찾을 수 없습니다.');
     }
@@ -73,7 +77,6 @@ export class BoardsService {
       createAt: board.createAt,
       updateAt: board.updateAt,
       userId: {
-        // id: board.user.id,
         name: board.user.name,
         userImage: board.user.userImage ? board.user.userImage : [],
       },
@@ -81,6 +84,7 @@ export class BoardsService {
         id: image.id,
         imageUrl: image.imageUrl,
       })),
+      unitowner: unitowner,
     };
   }
 

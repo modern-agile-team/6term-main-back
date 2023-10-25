@@ -60,8 +60,12 @@ export class BoardsController {
   }
 
   @Get('/unit')
-  async findOne(@Query('boardId') boardId: number): Promise<BoardResponseDTO> {
-    return await this.boardsService.findOneBoard(boardId);
+  async findOne(
+    @Query('boardId') boardId: number,
+    @Headers('access_token') accesstoken: string,
+  ): Promise<BoardResponseDTO> {
+    const userId = await this.tokenService.decodeToken(accesstoken);
+    return await this.boardsService.findOneBoard(boardId, userId);
   }
 
   @Patch('')

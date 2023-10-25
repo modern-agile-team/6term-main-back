@@ -1,6 +1,6 @@
 import { UserImage } from 'src/users/entities/user-image.entity';
 
-export class BoardResponseDTO {
+export class oneBoardResponseDTO {
   id: number;
   head: string;
   body: string;
@@ -8,7 +8,9 @@ export class BoardResponseDTO {
   sub_category: string;
   createAt: Date;
   updateAt: Date;
+  unitowner: true | false;
   userId: {
+    // id: number;
     name: string;
     userImage: UserImage | UserImage[];
   };
