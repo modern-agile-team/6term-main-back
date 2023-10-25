@@ -31,23 +31,24 @@ export class PostChatDto {
   content: string;
 
   @ApiProperty({
-    example: '1',
+    example: 1,
     description: '채팅을 보내는 유저 아이디',
   })
   @IsNumber()
   senderId: number;
 
   @ApiProperty({
-    example: '2',
+    example: 2,
     description: '채팅을 받는 유저 아이디',
   })
   @IsNumber()
   @IsNotEmpty()
   receiverId: number;
 
-  @ApiProperty({
-    example: 'Key: file, Value: asd.png',
-    description: 'FormData. 이미지 파일',
+  @ApiPropertyOptional({
+    example:
+      'https://ma6-main.s3.ap-northeast-2.amazonaws.com/1_1696831127634.jpeg',
+    description: '이미지 url',
   })
   @IsOptional()
   @IsString()
