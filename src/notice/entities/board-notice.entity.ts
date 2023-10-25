@@ -1,6 +1,7 @@
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -8,22 +9,43 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export enum Separator {
+  COMMENT = '댓글',
+  RECOMMENT = '대댓글',
+  LIKE = '좋아요',
+}
+
 @Entity({ name: 'board_notification' })
 export class BoardNotification {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ name: 'board_id' })
+  boardId: number;
+
   @ManyToOne(() => Board)
   @JoinColumn({ name: 'board_id' })
-  boardId: Board;
+  board: Board;
+
+  @Column({ name: 'sender_id' })
+  senderId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'sender_id' })
-  senderId: User;
+  sender: User;
+
+  @Column({ name: 'receiver_id' })
+  receiverId: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'receiver_id' })
-  receiverId: User;
+  receiver: User;
+
+  @Column({ type: 'enum', enum: Separator })
+  seperator: Separator;
+
+  @Column({ name: 'is_seen', default: false })
+  isSeen: boolean;
 
   @CreateDateColumn({ name: 'create_at' })
   createAt: Date;
