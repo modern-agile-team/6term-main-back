@@ -39,6 +39,15 @@ export class FriendsRepository {
     });
   }
 
+  async getRejectPermanent(userId: number): Promise<Friend[]> {
+    return await this.entityManager.find(Friend, {
+      where: {
+        respondentId: userId,
+        status: Status.REJECT,
+      },
+    });
+  }
+
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
     const friend = new Friend();
     friend.requesterId = userId;
@@ -71,6 +80,22 @@ export class FriendsRepository {
         requesterId: friendId,
         respondentId: userId,
         status: Status.PENDING,
+      },
+    });
+
+    if (!friend) {
+      return null;
+    }
+    
+    return await this.entityManager.delete(Friend, friend);
+  }
+
+  async friendResponseRejectPermanentCancel(userId: number, friendId: number): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: {
+        requesterId: friendId,
+        respondentId: userId,
+        status: Status.REJECT,
       },
     });
 
