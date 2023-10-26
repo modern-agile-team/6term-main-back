@@ -55,4 +55,8 @@ export class NoticeService {
       receiverId,
     );
   }
+
+  async updateUnSeenNotification(notificationId: number) {
+    return this.noticeRepository.updateUnSeenNotification(notificationId);
+  }
 }

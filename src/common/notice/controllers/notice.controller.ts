@@ -27,10 +27,10 @@ export class NoticeController {
     return this.noticeService.getAllNotifications(userId);
   }
 
-  @Patch('notification-id')
+  @Patch(':notificationId')
   async updateUnSeenNotification(
-    @Param('notification-id', ParseIntPipe) notificationId: number,
+    @Param('notificationId', ParseIntPipe) notificationId: number,
   ) {
-    return this.noticeService.updateUnSeenNotification();
+    return this.noticeService.updateUnSeenNotification(notificationId);
   }
 }
