@@ -9,11 +9,16 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import mongoose from 'mongoose';
 import { ChatService } from 'src/chat/services/chat.service';
 import { PostChatDto } from '../dto/post-chat.dto';
+import { AsyncApiSub } from 'nestjs-asyncapi';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { LoginChatRoomDto } from '../dto/login-chat-room.dto';
+import { WebSocketExceptionFilter } from '../exceptions/websocket-exception.filter';
 
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
+@UsePipes(ValidationPipe)
+@UseFilters(WebSocketExceptionFilter)
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -25,18 +30,43 @@ export class EventsGateway
     console.log('test', data);
   }
 
+  @AsyncApiSub({
+    description: `
+    socket.join
+    유저가 속한 chat_room의 id를 토대로
+    소켓 룸으로 join`,
+    channel: 'login',
+    message: {
+      payload: LoginChatRoomDto,
+    },
+  })
   @SubscribeMessage('login')
   handleLogin(
-    @MessageBody() data: { id: number; rooms: mongoose.Types.ObjectId[] },
+    @MessageBody() loginChatRoomDto: LoginChatRoomDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log('login', data.id);
-    data.rooms.forEach((room) => {
+    console.log('login', loginChatRoomDto.userId);
+    loginChatRoomDto.rooms.forEach((room) => {
       console.log('join', socket.nsp.name, room);
       socket.join(room.toString());
     });
   }
 
+  @AsyncApiSub({
+    description: `
+    채팅 전송
+    리턴 값
+    {
+      content: 채팅내용,
+      sender: 보낸 사람 id,
+      receiver: 받는 사람 id,
+    };
+    `,
+    channel: 'message',
+    message: {
+      payload: PostChatDto,
+    },
+  })
   @SubscribeMessage('message')
   async handleMessage(
     @MessageBody() postChatDto: PostChatDto,
