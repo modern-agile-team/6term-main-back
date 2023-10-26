@@ -1,7 +1,19 @@
-import { Controller, Get, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Headers,
+  Param,
+  ParseIntPipe,
+  Patch,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { NoticeService } from '../services/notice.service';
 import { TokenService } from 'src/auth/services/token.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('BOARD-NOTICE')
+@UsePipes(ValidationPipe)
 @Controller('notice')
 export class NoticeController {
   constructor(
@@ -13,5 +25,12 @@ export class NoticeController {
   async getAllNotifications(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return this.noticeService.getAllNotifications(userId);
+  }
+
+  @Patch('notification-id')
+  async updateUnSeenNotification(
+    @Param('notification-id', ParseIntPipe) notificationId: number,
+  ) {
+    return this.noticeService.updateUnSeenNotification();
   }
 }
