@@ -25,22 +25,34 @@ export class NoticeService {
     senderId: number,
     receiverId: number,
   ) {
-    return this.createBoardNoticeFromComment(boardId, senderId, receiverId);
+    return this.noticeRepository.createBoardNoticeFromComment(
+      boardId,
+      senderId,
+      receiverId,
+    );
   }
 
-  async createCommentNoticeFromNotice(
+  async createCommentNoticeFromRecomment(
     boardId: number,
     senderId: number,
     receiverId: number,
   ) {
-    return this.createCommentNoticeFromNotice(boardId, senderId, receiverId);
+    return this.noticeRepository.createCommentNoticeFromRecomment(
+      boardId,
+      senderId,
+      receiverId,
+    );
   }
 
-  async createLikeNoticeFromNotice(
+  async createBoardNoticeFromLike(
     boardId: number,
     senderId: number,
     receiverId: number,
   ) {
-    return this.createCommentNoticeFromNotice(boardId, senderId, receiverId);
+    return this.noticeRepository.createBoardNoticeFromLike(
+      boardId,
+      senderId,
+      receiverId,
+    );
   }
 }

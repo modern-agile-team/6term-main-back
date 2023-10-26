@@ -13,9 +13,10 @@ import { BoardsLikeService } from './services/boards-like.service';
 import { BoardsLikeRepository } from './repository/boards-like.repository';
 import { TokenService } from 'src/auth/services/token.service';
 import { TokenRepository } from 'src/auth/repositories/token.repository';
+import { NoticeModule } from 'src/common/notice/notice.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Board, BoardImage])],
+  imports: [TypeOrmModule.forFeature([Board, BoardImage]), NoticeModule],
   controllers: [BoardsController, BoardsLikeController],
   providers: [
     BoardsService,
