@@ -19,4 +19,28 @@ export class NoticeService {
     }
     return this.noticeRepository.getAllNotifications(userId);
   }
+
+  async createBoardNoticeFromComment(
+    boardId: number,
+    senderId: number,
+    receiverId: number,
+  ) {
+    return this.createBoardNoticeFromComment(boardId, senderId, receiverId);
+  }
+
+  async createCommentNoticeFromNotice(
+    boardId: number,
+    senderId: number,
+    receiverId: number,
+  ) {
+    return this.createCommentNoticeFromNotice(boardId, senderId, receiverId);
+  }
+
+  async createLikeNoticeFromNotice(
+    boardId: number,
+    senderId: number,
+    receiverId: number,
+  ) {
+    return this.createCommentNoticeFromNotice(boardId, senderId, receiverId);
+  }
 }
