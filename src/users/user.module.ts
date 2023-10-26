@@ -8,13 +8,12 @@ import { S3Service } from 'src/common/s3/s3.service';
 import { UserRepository } from './repositories/user.repository';
 import { UserImageRepository } from './repositories/user-image.repository';
 import { UserImageService } from './services/user-image.service';
-import { TokenService } from 'src/auth/services/token.service';
-import { TokenRepository } from 'src/auth/repositories/token.repository';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), AuthModule],
   controllers: [UserController, UserImageController],
   providers: [
-        S3Service, UserRepository, UserImageRepository, UserService, UserImageService, TokenService, TokenRepository],
+        S3Service, UserRepository, UserImageRepository, UserService, UserImageService],
 })
 export class UserModule {}
