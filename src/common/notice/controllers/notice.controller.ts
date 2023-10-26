@@ -12,6 +12,9 @@ import {
 import { NoticeService } from '../services/notice.service';
 import { TokenService } from 'src/auth/services/token.service';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiGetAllNotifications } from '../swagger-decorators/get-all-notifications.decorator copy';
+import { ApiUpdateUnSeenNotification } from '../swagger-decorators/update-un-seen-notification.decorator copy';
+import { ApiHardDeleteNotificatons } from '../swagger-decorators/hard-delete-notifications.decorator';
 
 @ApiTags('BOARD-NOTICE')
 @UsePipes(ValidationPipe)
@@ -22,12 +25,14 @@ export class NoticeController {
     private tokenService: TokenService,
   ) {}
 
+  @ApiGetAllNotifications()
   @Get()
   async getAllNotifications(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return this.noticeService.getAllNotifications(userId);
   }
 
+  @ApiUpdateUnSeenNotification()
   @Patch(':notificationId')
   async updateUnSeenNotification(
     @Param('notificationId', ParseIntPipe) notificationId: number,
@@ -35,6 +40,7 @@ export class NoticeController {
     return this.noticeService.updateUnSeenNotification(notificationId);
   }
 
+  @ApiHardDeleteNotificatons()
   @Delete()
   async hardDeleteNotifications() {
     return this.noticeService.hardDeleteNotifications();
