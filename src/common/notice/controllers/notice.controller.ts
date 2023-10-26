@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
@@ -32,5 +33,10 @@ export class NoticeController {
     @Param('notificationId', ParseIntPipe) notificationId: number,
   ) {
     return this.noticeService.updateUnSeenNotification(notificationId);
+  }
+
+  @Delete()
+  async hardDeleteNotifications() {
+    return this.noticeService.hardDeleteNotifications();
   }
 }

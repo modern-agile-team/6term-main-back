@@ -59,4 +59,11 @@ export class NoticeService {
   async updateUnSeenNotification(notificationId: number) {
     return this.noticeRepository.updateUnSeenNotification(notificationId);
   }
+
+  async hardDeleteNotifications() {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    return this.noticeRepository.hardDeleteNotifications(oneWeekAgo);
+  }
 }
