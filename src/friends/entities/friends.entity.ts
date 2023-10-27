@@ -11,6 +11,7 @@ export enum Status {
   PENDING = '대기 상태',
   ACCEPT = '친구 수락',
   REJECT = '친구 거절',
+  PERMANENT = '영구 거절',
 }
 
 @Entity({ name: 'friend' })
@@ -38,4 +39,11 @@ export class Friend {
 
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status!: Status;
+
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
 }

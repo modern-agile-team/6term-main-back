@@ -21,9 +21,13 @@ export class S3Service {
 
   private s3Adress = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`;
 
-  async imgUpload(file, userId): Promise<{ url: string; key: string }> {
+  private async uploadImage(
+    file,
+    userId,
+    folderName,
+  ): Promise<{ url: string; key: string }> {
     const currentTime = new Date().getTime();
-    const filename = `${userId}_${currentTime}.jpeg`;
+    const filename = `${folderName}/${userId}_${currentTime}.jpeg`;
 
     const params = {
       ACL: 'public-read',
@@ -33,6 +37,7 @@ export class S3Service {
       ContentType: 'image/jpeg',
       ContentDisposition: 'inline',
     };
+
     try {
       await this.s3.send(new PutObjectCommand(params));
       const fileUrl = `${this.s3Adress}${filename}`;
@@ -41,6 +46,18 @@ export class S3Service {
     } catch (error) {
       throw new Error('S3 업로드 오류');
     }
+  }
+
+  async BoardImageUpload(file, userId): Promise<{ url: string; key: string }> {
+    return await this.uploadImage(file, userId, 'BoardImages');
+  }
+
+  async UserImageUpload(file, userId): Promise<{ url: string; key: string }> {
+    return await this.uploadImage(file, userId, 'UserImages');
+  }
+
+  async ChatImageUpload(file, userId): Promise<{ url: string; key: string }> {
+    return await this.uploadImage(file, userId, 'ChatImages');
   }
 
   async deleteImage(key: string): Promise<boolean> {
