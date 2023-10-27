@@ -76,6 +76,22 @@ export class BoardsController {
     return await this.boardsService.updateBoard(boardId, boardData);
   }
 
+  @Patch('/images')
+  @UseInterceptors(FilesInterceptor('files'))
+  async editBoardImage(
+    @Headers('access_token') accessToken: string,
+    @Query('boardId') boardId: number,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    const updatedImages = await this.boardImagesService.updateBoardImages(
+      boardId,
+      files,
+      userId,
+    );
+    return updatedImages;
+  }
+
   // @Patch('/images')
   // async editBoardImage(
   //   @Headers('access_token') accesstoken: string,

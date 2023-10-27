@@ -14,14 +14,18 @@ export class BoardImageRepository {
     const savedImage = await this.entityManager.save(BoardImage, newBoardImage);
     return savedImage;
   }
-  // async updateBoardImage(boardImage: CreateBoardImageDto): Promise<BoardImage> {
-  //   const newBoardImages = new BoardImage();
-  //   newBoardImages.boardId = boardImage.boardId;
-  //   newBoardImages.imageUrl = boardImage.imageUrl;
-  //   const savedImages = await this.entityManager.update(
-  //     BoardImage,
-  //     newBoardImages,
-  //   );
-  //   return savedImages;
-  // }
+  async getBoardImages(boardId: number): Promise<BoardImage[]> {
+    return this.entityManager.find(BoardImage, { where: { boardId } });
+  }
+
+  async createBoardImage(boardImage: CreateBoardImageDto): Promise<BoardImage> {
+    const newImage = new BoardImage();
+    newImage.boardId = boardImage.boardId;
+    newImage.imageUrl = boardImage.imageUrl;
+    return this.entityManager.save(newImage);
+  }
+
+  async deleteBoardImage(imageId: number): Promise<void> {
+    await this.entityManager.delete(BoardImage, imageId);
+  }
 }
