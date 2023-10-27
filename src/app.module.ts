@@ -13,7 +13,7 @@ import { S3Module } from './common/s3/s3.module';
 import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
 import { FriendsModule } from './friends/friends.module';
-import { NoticeModule } from './notice/notice.module';
+import { NoticeModule } from './common/notice/notice.module';
 import { EventsGateway } from './events/events.gateway';
 import { EventsModule } from './events/events.module';
 import * as mongoose from 'mongoose';
