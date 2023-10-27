@@ -1,4 +1,3 @@
-import { TokenService } from './auth/services/token.service';
 import { UserImageService } from './users/services/user-image.service';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comments/comment.module';
@@ -16,7 +15,6 @@ import { FriendsModule } from './friends/friends.module';
 import { NoticeModule } from './common/notice/notice.module';
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
-import { TokenRepository } from './auth/repositories/token.repository';
 
 @Module({
   imports: [
@@ -40,8 +38,6 @@ import { TokenRepository } from './auth/repositories/token.repository';
     NoticeModule,
   ], //
   providers: [
-    TokenService,
-    TokenRepository,
     UserImageService,
     UserImageRepository,
     S3Service,

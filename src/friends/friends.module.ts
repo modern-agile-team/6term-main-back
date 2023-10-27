@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { FriendsController } from './controllers/friends.controller';
 import { FriendsService } from './services/friends.service';
 import { FriendsRepository } from './repositories/friends.repository';
-import { TokenService } from 'src/auth/services/token.service';
-import { TokenRepository } from 'src/auth/repositories/token.repository';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [],
+  imports: [AuthModule],
   controllers: [FriendsController],
-  providers: [FriendsService, FriendsRepository, TokenService, TokenRepository],
+  providers: [FriendsService, FriendsRepository],
 })
 export class FriendsModule {}
