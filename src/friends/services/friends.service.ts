@@ -29,6 +29,11 @@ export class FriendsService {
         throw new HttpException('상대방이 친구 요청을 영구적으로 거절했습니다.', HttpStatus.GONE);
       }
 
+      const checkRejectTime = await this.friendsRepository.checkRejectTime(userId, friendId);
+      if (checkRejectTime) {
+        throw new HttpException('친구 요청은 24시간 이내에 한번만 가능합니다.', HttpStatus.GONE);
+      }
+
       const getFriendsReqStatus = await this.getFriendsReqPending(userId);
       
       const isFriend = getFriendsReqStatus.find((friend) => {
