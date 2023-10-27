@@ -43,7 +43,7 @@ export class FriendsRepository {
     return await this.entityManager.find(Friend, {
       where: {
         respondentId: userId,
-        status: Status.REJECT,
+        status: Status.PERMANENT,
       },
     });
   }
@@ -95,7 +95,7 @@ export class FriendsRepository {
       where: {
         requesterId: friendId,
         respondentId: userId,
-        status: Status.REJECT,
+        status: Status.PERMANENT,
       },
     });
 
@@ -150,7 +150,7 @@ export class FriendsRepository {
       where: {
         requesterId: userId,
         respondentId: friendId,
-        status: Status.REJECT,
+        status: Status.PERMANENT,
       },
     });
     

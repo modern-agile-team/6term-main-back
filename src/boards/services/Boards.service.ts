@@ -64,7 +64,7 @@ export class BoardsService {
     userId: number,
   ): Promise<oneBoardResponseDTO> {
     const board = await this.boardRepository.findBoardById(boardId);
-    const unitowner = board.userId == userId;
+    const unitowner = board.userId === userId;
     if (!board) {
       throw new Error('게시물을 찾을 수 없습니다.');
     }

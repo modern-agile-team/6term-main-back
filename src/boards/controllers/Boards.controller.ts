@@ -73,12 +73,22 @@ export class BoardsController {
     @Query('boardId') boardId: number,
     @Body() boardData: Partial<Board>,
   ): Promise<Board> {
-    const updatedBoard = await this.boardsService.updateBoard(
-      boardId,
-      boardData,
-    );
-    return updatedBoard;
+    return await this.boardsService.updateBoard(boardId, boardData);
   }
+
+  // @Patch('/images')
+  // async editBoardImage(
+  //   @Headers('access_token') accesstoken: string,
+  //   @Query('boardId') boardId: number,
+  //   @UploadedFiles() files: Express.Multer.File[],
+  // ) {
+  //   const userId = await this.tokenService.decodeToken(accesstoken);
+  //   return await this.boardImagesService.updateBoardImage(
+  //     boardId,
+  //     files,
+  //     userId,
+  //   );
+  // }
 
   @Delete('')
   async deleteBoard(
@@ -88,4 +98,13 @@ export class BoardsController {
     const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);
   }
+
+  // @Delete('/images')
+  // async deleteBoardImages(
+  //   @Query('boardImageId') boardImageId: number,
+  //   @Headers('access_token') accessToken: string,
+  // ) {
+  //   const userId = await this.tokenService.decodeToken(accessToken);
+  //   await this.boardsService.delteBoardImage(boardImageId, userId);
+  // }
 }
