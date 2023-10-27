@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { FriendsRepository } from '../repositories/friends.repository';
 import { Status } from '../entities/friends.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class FriendsService {
@@ -163,6 +164,20 @@ export class FriendsService {
     } catch (error) {
       console.log(error);
       throw new HttpException('영구 거절 체크에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async cleanupRejectedFriends() {
+    try {
+      const cleanup = await this.friendsRepository.cleanupRejectedFriends();
+      if (!cleanup) {
+        console.log('24시간 지난 친구 요청 거절 데이터 없음');
+      } else {
+        console.log('24시간 지난 친구 요청 거절 데이터 삭제 완료');
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }

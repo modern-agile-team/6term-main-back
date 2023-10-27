@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, EntityManager, MoreThanOrEqual } from 'typeorm';
+import { DeleteResult, EntityManager, LessThan, MoreThanOrEqual } from 'typeorm';
 import { Friend, Status } from '../entities/friends.entity';
 
 @Injectable()
@@ -172,5 +172,25 @@ export class FriendsRepository {
     });
     
     return check;
+  }
+
+  async cleanupRejectedFriends() {
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  // 'REJECT' 상태이고 24시간 이상 지난 로우들을 찾아서 삭제
+  const friendsToDelete = await this.entityManager.find(Friend, {
+    where: {
+      status: Status.REJECT,
+      createdAt: LessThan(twentyFourHoursAgo),
+    },
+  });
+  
+  if (friendsToDelete.length === 0) {
+    return null;
+  }
+
+  await this.entityManager.remove(friendsToDelete);
+
+  return friendsToDelete.length;
   }
 }
