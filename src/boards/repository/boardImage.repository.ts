@@ -14,4 +14,14 @@ export class BoardImageRepository {
     const savedImage = await this.entityManager.save(BoardImage, newBoardImage);
     return savedImage;
   }
+  // async updateBoardImage(boardImage: CreateBoardImageDto): Promise<BoardImage> {
+  //   const newBoardImages = new BoardImage();
+  //   newBoardImages.boardId = boardImage.boardId;
+  //   newBoardImages.imageUrl = boardImage.imageUrl;
+  //   const savedImages = await this.entityManager.update(
+  //     BoardImage,
+  //     newBoardImages,
+  //   );
+  //   return savedImages;
+  // }
 }
