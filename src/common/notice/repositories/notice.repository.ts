@@ -7,7 +7,6 @@ export class NoticeRepository {
   constructor(private entityManager: EntityManager) {}
 
   async getAllNotifications(userId: number) {
-    userId = 1;
     return this.entityManager.find(BoardNotification, {
       withDeleted: true,
       where: { receiverId: userId },
