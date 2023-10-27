@@ -41,5 +41,6 @@ export class Friend {
   status!: Status;
 
   @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+
   createdAt: Date;
 }

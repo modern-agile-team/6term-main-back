@@ -17,7 +17,7 @@ export class BoardImagesService {
   ): Promise<CreateBoardImageDto[]> {
     const savedImagesArray: CreateBoardImageDto[] = [];
     for (const file of files) {
-      const uploadedImage = await this.s3Service.imgUpload(file, userId);
+      const uploadedImage = await this.s3Service.BoardImageUpload(file, userId);
       const boardImage = new CreateBoardImageDto();
       boardImage.boardId = boardId;
       boardImage.imageUrl = uploadedImage.url;
@@ -27,4 +27,21 @@ export class BoardImagesService {
     }
     return savedImagesArray;
   }
+  // async updateBoardImage(
+  //   boardId: number,
+  //   files: Express.Multer.File[],
+  //   userId: number,
+  // ): Promise<CreateBoardImageDto[]> {
+  //   const savedImagesArray: CreateBoardImageDto[] = [];
+  //   for (const file of files) {
+  //     const uploadedImage = await this.s3Service.imgUpload(file, userId);
+  //     const newBoardImage = new CreateBoardImageDto();
+  //     newBoardImage.boardId = boardId;
+  //     newBoardImage.imageUrl = uploadedImage.url;
+  //     const savedImage =
+  //       await this.boardImageRepository.updateBoardImage(newBoardImage);
+  //     savedImagesArray.push(savedImage);
+  //   }
+  //   return savedImagesArray;
+  // }
 }
