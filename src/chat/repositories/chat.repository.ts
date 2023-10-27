@@ -90,4 +90,10 @@ export class ChatRepository {
 
     return returnedChat;
   }
+
+  async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
+    return this.chatModel.count({
+      $and: [{ chatroom_id: roomId }, { createdAt: { $gt: new Date(after) } }],
+    });
+  }
 }

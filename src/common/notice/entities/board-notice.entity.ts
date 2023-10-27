@@ -43,7 +43,7 @@ export class BoardNotification {
   receiver: User;
 
   @Column({ type: 'enum', enum: Separator })
-  separator: Separator;
+  seperator: Separator;
 
   @Column({ name: 'is_seen', default: false })
   isSeen: boolean;

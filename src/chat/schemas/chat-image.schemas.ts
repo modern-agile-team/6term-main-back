@@ -16,7 +16,6 @@ export class ChatImage {
   chat_id: mongoose.Types.ObjectId;
 
   @IsString()
-  @IsNotEmpty()
   @Prop({ required: true })
   image_url: string;
 }

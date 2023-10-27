@@ -12,7 +12,7 @@ export class TokenService {
     if (getUserTokens.length <= 0) {
       throw new HttpException('토큰을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
-    return getUserTokens;
+    return getUserTokens[0];
   }
 
   async saveTokens(

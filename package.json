@@ -41,6 +41,7 @@
     "mongoose": "^7.5.0",
     "mysql2": "^3.6.0",
     "nest-aws-sdk": "^3.0.1",
+    "nestjs-asyncapi": "^1.2.1",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-kakao": "^1.0.1",

@@ -1,4 +1,3 @@
-import { TokenService } from './auth/services/token.service';
 import { UserImageService } from './users/services/user-image.service';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comments/comment.module';
@@ -14,11 +13,8 @@ import { S3Service } from './common/s3/s3.service';
 import { BoardsModule } from './boards/boards.module';
 import { FriendsModule } from './friends/friends.module';
 import { NoticeModule } from './common/notice/notice.module';
-import { EventsGateway } from './events/events.gateway';
-import { EventsModule } from './events/events.module';
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
-import { TokenRepository } from './auth/repositories/token.repository';
 
 @Module({
   imports: [
@@ -40,15 +36,11 @@ import { TokenRepository } from './auth/repositories/token.repository';
     BoardsModule,
     FriendsModule,
     NoticeModule,
-    EventsModule,
   ], //
   providers: [
-    TokenService,
-    TokenRepository,
     UserImageService,
     UserImageRepository,
     S3Service,
-    EventsGateway,
   ],
 })
 export class AppModule implements NestModule {
