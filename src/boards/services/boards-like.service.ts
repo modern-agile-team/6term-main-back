@@ -8,10 +8,12 @@ import { EntityManager, Equal } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
 import { BoardLike } from '../entities/board-like.entity';
+import { NoticeService } from 'src/common/notice/services/notice.service';
 
 @Injectable()
 export class BoardsLikeService {
   constructor(
+    private noticeService: NoticeService,
     private entityManager: EntityManager,
     private boardsLikeRepositry: BoardsLikeRepository,
   ) {}
@@ -41,7 +43,22 @@ export class BoardsLikeService {
       throw new ConflictException('이미 좋아요가 있습니다');
     }
 
-    return this.boardsLikeRepositry.addBoardLike(boardId, userId);
+    const returnedLike = await this.boardsLikeRepositry.addBoardLike(
+      boardId,
+      userId,
+    );
+
+    const returnedBoard = await this.entityManager.findOne(Board, {
+      where: { id: boardId },
+    });
+
+    await this.noticeService.createBoardNoticeFromLike(
+      boardId,
+      userId,
+      returnedBoard.userId,
+    );
+
+    return returnedLike;
   }
 
   async getBoardLikes(boardId: number) {
