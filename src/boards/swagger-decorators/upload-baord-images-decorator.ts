@@ -1,17 +1,17 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-export function ApiUpdateBoard() {
+export function ApiUploadBoardImages() {
   return applyDecorators(
     ApiOperation({
-      summary: '보드를 수정 API',
-      description: '보드 수정 API',
+      summary: '보드 이미지 업로드 API',
+      description: '보드 이미지 업로드 API',
     }),
     ApiResponse({
       status: 200,
-      description: '보드의 내용을 성공적으로 수정한 경우',
+      description: '성공적으로 이미지를 업로드한 경우',
       content: {
-        JSON: { example: { message: '성공적으로 보드 수정을 완료했습니다.' } },
+        JSON: { example: { message: '이미지 업로드에 성공했습니다.' } },
       },
     }),
     ApiResponse({
@@ -52,12 +52,12 @@ export function ApiUpdateBoard() {
     }),
     ApiResponse({
       status: 500,
-      description: '보드 수정중 오류가 발생했습니다',
+      description: '이미지 업로드 및 처리 중 오류가 발생한 경우',
       content: {
         JSON: {
           example: {
             statusCode: 500,
-            message: '보드 수정 중 오류가 발생했습니다.',
+            message: '이미지 업로드 및 처리 중 오류가 발생했습니다.',
           },
         },
       },
