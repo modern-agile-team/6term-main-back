@@ -20,6 +20,7 @@ export class BoardsLikeRepository {
     const likesCount: number = await this.entityManager.count(BoardLike, {
       where: { boardId: boardId },
     });
+
     return likesCount;
   }
 
