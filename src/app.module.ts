@@ -15,6 +15,7 @@ import { FriendsModule } from './friends/friends.module';
 import { NoticeModule } from './common/notice/notice.module';
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserImageRepository } from './users/repositories/user-image.repository'
       envFilePath: '.env', // .env 파일 경로 설정
     }),
     MongooseModule.forRoot(process.env.DB_URI),
+    ScheduleModule.forRoot(),
     ChatModule,
     S3Module,
     BoardsModule,

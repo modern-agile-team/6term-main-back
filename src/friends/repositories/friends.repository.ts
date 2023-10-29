@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, EntityManager } from 'typeorm';
+import { DeleteResult, EntityManager, LessThan, MoreThanOrEqual } from 'typeorm';
 import { Friend, Status } from '../entities/friends.entity';
 
 @Injectable()
@@ -57,6 +57,22 @@ export class FriendsRepository {
     return await this.entityManager.save(friend);
   }
 
+  async checkRejectTime(userId: number, friendId: number): Promise<Friend> {
+    const friendRepository = this.entityManager.getRepository(Friend);
+
+    return await friendRepository.findOne({
+      where: {
+        createdAt: MoreThanOrEqual(new Date(Date.now() - 24 * 60 * 60 * 1000)),
+        requesterId: userId,
+        respondentId: friendId,
+        status: Status.REJECT,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
   async friendResponseAccept(userId: number, friendId: number): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
@@ -74,7 +90,7 @@ export class FriendsRepository {
     return await this.entityManager.save(friend);
   }
 
-  async friendResponseReject(userId: number, friendId: number): Promise<DeleteResult> {
+  async friendResponseReject(userId: number, friendId: number): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -87,7 +103,8 @@ export class FriendsRepository {
       return null;
     }
     
-    return await this.entityManager.delete(Friend, friend);
+    friend.status = Status.REJECT;
+    return await this.entityManager.save(friend);
   }
 
   async friendResponseRejectPermanentCancel(userId: number, friendId: number): Promise<DeleteResult> {
@@ -155,5 +172,25 @@ export class FriendsRepository {
     });
     
     return check;
+  }
+
+  async cleanupRejectedFriends() {
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  // 'REJECT' 상태이고 24시간 이상 지난 로우들을 찾아서 삭제
+  const friendsToDelete = await this.entityManager.find(Friend, {
+    where: {
+      status: Status.REJECT,
+      createdAt: LessThan(twentyFourHoursAgo),
+    },
+  });
+  
+  if (friendsToDelete.length === 0) {
+    return null;
+  }
+
+  await this.entityManager.remove(friendsToDelete);
+
+  return friendsToDelete.length;
   }
 }

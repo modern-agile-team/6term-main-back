@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { FriendsRepository } from '../repositories/friends.repository';
 import { Status } from '../entities/friends.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class FriendsService {
@@ -27,6 +28,11 @@ export class FriendsService {
       const checkRejectPermanent = await this.checkRejectPermanent(userId, friendId);
       if (checkRejectPermanent) {
         throw new HttpException('상대방이 친구 요청을 영구적으로 거절했습니다.', HttpStatus.GONE);
+      }
+
+      const checkRejectTime = await this.friendsRepository.checkRejectTime(userId, friendId);
+      if (checkRejectTime) {
+        throw new HttpException('친구 요청은 24시간 이내에 한번만 가능합니다.', HttpStatus.GONE);
       }
 
       const getFriendsReqStatus = await this.getFriendsReqPending(userId);
@@ -158,6 +164,20 @@ export class FriendsService {
     } catch (error) {
       console.log(error);
       throw new HttpException('영구 거절 체크에 실패했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async cleanupRejectedFriends() {
+    try {
+      const cleanup = await this.friendsRepository.cleanupRejectedFriends();
+      if (!cleanup) {
+        console.log('24시간 지난 친구 요청 거절 데이터 없음');
+      } else {
+        console.log('24시간 지난 친구 요청 거절 데이터 삭제 완료');
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }

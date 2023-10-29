@@ -64,7 +64,7 @@ export class FriendsController {
   }
 
   @ApiFriendResponseReject()
-  @Delete('responses/reject/:friend_id')
+  @Patch('responses/reject/:friend_id')
   async friendResponseReject(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.friendsService.friendResponseReject(userId, friendId);
