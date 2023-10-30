@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Equal } from 'typeorm';
 import { BoardLike } from '../entities/board-like.entity';
 
 @Injectable()
 export class BoardsLikeRepository {
   constructor(private entityManager: EntityManager) {}
+
   async addBoardLike(boardId: number, userId: number) {
     const boardLike = new BoardLike();
     boardLike.boardId = boardId;
@@ -19,7 +20,14 @@ export class BoardsLikeRepository {
     const likesCount: number = await this.entityManager.count(BoardLike, {
       where: { boardId: boardId },
     });
+
     return likesCount;
+  }
+
+  async isBoardLike(boardId: number, userId: number) {
+    return this.entityManager.findOne(BoardLike, {
+      where: { boardId: Equal(boardId), userId: Equal(userId) },
+    });
   }
 
   async deleteBoardLike(boardId: number, userId: number) {

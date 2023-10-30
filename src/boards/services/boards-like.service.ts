@@ -61,14 +61,43 @@ export class BoardsLikeService {
     return returnedLike;
   }
 
+  async getBoardLikesAndIsLike(boardId: number, userId: number) {
+    const board = await this.entityManager.findOne(Board, {
+      where: { id: boardId },
+    });
+
+    if (!board) {
+      throw new NotFoundException('해당 게시글이 없습니다.');
+    }
+
+    const boardLikesCount =
+      await this.boardsLikeRepositry.getBoardLikesCount(boardId);
+
+    const isBoardLike = await this.boardsLikeRepositry.isBoardLike(
+      boardId,
+      userId,
+    );
+
+    if (!isBoardLike) {
+      return { isLike: false, boardLikesCount };
+    }
+
+    return { isLike: true, boardLikesCount };
+  }
+
   async getBoardLikes(boardId: number) {
     const board = await this.entityManager.findOne(Board, {
       where: { id: boardId },
     });
+
     if (!board) {
-      throw new Error('해당 게시글이 없습니다. ');
+      throw new NotFoundException('해당 게시글이 없습니다.');
     }
-    return this.boardsLikeRepositry.getBoardLikesCount(boardId);
+
+    const boardLikesCount =
+      await this.boardsLikeRepositry.getBoardLikesCount(boardId);
+
+    return { isLike: false, boardLikesCount };
   }
 
   async deleteBoardLike(boardId: number, userId: number) {
