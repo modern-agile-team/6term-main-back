@@ -4,12 +4,12 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 export function ApiGetPageBoards() {
   return applyDecorators(
     ApiOperation({
-      summary: '페이지 별로 보드 가져오기',
-      // description:
+      summary: '페이지별 보드 불러오는 API',
+      description: '페이지별 보드 불러오는 API',
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 보드 가져옴',
+      description: '성공적으로 보드를 불러왔습니다.',
       content: {
         JSON: {
           example: {
@@ -19,44 +19,17 @@ export function ApiGetPageBoards() {
         },
       },
     }),
-    // ApiResponse({
-    //   status: 404,
-    //   description: '해당 유저가 존재하지 않는 경우',
-    //   content: {
-    //     JSON: {
-    //       example: {
-    //         success: false,
-    //         code: 404,
-    //         data: '해당 유저가 없습니다',
-    //       },
-    //     },
-    //   },
-    // }),
-    // ApiResponse({
-    //   status: 404,
-    //   description: '해당 게시글이 존재하지 않는 경우',
-    //   content: {
-    //     JSON: {
-    //       example: {
-    //         success: false,
-    //         code: 404,
-    //         data: '해당 게시글이 없습니다.',
-    //       },
-    //     },
-    //   },
-    // }),
-    // ApiResponse({
-    //   status: 409,
-    //   description: '해당 게시글의 좋아요가 이미 존재하는 경우',
-    //   content: {
-    //     JSON: {
-    //       example: {
-    //         success: false,
-    //         code: 409,
-    //         data: '이미 좋아요가 있습니다',
-    //       },
-    //     },
-    //   },
-    // }),
+    ApiResponse({
+      status: 500,
+      description: '보드를 불러오는 중 오류가 발생한 경우',
+      content: {
+        JSON: {
+          example: {
+            statusCode: 500,
+            message: '보드를 불러오는 중 오류가 발생했습니다.',
+          },
+        },
+      },
+    }),
   );
 }

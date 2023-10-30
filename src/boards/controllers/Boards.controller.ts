@@ -18,6 +18,11 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
 import { TokenService } from 'src/auth/services/token.service';
+import { ApiUploadBoardImages } from '../swagger-decorators/upload-baord-images-decorator';
+import { ApiAddBoard } from '../swagger-decorators/add-board-decorators';
+import { ApiGetPageBoards } from '../swagger-decorators/get-page-boards-decorators';
+import { ApiGetOneBoard } from '../swagger-decorators/get-one-board-decorators';
+import { ApiUpdateBoard } from '../swagger-decorators/patch-board-decorators';
 
 @Controller('boards')
 export class BoardsController {
@@ -28,6 +33,7 @@ export class BoardsController {
   ) {}
 
   @Post('')
+  @ApiAddBoard()
   async create(
     @Headers('access_token') accessToken: string,
     @Body() createBoardDto: CreateBoardDto,
@@ -38,12 +44,15 @@ export class BoardsController {
 
   @Post('/images')
   @UseInterceptors(FilesInterceptor('files', 3))
+  @ApiUploadBoardImages()
   async uploadImage(
     @Headers('access_token') accesstoken: string,
     @Query('boardId') boardId: number,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<CreateBoardImageDto[]> {
     const userId = await this.tokenService.decodeToken(accesstoken);
+    console.log(files);
+
     return await this.boardImagesService.createBoardImages(
       boardId,
       files,
@@ -52,6 +61,7 @@ export class BoardsController {
   }
 
   @Get('')
+  @ApiGetPageBoards()
   async findPageBoards(
     @Query('page') page = 1,
     @Query('limit') limit = 30,
@@ -60,15 +70,18 @@ export class BoardsController {
   }
 
   @Get('/unit')
+  @ApiGetOneBoard()
   async findOne(
     @Query('boardId') boardId: number,
     @Headers('access_token') accesstoken: string,
   ): Promise<BoardResponseDTO> {
+    ``;
     const userId = await this.tokenService.decodeToken(accesstoken);
     return await this.boardsService.findOneBoard(boardId, userId);
   }
 
   @Patch('')
+  @ApiUpdateBoard()
   async editBoard(
     @Query('boardId') boardId: number,
     @Body() boardData: Partial<Board>,
@@ -76,19 +89,22 @@ export class BoardsController {
     return await this.boardsService.updateBoard(boardId, boardData);
   }
 
-  // @Patch('/images')
-  // async editBoardImage(
-  //   @Headers('access_token') accesstoken: string,
-  //   @Query('boardId') boardId: number,
-  //   @UploadedFiles() files: Express.Multer.File[],
-  // ) {
-  //   const userId = await this.tokenService.decodeToken(accesstoken);
-  //   return await this.boardImagesService.updateBoardImage(
-  //     boardId,
-  //     files,
-  //     userId,
-  //   );
-  // }
+  @Patch('/images')
+  @UseInterceptors(FilesInterceptor('files', 3))
+  async editBoardImages(
+    @Headers('access_token') accessToken: string,
+    @Query('boardId') boardId: number,
+    @Body() formData: FormData, // 재진이가 보낸 FormData
+  ) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    console.log(formData);
+
+    return await this.boardImagesService.updateBoardImages(
+      boardId,
+      formData,
+      userId,
+    );
+  }
 
   @Delete('')
   async deleteBoard(
@@ -98,13 +114,4 @@ export class BoardsController {
     const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);
   }
-
-  // @Delete('/images')
-  // async deleteBoardImages(
-  //   @Query('boardImageId') boardImageId: number,
-  //   @Headers('access_token') accessToken: string,
-  // ) {
-  //   const userId = await this.tokenService.decodeToken(accessToken);
-  //   await this.boardsService.delteBoardImage(boardImageId, userId);
-  // }
 }
