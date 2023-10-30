@@ -1,62 +1,74 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiAddBoard() {
   return applyDecorators(
     ApiOperation({
-      summary: '보드 생성',
-      // description:
+      summary: '보드를 생성하는 API',
+      description: '보드를 생성하는 API',
     }),
     ApiResponse({
-      status: 201,
-      description: '성공적으로 보드 생성',
+      status: 200,
+      description: '성공적으로 보드를 생성한 경우',
+      content: {
+        JSON: { example: { message: '보드를 성공적으로 생성하였습니다.' } },
+      },
+    }),
+    ApiResponse({
+      status: 401,
+      description: '우리 서비스의 액세스 토큰이 아닌 경우',
       content: {
         JSON: {
-          example: {
-            success: true,
-            msg: '보드 생성 성공',
-          },
+          example: { statusCode: 401, message: '유효하지 않은 토큰입니다.' },
+        },
+      },
+    }),
+    ApiResponse({
+      status: 403,
+      description: '만료된 액세스 토큰인 경우',
+      content: {
+        JSON: {
+          example: { statusCode: 403, message: '만료된 토큰입니다.' },
         },
       },
     }),
     ApiResponse({
       status: 404,
-      description: '해당 유저가 존재하지 않는 경우',
+      description: 'DB에서 사용자를 찾을 수 없는 경우',
       content: {
         JSON: {
-          example: {
-            success: false,
-            code: 404,
-            data: '해당 유저가 없습니다',
-          },
+          example: { statusCode: 404, message: '사용자를 찾을 수 없습니다.' },
         },
       },
     }),
     ApiResponse({
-      status: 404,
-      description: '해당 게시글이 존재하지 않는 경우',
+      status: 411,
+      description: '액세스 토큰이 제공되지 않은 경우',
       content: {
         JSON: {
-          example: {
-            success: false,
-            code: 404,
-            data: '해당 게시글이 없습니다.',
-          },
+          example: { statusCode: 411, message: '토큰이 제공되지 않았습니다.' },
         },
       },
     }),
     ApiResponse({
-      status: 409,
-      description: '해당 게시글의 좋아요가 이미 존재하는 경우',
+      status: 500,
+      description: '보드를 생성하는 중 오류가 발생한 경우',
       content: {
         JSON: {
           example: {
-            success: false,
-            code: 409,
-            data: '이미 좋아요가 있습니다',
+            statusCode: 500,
+            message: '보드를 생성하는 중 오류가 발생했습니다.',
           },
         },
       },
     }),
+    ApiHeaders([
+      {
+        name: 'access_token',
+        description: '액세스 토큰',
+        required: true,
+        example: '여기에 액세스 토큰',
+      },
+    ]),
   );
 }

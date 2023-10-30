@@ -51,6 +51,8 @@ export class BoardsController {
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<CreateBoardImageDto[]> {
     const userId = await this.tokenService.decodeToken(accesstoken);
+    console.log(files);
+
     return await this.boardImagesService.createBoardImages(
       boardId,
       files,
@@ -73,6 +75,7 @@ export class BoardsController {
     @Query('boardId') boardId: number,
     @Headers('access_token') accesstoken: string,
   ): Promise<BoardResponseDTO> {
+    ``;
     const userId = await this.tokenService.decodeToken(accesstoken);
     return await this.boardsService.findOneBoard(boardId, userId);
   }
@@ -87,34 +90,21 @@ export class BoardsController {
   }
 
   @Patch('/images')
-  @UseInterceptors(FilesInterceptor('files'))
-  async editBoardImage(
+  @UseInterceptors(FilesInterceptor('files', 3))
+  async editBoardImages(
     @Headers('access_token') accessToken: string,
     @Query('boardId') boardId: number,
-    @UploadedFiles() files: Express.Multer.File[],
+    @Body() formData: FormData, // 재진이가 보낸 FormData
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const updatedImages = await this.boardImagesService.updateBoardImages(
+    console.log(formData);
+
+    return await this.boardImagesService.updateBoardImages(
       boardId,
-      files,
+      formData,
       userId,
     );
-    return updatedImages;
   }
-
-  // @Patch('/images')
-  // async editBoardImage(
-  //   @Headers('access_token') accesstoken: string,
-  //   @Query('boardId') boardId: number,
-  //   @UploadedFiles() files: Express.Multer.File[],
-  // ) {
-  //   const userId = await this.tokenService.decodeToken(accesstoken);
-  //   return await this.boardImagesService.updateBoardImage(
-  //     boardId,
-  //     files,
-  //     userId,
-  //   );
-  // }
 
   @Delete('')
   async deleteBoard(
@@ -124,13 +114,4 @@ export class BoardsController {
     const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);
   }
-
-  // @Delete('/images')
-  // async deleteBoardImages(
-  //   @Query('boardImageId') boardImageId: number,
-  //   @Headers('access_token') accessToken: string,
-  // ) {
-  //   const userId = await this.tokenService.decodeToken(accessToken);
-  //   await this.boardsService.delteBoardImage(boardImageId, userId);
-  // }
 }
