@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   ParseIntPipe,
   Post,
@@ -28,12 +29,16 @@ import { ApiDeleteChatRoom } from '../swagger-decorators/delete-chat-room.decora
 import { ApiGetChats } from '../swagger-decorators/get-chats.decorator';
 import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notification.decorator';
 import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
+import { TokenService } from 'src/auth/services/token.service';
 
 @ApiTags('CHAT')
 @Controller('chat-room')
 @UsePipes(ValidationPipe)
 export class ChatController {
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private tokenService: TokenService,
+  ) {}
 
   @ApiGetChatNotification()
   @Sse('listener')
@@ -84,13 +89,15 @@ export class ChatController {
   @UseInterceptors(FileInterceptor('file'))
   async createChatImage(
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-    @Users() user: User,
+    @Headers('access_token') accessToken: string,
     @Body() body: ReceivedUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    let userId = await this.tokenService.decodeToken(accessToken);
+    userId = 12345642;
     return this.chatService.createChatImage(
       roomId,
-      user.id,
+      userId,
       body.receiverId,
       file,
     );

@@ -190,20 +190,18 @@ export class ChatService {
 
     const imageUrl = await this.s3Service.ChatImageUpload(file, myId);
 
-    const returnedChat = await this.chatRepository.createChatImage(
+    return await this.chatRepository.createChatImage(
       roomId,
       myId,
       receiverId,
       imageUrl.url,
     );
 
-    const chat = {
-      content: returnedChat.content,
-      sender: returnedChat.sender,
-      receiver: returnedChat.receiver,
-    };
-
-    return chat;
+    // const chat = {
+    //   content: returnedChat.content,
+    //   sender: returnedChat.sender,
+    //   receiver: returnedChat.receiver,
+    // };
   }
 
   async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {

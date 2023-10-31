@@ -13,6 +13,7 @@ import { S3Module } from 'src/common/s3/s3.module';
 import { ChatRepository } from './repositories/chat.repository';
 import { NotificationService } from './services/notification.service';
 import { EventsGateway } from './events/events.gateway';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { EventsGateway } from './events/events.gateway';
       { name: ChatNotification.name, schema: ChatNotificationSchema },
     ]),
     S3Module,
+    AuthModule,
   ],
   controllers: [ChatController],
   providers: [ChatService, ChatRepository, NotificationService, EventsGateway],
