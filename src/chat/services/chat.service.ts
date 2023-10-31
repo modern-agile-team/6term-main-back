@@ -190,7 +190,7 @@ export class ChatService {
 
     const imageUrl = await this.s3Service.ChatImageUpload(file, myId);
 
-    return await this.chatRepository.createChatImage(
+    return this.chatRepository.createChatImage(
       roomId,
       myId,
       receiverId,
