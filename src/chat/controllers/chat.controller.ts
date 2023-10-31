@@ -93,11 +93,11 @@ export class ChatController {
     @Body() body: ReceivedUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    let userId = await this.tokenService.decodeToken(accessToken);
-    userId = 12345642;
+    let senderId = await this.tokenService.decodeToken(accessToken);
+    senderId = 12345642;
     return this.chatService.createChatImage(
       roomId,
-      userId,
+      senderId,
       body.receiverId,
       file,
     );

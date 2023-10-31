@@ -12,9 +12,15 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from 'src/chat/services/chat.service';
 import { PostChatDto } from '../dto/post-chat.dto';
 import { AsyncApiSub } from 'nestjs-asyncapi';
-import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  BadRequestException,
+  UseFilters,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { LoginChatRoomDto } from '../dto/login-chat-room.dto';
 import { WebSocketExceptionFilter } from '../exceptions/websocket-exception.filter';
+import mongoose from 'mongoose';
 
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 @UsePipes(ValidationPipe)
@@ -47,6 +53,10 @@ export class EventsGateway
   ) {
     console.log('login', loginChatRoomDto.userId);
     loginChatRoomDto.rooms.forEach((room) => {
+      const isObjectId = mongoose.isObjectIdOrHexString(room);
+      if (!isObjectId) {
+        throw new BadRequestException('오브젝트 id 형식이 아닙니다');
+      }
       console.log('join', socket.nsp.name, room);
       socket.join(room.toString());
     });
@@ -72,8 +82,20 @@ export class EventsGateway
     @MessageBody() postChatDto: PostChatDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    const chat = await this.chatService.createChat(postChatDto);
-    socket.to(postChatDto.roomId.toString()).emit('message', chat);
+    postChatDto.hasOwnProperty('content')
+      ? async () => {
+          const returnedChat = await this.chatService.createChat(postChatDto);
+          socket
+            .to(postChatDto.roomId.toString())
+            .emit('message', returnedChat);
+        }
+      : async () => {
+          const returnedChat =
+            await this.chatService.findChatImage(postChatDto);
+          socket
+            .to(postChatDto.roomId.toString())
+            .emit('message', returnedChat);
+        };
   }
 
   afterInit(server: Server): any {

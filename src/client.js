@@ -1,4 +1,4 @@
-const namespaceURL = 'http://localhost:3000/ch-650bde3798dd4c34439c30dc';
+const namespaceURL = 'http://localhost:3000/ch-653383a4468680bc4e9f8491';
 const socket = io(namespaceURL);
 
 socket.on('connect', () => {
@@ -6,8 +6,8 @@ socket.on('connect', () => {
 
   // 예제로 'login' 이벤트를 보내는 방법
   socket.emit('login', {
-    id: 1,
-    rooms: ['650bde3798dd4c34439c30dc'],
+    userId: 1,
+    rooms: ['653383a4468680bc4e9f8491'],
   });
   // socket.emit('messages', {
   //   roomId: '650bde3798dd4c34439c30dc',
