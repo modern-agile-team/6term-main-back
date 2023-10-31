@@ -64,6 +64,7 @@ export class EventsGateway
 
   @AsyncApiSub({
     description: `
+    imageUrl 혹은 content로 이미지 전송인지, 스트링 챗인지 판별
     채팅 전송
     리턴 값
     {
@@ -82,20 +83,13 @@ export class EventsGateway
     @MessageBody() postChatDto: PostChatDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    postChatDto.hasOwnProperty('content')
-      ? async () => {
-          const returnedChat = await this.chatService.createChat(postChatDto);
-          socket
-            .to(postChatDto.roomId.toString())
-            .emit('message', returnedChat);
-        }
-      : async () => {
-          const returnedChat =
-            await this.chatService.findChatImage(postChatDto);
-          socket
-            .to(postChatDto.roomId.toString())
-            .emit('message', returnedChat);
-        };
+    if (postChatDto.hasOwnProperty('content')) {
+      const returnedChat = await this.chatService.createChat(postChatDto);
+      socket.to(postChatDto.roomId.toString()).emit('message', returnedChat);
+    } else {
+      const returnedChat = await this.chatService.findChatImage(postChatDto);
+      socket.to(postChatDto.roomId.toString()).emit('message', returnedChat);
+    }
   }
 
   afterInit(server: Server): any {
