@@ -1,5 +1,14 @@
 import { AuthService } from '../services/auth.service';
-import { BadRequestException, Controller, Delete, Get, Headers, Post, Query, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,7 +27,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private tokenService: TokenService,
-    private s3Service: S3Service
+    private s3Service: S3Service,
   ) {}
 
   @ApiNaverLogin()
@@ -27,12 +36,18 @@ export class AuthController {
     if (!code) {
       throw new BadRequestException('인가코드가 없습니다.');
     }
-    
-    const { userId, naverAccessToken, naverRefreshToken } = await this.authService.naverLogin(code);
+
+    const { userId, naverAccessToken, naverRefreshToken } =
+      await this.authService.naverLogin(code);
     const accessToken = await this.tokenService.createAccessToken(userId);
     const refreshToken = await this.tokenService.createRefreshToken(userId);
 
-    await this.tokenService.saveTokens(userId, refreshToken, naverAccessToken, naverRefreshToken);
+    await this.tokenService.saveTokens(
+      userId,
+      refreshToken,
+      naverAccessToken,
+      naverRefreshToken,
+    );
 
     return res.json({ accessToken, refreshToken });
   }
@@ -44,18 +59,27 @@ export class AuthController {
       throw new BadRequestException('인가코드가 없습니다.');
     }
 
-    const { userId, kakaoAccessToken, kakaoRefreshToken } = await this.authService.kakaoLogin(code);
+    const { userId, kakaoAccessToken, kakaoRefreshToken } =
+      await this.authService.kakaoLogin(code);
     const accessToken = await this.tokenService.createAccessToken(userId);
     const refreshToken = await this.tokenService.createRefreshToken(userId);
 
-    await this.tokenService.saveTokens(userId, refreshToken, kakaoAccessToken, kakaoRefreshToken);
+    await this.tokenService.saveTokens(
+      userId,
+      refreshToken,
+      kakaoAccessToken,
+      kakaoRefreshToken,
+    );
 
     return res.json({ accessToken, refreshToken });
   }
 
   @ApiNewAccessToken()
   @Get('new-access-token')
-  async newAccessToken(@Headers('refresh_token') refreshToken: string, @Res() res) {
+  async newAccessToken(
+    @Headers('refresh_token') refreshToken: string,
+    @Res() res,
+  ) {
     const userId = await this.tokenService.decodeToken(refreshToken);
     const newAccessToken = await this.tokenService.createAccessToken(userId);
     return res.json({ accessToken: newAccessToken });
@@ -65,18 +89,26 @@ export class AuthController {
   @Post('kakao/logout')
   async kakaoLogout(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const { kakaoAccessToken, kakaoRefreshToken } = await this.tokenService.getUserTokens(userId)[0];
+    const { socialAccessToken, socialRefreshToken } =
+      await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.kakaoLogout(kakaoAccessToken, kakaoRefreshToken);
+    return await this.authService.kakaoLogout(
+      socialAccessToken,
+      socialRefreshToken,
+    );
   }
 
   @ApiKakaoUnlink()
   @Post('kakao/unlink')
   async kakaoUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const { kakaoAccessToken, kakaoRefreshToken } = await this.tokenService.getUserTokens(userId)[0];
+    const { socialAccessToken, socialRefreshToken } =
+      await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.kakaoUnlink(kakaoAccessToken, kakaoRefreshToken);
+    return await this.authService.kakaoUnlink(
+      socialAccessToken,
+      socialRefreshToken,
+    );
   }
 
   @ApiNaverLogout()
@@ -90,9 +122,13 @@ export class AuthController {
   @Post('naver/unlink')
   async naverUnlink(@Headers('access_token') accessToken: string) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    const { naverAccessToken, naverRefreshToken } = await this.tokenService.getUserTokens(userId)[0];
+    const { socialAccessToken, socialRefreshToken } =
+      await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
-    return await this.authService.naverUnlink(naverAccessToken, naverRefreshToken);
+    return await this.authService.naverUnlink(
+      socialAccessToken,
+      socialRefreshToken,
+    );
   }
 
   @ApiDeleteAccount()

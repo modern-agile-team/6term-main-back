@@ -9,6 +9,7 @@ import {
 import { UserImage } from './user-image.entity';
 import { Token } from 'src/auth/entities/token.entity';
 import { Board } from 'src/boards/entities/board.entity';
+import { Friend } from 'src/friends/entities/friends.entity';
 
 @Entity({
   name: 'user',
@@ -43,4 +44,16 @@ export class User {
     onDelete: 'CASCADE',
   })
   token: Token;
+
+  @OneToMany(() => Friend, (friend) => friend.requesterId, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'requester_id' })
+  requester: Friend;
+
+  @OneToMany(() => Friend, (friend) => friend.respondentId, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'respondent_id' })
+  respondent: Friend;
 }

@@ -8,6 +8,20 @@ export class UserRepository {
     private readonly entityManager: EntityManager,
   ) {}
 
+  async getUserName(userId: number): Promise<string> {
+    const user = await this.entityManager.findOne(User, {
+      where: { id: userId },
+      select: ["name"],
+    });
+  
+    if (!user) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+  
+    return user.name;
+  }
+  
+
   async findUser(email: string, provider: string): Promise<User | undefined> {
     return this.entityManager.findOne(User, { where: { email, provider } });
   }

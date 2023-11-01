@@ -8,10 +8,12 @@ import { EntityManager, Equal } from 'typeorm';
 import { Board } from '../entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
 import { BoardLike } from '../entities/board-like.entity';
+import { NoticeService } from 'src/common/notice/services/notice.service';
 
 @Injectable()
 export class BoardsLikeService {
   constructor(
+    private noticeService: NoticeService,
     private entityManager: EntityManager,
     private boardsLikeRepositry: BoardsLikeRepository,
   ) {}
@@ -41,10 +43,25 @@ export class BoardsLikeService {
       throw new ConflictException('이미 좋아요가 있습니다');
     }
 
-    return this.boardsLikeRepositry.addBoardLike(board, user);
+    const returnedLike = await this.boardsLikeRepositry.addBoardLike(
+      boardId,
+      userId,
+    );
+
+    const returnedBoard = await this.entityManager.findOne(Board, {
+      where: { id: boardId },
+    });
+
+    await this.noticeService.createBoardNoticeFromLike(
+      boardId,
+      userId,
+      returnedBoard.userId,
+    );
+
+    return returnedLike;
   }
 
-  async getBoardLike(boardId: number) {
+  async getBoardLikesAndIsLike(boardId: number, userId: number) {
     const board = await this.entityManager.findOne(Board, {
       where: { id: boardId },
     });
@@ -52,7 +69,35 @@ export class BoardsLikeService {
     if (!board) {
       throw new NotFoundException('해당 게시글이 없습니다.');
     }
-    return this.boardsLikeRepositry.getBoardLike(boardId);
+
+    const boardLikesCount =
+      await this.boardsLikeRepositry.getBoardLikesCount(boardId);
+
+    const isBoardLike = await this.boardsLikeRepositry.isBoardLike(
+      boardId,
+      userId,
+    );
+
+    if (!isBoardLike) {
+      return { isLike: false, boardLikesCount };
+    }
+
+    return { isLike: true, boardLikesCount };
+  }
+
+  async getBoardLikes(boardId: number) {
+    const board = await this.entityManager.findOne(Board, {
+      where: { id: boardId },
+    });
+
+    if (!board) {
+      throw new NotFoundException('해당 게시글이 없습니다.');
+    }
+
+    const boardLikesCount =
+      await this.boardsLikeRepositry.getBoardLikesCount(boardId);
+
+    return { isLike: false, boardLikesCount };
   }
 
   async deleteBoardLike(boardId: number, userId: number) {

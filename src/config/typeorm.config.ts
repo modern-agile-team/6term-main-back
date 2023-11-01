@@ -9,9 +9,9 @@ import { Board } from 'src/boards/entities/board.entity';
 import { CommentLike } from 'src/comments/entities/comment-like.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Recomment } from 'src/comments/entities/recomment.entity';
-import { Friend } from 'src/friend/entities/friend.entity';
-import { BoardNotification } from 'src/notice/entities/board-notice.entity';
-import { CommentNotification } from 'src/notice/entities/comment-notice.entity';
+import { Friend } from 'src/friends/entities/friends.entity';
+import { BoardNotification } from 'src/common/notice/entities/board-notice.entity';
+import { CommentNotification } from 'src/common/notice/entities/comment-notice.entity';
 import { UserImage } from 'src/users/entities/user-image.entity';
 import { User } from 'src/users/entities/user.entity';
 

@@ -4,71 +4,114 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
-  UploadedFile,
   UseInterceptors,
   Query,
+  Headers,
+  UploadedFiles,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
 import { CreateBoardDto } from '../dto/create.board.dto';
 import { BoardImagesService } from '../services/BoardImage.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
+import { TokenService } from 'src/auth/services/token.service';
+import { ApiUploadBoardImages } from '../swagger-decorators/upload-baord-images-decorator';
+import { ApiAddBoard } from '../swagger-decorators/add-board-decorators';
+import { ApiGetPageBoards } from '../swagger-decorators/get-page-boards-decorators';
+import { ApiGetOneBoard } from '../swagger-decorators/get-one-board-decorators';
+import { ApiUpdateBoard } from '../swagger-decorators/patch-board-decorators';
 
 @Controller('boards')
 export class BoardsController {
   constructor(
     private readonly boardsService: BoardsService,
     private readonly boardImagesService: BoardImagesService,
+    private tokenService: TokenService,
   ) {}
 
-  @Post()
-  async create(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
-    return this.boardsService.create(createBoardDto);
+  @Post('')
+  @ApiAddBoard()
+  async create(
+    @Headers('access_token') accessToken: string,
+    @Body() createBoardDto: CreateBoardDto,
+  ): Promise<Board> {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.boardsService.create(createBoardDto, userId);
   }
 
-  @Post(':boardId/images')
-  @UseInterceptors(FileInterceptor('file'))
+  @Post('/images')
+  @UseInterceptors(FilesInterceptor('files', 3))
+  @ApiUploadBoardImages()
   async uploadImage(
-    @Param('boardId') boardId: number,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<CreateBoardImageDto> {
-    return this.boardImagesService.createBoardImages(boardId, file);
+    @Headers('access_token') accesstoken: string,
+    @Query('boardId') boardId: number,
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<CreateBoardImageDto[]> {
+    const userId = await this.tokenService.decodeToken(accesstoken);
+    console.log(files);
+
+    return await this.boardImagesService.createBoardImages(
+      boardId,
+      files,
+      userId,
+    );
   }
 
-  @Get()
+  @Get('')
+  @ApiGetPageBoards()
   async findPageBoards(
     @Query('page') page = 1,
     @Query('limit') limit = 30,
-  ): Promise<BoardResponseDTO[]> {
-    return this.boardsService.findPagedBoards(page, limit);
+  ): Promise<{ data: BoardResponseDTO[]; total: number }> {
+    return await this.boardsService.findPagedBoards(page, limit);
   }
 
-  @Get(':boardId')
+  @Get('/unit')
+  @ApiGetOneBoard()
   async findOne(
-    @Param('boardId') boardId: string,
-  ): Promise<BoardResponseDTO | undefined> {
-    return this.boardsService.findOneBoard(+boardId);
+    @Query('boardId') boardId: number,
+    @Headers('access_token') accesstoken: string,
+  ): Promise<BoardResponseDTO> {
+    ``;
+    const userId = await this.tokenService.decodeToken(accesstoken);
+    return await this.boardsService.findOneBoard(boardId, userId);
   }
 
-  @Patch(':boardId')
+  @Patch('')
+  @ApiUpdateBoard()
   async editBoard(
-    @Param('boardId') boardId: string,
+    @Query('boardId') boardId: number,
     @Body() boardData: Partial<Board>,
   ): Promise<Board> {
-    const updatedBoard = await this.boardsService.updateBoard(
-      +boardId,
-      boardData,
-    );
-    return updatedBoard;
+    return await this.boardsService.updateBoard(boardId, boardData);
   }
 
-  @Delete(':boardId')
-  async deleteBoard(@Param('boardId') boardId: number): Promise<void> {
-    const userId = 1; // 임시로 1 받아오는겁니다 (토큰 완성되면 수정예정)
+  @Patch('/images')
+  @UseInterceptors(FilesInterceptor('files', 3))
+  async editBoardImages(
+    @Headers('access_token') accessToken: string,
+    @Query('boardId') boardId: number,
+    @Body() formData: FormData, // 재진이가 보낸 FormData
+  ) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    console.log(formData);
+
+    return await this.boardImagesService.updateBoardImages(
+      boardId,
+      formData,
+      userId,
+    );
+  }
+
+  @Delete('')
+  async deleteBoard(
+    @Query('boardId') boardId: number,
+    @Headers('access_token') accessToken: string,
+  ) {
+    const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);
   }
 }

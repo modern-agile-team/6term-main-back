@@ -33,7 +33,7 @@ export class TokenRepository {
 
   async deleteTokens(userId: number): Promise<Token | DeleteResult> {
     const res = await this.entityManager.delete(Token, { userId });
-    if (res.affected === 0) {
+    if (!res.affected) {
       throw new NotFoundException('토큰을 찾을 수 없습니다.');
     }
     return res;

@@ -9,7 +9,6 @@ export class BoardResponseDTO {
   createAt: Date;
   updateAt: Date;
   userId: {
-    id: number;
     name: string;
     userImage: UserImage | UserImage[];
   };
