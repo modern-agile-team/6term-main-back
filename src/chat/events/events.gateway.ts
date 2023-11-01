@@ -21,7 +21,6 @@ import {
 import { LoginChatRoomDto } from '../dto/login-chat-room.dto';
 import { WebSocketExceptionFilter } from '../exceptions/websocket-exception.filter';
 import mongoose from 'mongoose';
-import { TokenService } from 'src/auth/services/token.service';
 
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 @UsePipes(ValidationPipe)

@@ -201,16 +201,16 @@ export class ChatService {
     );
   }
 
-  async findChatImage({ roomId, content, senderId, receiverId }) {
+  async findChatImage({ roomId, imageUrl, senderId, receiverId }) {
     const isChatAndUsers = await this.chatModel.findOne({
       $and: [
         { chatroom_id: roomId },
         { sender: senderId },
         { receiver: receiverId },
-        { content: content },
+        { content: imageUrl },
       ],
     });
-
+    console.log(isChatAndUsers);
     if (!isChatAndUsers) {
       throw new NotFoundException('해당 채팅을 찾지 못했습니다.');
     }
