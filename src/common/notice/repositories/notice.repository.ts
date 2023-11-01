@@ -7,10 +7,14 @@ export class NoticeRepository {
   constructor(private entityManager: EntityManager) {}
 
   async getAllNotifications(userId: number) {
-    return this.entityManager.find(BoardNotification, {
+    const notifications = await this.entityManager.find(BoardNotification, {
+      skip: 1,
+      take: 10,
       withDeleted: true,
       where: { receiverId: userId },
     });
+
+    return notifications;
   }
 
   async createBoardNoticeFromComment(
