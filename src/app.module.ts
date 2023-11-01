@@ -16,6 +16,7 @@ import { NoticeModule } from './common/notice/notice.module';
 import * as mongoose from 'mongoose';
 import { UserImageRepository } from './users/repositories/user-image.repository';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BoardsModule,
     FriendsModule,
     NoticeModule,
+    SearchModule,
   ], //
   providers: [
     UserImageService,
