@@ -17,11 +17,6 @@ export class PostChatDto {
   })
   roomId: mongoose.Types.ObjectId;
 
-  @ApiProperty({
-    example: '안녕하세요',
-    description: '채팅 내용',
-  })
-  @IsString()
   @ApiPropertyOptional({
     example: '안녕하세요',
     description: '채팅 내용',

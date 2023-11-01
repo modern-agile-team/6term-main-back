@@ -14,6 +14,7 @@ import { S3Service } from 'src/common/s3/s3.service';
 import { NotificationService } from './notification.service';
 import { ChatNotification } from '../schemas/chat-notifiation.schemas';
 import { Subject, catchError, map } from 'rxjs';
+import { Chat } from '../schemas/chat.schemas';
 
 @Injectable()
 export class ChatService {
@@ -25,6 +26,8 @@ export class ChatService {
     private readonly chatRepository: ChatRepository,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
+    @InjectModel(Chat.name)
+    private readonly chatModel: mongoose.Model<Chat>,
     @InjectModel(ChatNotification.name)
     private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
   ) {}
@@ -190,20 +193,29 @@ export class ChatService {
 
     const imageUrl = await this.s3Service.ChatImageUpload(file, myId);
 
-    const returnedChat = await this.chatRepository.createChatImage(
+    return this.chatRepository.createChatImage(
       roomId,
       myId,
       receiverId,
       imageUrl.url,
     );
+  }
 
-    const chat = {
-      content: returnedChat.content,
-      sender: returnedChat.sender,
-      receiver: returnedChat.receiver,
-    };
+  async findChatImage({ roomId, imageUrl, senderId, receiverId }) {
+    const isChatAndUsers = await this.chatModel.findOne({
+      $and: [
+        { chatroom_id: roomId },
+        { sender: senderId },
+        { receiver: receiverId },
+        { content: imageUrl },
+      ],
+    });
+    console.log(isChatAndUsers);
+    if (!isChatAndUsers) {
+      throw new NotFoundException('해당 채팅을 찾지 못했습니다.');
+    }
 
-    return chat;
+    return isChatAndUsers;
   }
 
   async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {

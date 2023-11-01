@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNumber } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 import mongoose from 'mongoose';
 
 export class LoginChatRoomDto {
@@ -10,7 +10,7 @@ export class LoginChatRoomDto {
   })
   userId: number;
 
-  @IsMongoId()
+  @IsArray()
   @ApiProperty({
     example: '650bde3798dd4c34439c30dc',
     description: '채팅을 전송하는 채팅방 id',
