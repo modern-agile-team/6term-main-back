@@ -1,5 +1,24 @@
-import { Injectable } from "@nestjs/common";
+import { ExecutionContext, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { TokenService } from "src/auth/services/token.service";
 
 @Injectable()
-export class JwtAccessTokenGuard extends AuthGuard('jwt') {}
+export class JwtAccessTokenGuard {
+  constructor(
+    private tokenService: TokenService,
+  ) {}
+
+  async canActivate(context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest();
+    const accessToken = request.headers['access_token'];
+
+    if (!accessToken) {
+      return false;
+    }
+
+    const userId = await this.tokenService.decodeToken(accessToken);
+    request.user = { userId };
+
+    return true;
+  }
+}

@@ -118,8 +118,7 @@ export class AuthController {
   @UseGuards(JwtAccessTokenGuard)
   @Post('naver/logout')
   async naverLogout(@GetUserId() userId: number) {
-    // const userId = await this.tokenService.decodeToken(accessToken);
-    console.log('userId',userId);
+    console.log('userId: ', userId);
     
     return await this.tokenService.deleteTokens(userId);
   }

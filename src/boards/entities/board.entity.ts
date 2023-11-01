@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -34,7 +35,8 @@ export class Board {
   })
   boardLike: BoardLike;
 
-  @Column()
+  @Index({ fulltext: true })
+  @Column('varchar')
   head: string;
 
   @Column()
