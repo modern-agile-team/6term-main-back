@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
@@ -20,6 +21,8 @@ import { ApiKakaoUnlink } from '../swagger-decorators/kakao-unlink.decorator';
 import { ApiNaverLogout } from '../swagger-decorators/naver-logout.decorator';
 import { ApiNaverUnlink } from '../swagger-decorators/naver-unlink.decorator';
 import { ApiDeleteAccount } from '../swagger-decorators/delete-account.decorator';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 
 @Controller('auth')
 @ApiTags('auth API')
@@ -112,9 +115,12 @@ export class AuthController {
   }
 
   @ApiNaverLogout()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('naver/logout')
-  async naverLogout(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async naverLogout(@GetUserId() userId: number) {
+    // const userId = await this.tokenService.decodeToken(accessToken);
+    console.log('userId',userId);
+    
     return await this.tokenService.deleteTokens(userId);
   }
 
