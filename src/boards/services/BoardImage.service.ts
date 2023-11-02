@@ -17,7 +17,11 @@ export class BoardImagesService {
   ): Promise<CreateBoardImageDto[]> {
     const savedImagesArray: CreateBoardImageDto[] = [];
     for (const file of files) {
-      const uploadedImage = await this.s3Service.BoardImageUpload(file, userId);
+      const uploadedImage = await this.s3Service.uploadImage(
+        file,
+        userId,
+        'BoadImages/',
+      );
       const boardImage = new CreateBoardImageDto();
       boardImage.boardId = boardId;
       boardImage.imageUrl = uploadedImage.url;
@@ -30,38 +34,42 @@ export class BoardImagesService {
 
   async updateBoardImages(
     boardId: number,
-    formData: FormData,
+    files: Express.Multer.File[],
     userId: number,
-  ): Promise<CreateBoardImageDto[]> {
-    const currentImages =
+    deleteImageUrl: string,
+  ): Promise<any> {
+    const existingImages =
       await this.boardImageRepository.getBoardImages(boardId);
-    const updatedImages: CreateBoardImageDto[] = [];
 
-    for (const [key, value] of formData.entries()) {
-      if (key === 'files') {
-        if (typeof value === 'string' && value.startsWith('http')) {
-          // value값이 URL인 경우, DB와 일치하는지 확인
-          const existingImage = currentImages.find(
-            (image) => image.imageUrl === value,
-          );
-          if (existingImage) {
-            updatedImages.push(existingImage);
-          }
-        } else {
-          const file = value as File; // 이미지 파일인 경우
-          const fileUrl = await this.s3Service.BoardImageUpload(file, userId);
+    const imagesToDelete = existingImages.filter(
+      (image) => image.imageUrl === deleteImageUrl,
+    );
+    const s3ToDelete = imagesToDelete.map((image) => {
+      const parts = image.imageUrl.split('/');
+      const fileName = parts[parts.length - 1];
+      return 'BoardImages/' + fileName;
+    });
 
-          const newImage = new CreateBoardImageDto();
-          newImage.boardId = boardId;
-          newImage.imageUrl = fileUrl.url;
+    await this.boardImageRepository.deleteImages(imagesToDelete);
+    await this.s3Service.deleteImage(s3ToDelete.join(','));
 
-          const savedImage =
-            await this.boardImageRepository.createBoardImage(newImage);
-          updatedImages.push(savedImage);
-        }
-      }
+    const newImagesArray: CreateBoardImageDto[] = [];
+    for (const file of files) {
+      const uploadedImage = await this.s3Service.uploadImage(
+        file,
+        userId,
+        'BoardImages/',
+      );
+      const boardImage = new CreateBoardImageDto();
+      boardImage.boardId = boardId;
+      boardImage.imageUrl = uploadedImage.url;
+      const savedImage =
+        await this.boardImageRepository.saveBoardImage(boardImage);
+      newImagesArray.push(savedImage);
     }
-
-    return updatedImages;
+    return {
+      message: '이미지 업데이트 및 삭제가 성공적으로 처리되었습니다.',
+      newImagesArray,
+    };
   }
 }

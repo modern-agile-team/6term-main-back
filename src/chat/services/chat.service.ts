@@ -191,7 +191,7 @@ export class ChatService {
       throw new NotFoundException('채팅을 전송할 유저가 채팅방에 없습니다');
     }
 
-    const imageUrl = await this.s3Service.ChatImageUpload(file, myId);
+    const imageUrl = await this.s3Service.uploadImage(file, myId, 'ChatImages');
 
     return this.chatRepository.createChatImage(
       roomId,

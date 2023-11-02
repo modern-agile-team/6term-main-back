@@ -27,7 +27,9 @@ export class Board {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToMany(() => BoardImage, (boardImage) => boardImage.board)
+  @OneToMany(() => BoardImage, (boardImage) => boardImage.board, {
+    onDelete: 'CASCADE',
+  })
   boardImages: BoardImage[];
 
   @OneToMany(() => BoardLike, (boardLike) => boardLike.boardId, {

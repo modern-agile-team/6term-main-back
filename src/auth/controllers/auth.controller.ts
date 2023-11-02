@@ -4,10 +4,10 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Post,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
@@ -20,6 +20,9 @@ import { ApiKakaoUnlink } from '../swagger-decorators/kakao-unlink.decorator';
 import { ApiNaverLogout } from '../swagger-decorators/naver-logout.decorator';
 import { ApiNaverUnlink } from '../swagger-decorators/naver-unlink.decorator';
 import { ApiDeleteAccount } from '../swagger-decorators/delete-account.decorator';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { JwtRefreshTokenGuard } from 'src/config/guards/jwt-refresh-token.guard';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 
 @Controller('auth')
 @ApiTags('auth API')
@@ -75,20 +78,20 @@ export class AuthController {
   }
 
   @ApiNewAccessToken()
+  @UseGuards(JwtRefreshTokenGuard)
   @Get('new-access-token')
   async newAccessToken(
-    @Headers('refresh_token') refreshToken: string,
+    @GetUserId() userId: number,
     @Res() res,
   ) {
-    const userId = await this.tokenService.decodeToken(refreshToken);
     const newAccessToken = await this.tokenService.createAccessToken(userId);
     return res.json({ accessToken: newAccessToken });
   }
 
   @ApiKakaoLogout()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('kakao/logout')
-  async kakaoLogout(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async kakaoLogout(@GetUserId() userId: number) {
     const { socialAccessToken, socialRefreshToken } =
       await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
@@ -99,9 +102,9 @@ export class AuthController {
   }
 
   @ApiKakaoUnlink()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('kakao/unlink')
-  async kakaoUnlink(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async kakaoUnlink(@GetUserId() userId: number) {
     const { socialAccessToken, socialRefreshToken } =
       await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
@@ -112,16 +115,16 @@ export class AuthController {
   }
 
   @ApiNaverLogout()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('naver/logout')
-  async naverLogout(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async naverLogout(@GetUserId() userId: number) {
     return await this.tokenService.deleteTokens(userId);
   }
 
   @ApiNaverUnlink()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('naver/unlink')
-  async naverUnlink(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async naverUnlink(@GetUserId() userId: number) {
     const { socialAccessToken, socialRefreshToken } =
       await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
@@ -132,9 +135,9 @@ export class AuthController {
   }
 
   @ApiDeleteAccount()
+  @UseGuards(JwtAccessTokenGuard)
   @Delete('account')
-  async accountDelete(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async accountDelete(@GetUserId() userId: number) {
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
     return await this.authService.accountDelete(userId);
   }
