@@ -11,7 +11,18 @@ export function ApiAddBoard() {
       status: 200,
       description: '성공적으로 보드를 생성한 경우',
       content: {
-        JSON: { example: { message: '보드를 성공적으로 생성하였습니다.' } },
+        JSON: {
+          example: {
+            head: '게시물 제목',
+            body: '게시물 내용',
+            main_category: '자유',
+            sub_category: '잡담',
+            userId: '유저 아이디가 number로 들어옵니다',
+            id: '생성된 보드 id number로 들어옵니다',
+            createAt: '2023-10-29T23:45:54.023Z',
+            updateAt: '2023-10-29T23:45:54.023Z',
+          },
+        },
       },
     }),
     ApiResponse({

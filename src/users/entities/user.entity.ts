@@ -5,6 +5,7 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
+  Index,
 } from 'typeorm';
 import { UserImage } from './user-image.entity';
 import { Token } from 'src/auth/entities/token.entity';
@@ -24,7 +25,8 @@ export class User {
   @Column({ length: 10 })
   provider: string;
 
-  @Column({ length: 20 })
+  @Index({ fulltext: true })
+  @Column('varchar', { length: 20 })
   name: string;
 
   @Column({ length: 100 })

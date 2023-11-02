@@ -36,7 +36,10 @@ export class BoardRepository {
     });
   }
 
-  async updateBoard(id: number, boardData: Partial<Board>): Promise<Board> {
+  async updateBoard(
+    id: number,
+    boardData: Partial<CreateBoardDto>,
+  ): Promise<Board> {
     const existingBoard = await this.entityManager.findOne(Board, {
       relations: ['user', 'user.userImage', 'boardImages'],
       where: { id },

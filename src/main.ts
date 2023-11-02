@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './config/swagger';
 import { AsyncApiDocumentBuilder, AsyncApiModule } from 'nestjs-asyncapi';
-import { HttpExceptionFilter } from './http-Exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });

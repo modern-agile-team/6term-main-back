@@ -90,7 +90,7 @@ export class BoardsService {
 
   async updateBoard(
     boardId: number,
-    boardData: Partial<Board>,
+    boardData: Partial<CreateBoardDto>,
   ): Promise<Board | undefined> {
     const existingBoard = await this.boardRepository.findBoardById(boardId);
     for (const key in boardData) {
