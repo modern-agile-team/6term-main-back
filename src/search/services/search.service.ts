@@ -1,22 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { Board } from 'src/boards/entities/board.entity';
+import { User } from 'src/users/entities/user.entity';
 import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class SearchService {
   constructor(private entityManager: EntityManager) {}
-  async searchBoardsAsHeadOrBody(boardHead: string) {
+  async searchBoardsAsHeadOrBody(searchQuery: string) {
     const boardRepository = this.entityManager.getRepository(Board);
-    const returnedBoard = await boardRepository
+
+    return boardRepository
       .createQueryBuilder()
       .select()
-      .where(`MATCH(head) AGAINST (:boardHead)`, {
-        boardHead: `${boardHead}`,
+      .where(`MATCH(head) AGAINST (:searchQuery)`, {
+        searchQuery: `${searchQuery}`,
       })
-      .orWhere(`MATCH(body) AGAINST (:boardHead);`, {
-        boardHead: `${boardHead}`,
+      .orWhere(`MATCH(body) AGAINST (:searchQuery);`, {
+        searchQuery: `${searchQuery}`,
       })
       .getMany();
-    return returnedBoard;
+  }
+
+  async searchUsersAsName(searchQuery: string) {
+    const userRepository = this.entityManager.getRepository(User);
+
+    return userRepository
+      .createQueryBuilder()
+      .select()
+      .where(`MATCH(name) AGAINST (:searchQuery);`, {
+        searchQuery: `${searchQuery}`,
+      })
+      .getMany();
   }
 }
