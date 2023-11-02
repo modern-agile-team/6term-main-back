@@ -29,6 +29,7 @@ import { NoticeModule } from 'src/common/notice/notice.module';
     BoardImageRepository,
     TokenRepository,
   ],
+  exports: [BoardsLikeRepository],
 })
 @Module({})
 export class BoardsModule {}
