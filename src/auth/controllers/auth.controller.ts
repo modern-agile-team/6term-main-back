@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Post,
   Query,
   Res,
@@ -22,6 +21,7 @@ import { ApiNaverLogout } from '../swagger-decorators/naver-logout.decorator';
 import { ApiNaverUnlink } from '../swagger-decorators/naver-unlink.decorator';
 import { ApiDeleteAccount } from '../swagger-decorators/delete-account.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { JwtRefreshTokenGuard } from 'src/config/guards/jwt-refresh-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 
 @Controller('auth')
@@ -78,12 +78,12 @@ export class AuthController {
   }
 
   @ApiNewAccessToken()
+  @UseGuards(JwtRefreshTokenGuard)
   @Get('new-access-token')
   async newAccessToken(
-    @Headers('refresh_token') refreshToken: string,
+    @GetUserId() userId: number,
     @Res() res,
   ) {
-    const userId = await this.tokenService.decodeToken(refreshToken);
     const newAccessToken = await this.tokenService.createAccessToken(userId);
     return res.json({ accessToken: newAccessToken });
   }
