@@ -10,8 +10,11 @@ export class SearchService {
     const returnedBoard = await boardRepository
       .createQueryBuilder()
       .select()
-      .where(`MATCH(head) AGAINST (:boardHead IN BOOLEAN MODE);`, {
-        boardHead: boardHead,
+      .where(`MATCH(head) AGAINST (:boardHead)`, {
+        boardHead: `${boardHead}`,
+      })
+      .orWhere(`MATCH(body) AGAINST (:boardHead);`, {
+        boardHead: `${boardHead}`,
       })
       .getMany();
     return returnedBoard;

@@ -39,7 +39,8 @@ export class Board {
   @Column('varchar')
   head: string;
 
-  @Column()
+  @Index({ fulltext: true })
+  @Column('text')
   body: string;
 
   @Column()
