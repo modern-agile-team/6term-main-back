@@ -63,7 +63,7 @@ export class S3Service {
   async deleteImage(key: string): Promise<boolean> {
     const params = {
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: key,
+      Key: 'UserImages/' + key,
     };
 
     try {

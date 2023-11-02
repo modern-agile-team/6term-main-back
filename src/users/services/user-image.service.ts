@@ -28,8 +28,8 @@ export class UserImageService {
       ).imageUrl; // DB에 이미지가 있는지 확인
       const imageUrlParts = checkUserImage.split('/');
       const imageKey = imageUrlParts[imageUrlParts.length - 1]; // S3에 업로드된 이미지의 키
-      const dbImageUrl = imageUrlParts[imageUrlParts.length - 2]; // 이미지 제공자 이름
-
+      const dbImageUrl = imageUrlParts[imageUrlParts.length - 3]; // 이미지 제공자 이름
+      
       if (
         dbImageUrl == 'ma6-main.s3.ap-northeast-2.amazonaws.com' &&
         imageKey !== 'default_user_image.png'
