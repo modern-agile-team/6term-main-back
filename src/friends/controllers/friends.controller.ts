@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Headers, Param, Patch, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { FriendsService } from '../services/friends.service';
 import { TokenService } from 'src/auth/services/token.service';
 import { ApiGetFriendsReqPending } from '../swagger-decorators/get-friends-req-pending.decorator';
@@ -12,6 +12,8 @@ import { ApiDeleteFriend } from '../swagger-decorators/delete-friend.decorator';
 import { ApiFriendResponseRejectPermanent } from '../swagger-decorators/friend-response-reject-permanent.decorator';
 import { ApiGetRejectPermanent } from '../swagger-decorators/get-reject-permanent.decorator';
 import { ApiDeleteRejectPermanentCancel } from '../swagger-decorators/delete-reject-permanent-cancel.decorator';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 
 @Controller('friends')
 @ApiTags('friends API')
@@ -22,72 +24,72 @@ export class FriendsController {
   ) {}
   
   @ApiGetFriendsReqPending()
+  @UseGuards(JwtAccessTokenGuard)
   @Get('requests/pending')
-  async getFriendsReqPending(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async getFriendsReqPending(@GetUserId() userId: number) {
     return await this.friendsService.getFriendsReqPending(userId);
   }
 
   @ApiGetFriendsResPending()
+  @UseGuards(JwtAccessTokenGuard)
   @Get('responses/pending')
-  async getFriendsResPending(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async getFriendsResPending(@GetUserId() userId: number) {
     return await this.friendsService.getFriendsResPending(userId);
   }
 
   @ApiGetFriends()
+  @UseGuards(JwtAccessTokenGuard)
   @Get()
-  async getFriends(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async getFriends(@GetUserId() userId: number) {
     return await this.friendsService.getFriends(userId);
   }
 
   @ApiGetRejectPermanent()
+  @UseGuards(JwtAccessTokenGuard)
   @Get('responses/reject/permanent')
-  async getRejectPermanent(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async getRejectPermanent(@GetUserId() userId: number) {
     return await this.friendsService.getRejectPermanent(userId);
   }
 
   @ApiFriendRequest()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('requests/:friend_id')
-  async friendRequest(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async friendRequest(@GetUserId() userId: number, @Param('friend_id') friendId: number) {
     return await this.friendsService.friendRequest(userId, friendId);
   }
 
   @ApiFriendResponseAccept()
+  @UseGuards(JwtAccessTokenGuard)
   @Patch('responses/accept/:friend_id')
-  async friendResponseAccept(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async friendResponseAccept(@GetUserId() userId: number, @Param('friend_id') friendId: number) {
     return await this.friendsService.friendResponseAccept(userId, friendId);
   }
 
   @ApiFriendResponseReject()
+  @UseGuards(JwtAccessTokenGuard)
   @Patch('responses/reject/:friend_id')
-  async friendResponseReject(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async friendResponseReject(@GetUserId() userId: number, @Param('friend_id') friendId: number) {
     return await this.friendsService.friendResponseReject(userId, friendId);
   }
 
   @ApiDeleteRejectPermanentCancel()
+  @UseGuards(JwtAccessTokenGuard)
   @Delete('responses/reject/permanent/:friend_id')
-  async friendResponseRejectPermanentCancel(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async friendResponseRejectPermanentCancel(@GetUserId() userId: number, @Param('friend_id') friendId: number) {
     return await this.friendsService.friendResponseRejectPermanentCancel(userId, friendId);
   }
 
   @ApiFriendResponseRejectPermanent()
+  @UseGuards(JwtAccessTokenGuard)
   @Patch('responses/reject/permanent/:friend_id')
-  async friendResponseRejectPermanent(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async friendResponseRejectPermanent(@GetUserId() userId: number, @Param('friend_id') friendId: number) {
     return await this.friendsService.friendResponseRejectPermanent(userId, friendId);
   }
 
   @ApiDeleteFriend()
+  @UseGuards(JwtAccessTokenGuard)
   @Delete(':friend_id')
-  async deleteFriend(@Headers('access_token') accessToken: string, @Param('friend_id') friendId: number) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async deleteFriend(@GetUserId() userId: number, @Param('friend_id') friendId: number) {
     return await this.friendsService.deleteFriend(userId, friendId);
   }
 }
