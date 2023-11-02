@@ -11,7 +11,7 @@ export class SearchService {
     private entityManager: EntityManager,
     private boardLikesRepository: BoardsLikeRepository,
   ) {}
-  async searchBoardsAsHeadOrBody(searchQuery: string) {
+  async searchBoardsByHeadOrBody(searchQuery: string) {
     const boardRepository = this.entityManager.getRepository(Board);
 
     const returnedBoards = await boardRepository
@@ -27,7 +27,7 @@ export class SearchService {
         searchQuery: `${searchQuery}`,
       })
       .getMany();
-    console.log(returnedBoards);
+    console.log(typeof returnedBoards);
 
     const boardResponse: BoardResponseDTO[] = await Promise.all(
       returnedBoards.map(async (board) => {
@@ -59,7 +59,7 @@ export class SearchService {
     return { data: boardResponse, total: boardResponse.length };
   }
 
-  async searchUsersAsName(searchQuery: string) {
+  async searchUsersByName(searchQuery: string) {
     const userRepository = this.entityManager.getRepository(User);
 
     return userRepository
