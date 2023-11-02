@@ -21,7 +21,7 @@ export class S3Service {
 
   private s3Adress = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/`;
 
-  private async uploadImage(
+  async uploadImage(
     file,
     userId,
     folderName,
@@ -48,22 +48,10 @@ export class S3Service {
     }
   }
 
-  async BoardImageUpload(file, userId): Promise<{ url: string; key: string }> {
-    return await this.uploadImage(file, userId, 'BoardImages');
-  }
-
-  async UserImageUpload(file, userId): Promise<{ url: string; key: string }> {
-    return await this.uploadImage(file, userId, 'UserImages');
-  }
-
-  async ChatImageUpload(file, userId): Promise<{ url: string; key: string }> {
-    return await this.uploadImage(file, userId, 'ChatImages');
-  }
-
   async deleteImage(key: string): Promise<boolean> {
     const params = {
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: 'UserImages/' + key,
+      Key: key,
     };
 
     try {

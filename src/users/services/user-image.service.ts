@@ -15,7 +15,7 @@ export class UserImageService {
     file: Express.Multer.File,
   ): Promise<{ message: string }> {
     try {
-      const res = await this.s3Service.UserImageUpload(file, userId); // S3에 이미지 업로드
+      const res = await this.s3Service.uploadImage(file, userId, 'UserImages'); // S3에 이미지 업로드
       if (!res) {
         throw new InternalServerErrorException(
           'S3 이미지 업로드에 실패했습니다.',
@@ -35,7 +35,7 @@ export class UserImageService {
         imageKey !== 'default_user_image.png'
       ) {
         // S3에 업로드된 이미지이고, 기본 이미지가 아닌 경우
-        await this.s3Service.deleteImage(imageKey); // S3에 업로드된 기존 이미지 삭제
+        await this.s3Service.deleteImage('UserImages/' + imageKey); // S3에 업로드된 기존 이미지 삭제
       }
 
       const updateUserImage = await this.userImageRepository.updateUserImage(
