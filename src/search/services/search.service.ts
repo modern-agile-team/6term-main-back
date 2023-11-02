@@ -5,7 +5,7 @@ import { EntityManager } from 'typeorm';
 @Injectable()
 export class SearchService {
   constructor(private entityManager: EntityManager) {}
-  async searchBoardsAsHead(boardHead: string) {
+  async searchBoardsAsHeadOrBody(boardHead: string) {
     const boardRepository = this.entityManager.getRepository(Board);
     const returnedBoard = await boardRepository
       .createQueryBuilder()

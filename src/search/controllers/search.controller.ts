@@ -6,7 +6,7 @@ export class SearchController {
   constructor(private searchService: SearchService) {}
 
   @Get('boards')
-  async searchBoardsAsHead(@Query('boardHead') boardHead: string) {
-    return this.searchService.searchBoardsAsHead(boardHead);
+  async searchBoardsAsHeadOrBody(@Query('boardHead') boardHead: string) {
+    return this.searchService.searchBoardsAsHeadOrBody(boardHead);
   }
 }
