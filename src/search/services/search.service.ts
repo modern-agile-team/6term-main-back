@@ -21,7 +21,7 @@ export class SearchService {
       .leftJoinAndSelect('user.userImage', 'userImage')
       .leftJoinAndSelect('board.boardImages', 'boardImages')
       .where(`MATCH(head) AGAINST (:searchQuery)`, {
-        searchQuery: `${searchQuery}`,
+        searchQuery,
       })
       .orWhere(`MATCH(body) AGAINST (:searchQuery)`, {
         searchQuery: `${searchQuery}`,
