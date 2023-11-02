@@ -89,9 +89,9 @@ export class AuthController {
   }
 
   @ApiKakaoLogout()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('kakao/logout')
-  async kakaoLogout(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async kakaoLogout(@GetUserId() userId: number) {
     const { socialAccessToken, socialRefreshToken } =
       await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
@@ -102,9 +102,9 @@ export class AuthController {
   }
 
   @ApiKakaoUnlink()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('kakao/unlink')
-  async kakaoUnlink(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async kakaoUnlink(@GetUserId() userId: number) {
     const { socialAccessToken, socialRefreshToken } =
       await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
@@ -118,15 +118,13 @@ export class AuthController {
   @UseGuards(JwtAccessTokenGuard)
   @Post('naver/logout')
   async naverLogout(@GetUserId() userId: number) {
-    console.log('userId: ', userId);
-    
     return await this.tokenService.deleteTokens(userId);
   }
 
   @ApiNaverUnlink()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('naver/unlink')
-  async naverUnlink(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async naverUnlink(@GetUserId() userId: number) {
     const { socialAccessToken, socialRefreshToken } =
       await this.tokenService.getUserTokens(userId);
     await this.tokenService.deleteTokens(userId);
@@ -137,9 +135,9 @@ export class AuthController {
   }
 
   @ApiDeleteAccount()
+  @UseGuards(JwtAccessTokenGuard)
   @Delete('account')
-  async accountDelete(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async accountDelete(@GetUserId() userId: number) {
     await this.s3Service.deleteImagesWithPrefix(userId + '_');
     return await this.authService.accountDelete(userId);
   }
