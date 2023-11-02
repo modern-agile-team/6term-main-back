@@ -18,14 +18,8 @@ export class BoardImageRepository {
     return this.entityManager.find(BoardImage, { where: { boardId } });
   }
 
-  async createBoardImage(boardImage: CreateBoardImageDto): Promise<BoardImage> {
-    const newImage = new BoardImage();
-    newImage.boardId = boardImage.boardId;
-    newImage.imageUrl = boardImage.imageUrl;
-    return this.entityManager.save(newImage);
-  }
-
-  async deleteBoardImage(imageId: number): Promise<void> {
-    await this.entityManager.delete(BoardImage, imageId);
+  async deleteImages(imagesToDelete: BoardImage[]): Promise<void> {
+    const imageIds = imagesToDelete.map((image) => image.id);
+    await this.entityManager.delete(BoardImage, imageIds);
   }
 }

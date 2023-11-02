@@ -15,7 +15,7 @@ export class UserImageService {
     file: Express.Multer.File,
   ): Promise<{ message: string }> {
     try {
-      const res = await this.s3Service.UserImageUpload(file, userId); // S3에 이미지 업로드
+      const res = await this.s3Service.uploadImage(file, userId, 'UserImages'); // S3에 이미지 업로드
       if (!res) {
         throw new InternalServerErrorException(
           'S3 이미지 업로드에 실패했습니다.',

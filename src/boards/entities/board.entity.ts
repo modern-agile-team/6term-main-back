@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -26,7 +27,9 @@ export class Board {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToMany(() => BoardImage, (boardImage) => boardImage.board)
+  @OneToMany(() => BoardImage, (boardImage) => boardImage.board, {
+    onDelete: 'CASCADE',
+  })
   boardImages: BoardImage[];
 
   @OneToMany(() => BoardLike, (boardLike) => boardLike.boardId, {
@@ -34,10 +37,12 @@ export class Board {
   })
   boardLike: BoardLike;
 
-  @Column()
+  @Index({ fulltext: true })
+  @Column('varchar')
   head: string;
 
-  @Column()
+  @Index({ fulltext: true })
+  @Column('text')
   body: string;
 
   @Column()

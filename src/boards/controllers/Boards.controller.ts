@@ -23,8 +23,11 @@ import { ApiAddBoard } from '../swagger-decorators/add-board-decorators';
 import { ApiGetPageBoards } from '../swagger-decorators/get-page-boards-decorators';
 import { ApiGetOneBoard } from '../swagger-decorators/get-one-board-decorators';
 import { ApiUpdateBoard } from '../swagger-decorators/patch-board-decorators';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiDeleteBoard } from '../swagger-decorators/delete-board-decorators';
 
 @Controller('boards')
+@ApiTags('board API')
 export class BoardsController {
   constructor(
     private readonly boardsService: BoardsService,
@@ -94,19 +97,20 @@ export class BoardsController {
   async editBoardImages(
     @Headers('access_token') accessToken: string,
     @Query('boardId') boardId: number,
-    @Body() formData: FormData, // 재진이가 보낸 FormData
+    @Query('deleteImageUrl') deleteImageUrl: string,
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
-    console.log(formData);
-
     return await this.boardImagesService.updateBoardImages(
       boardId,
-      formData,
+      files,
       userId,
+      deleteImageUrl,
     );
   }
 
   @Delete('')
+  @ApiDeleteBoard()
   async deleteBoard(
     @Query('boardId') boardId: number,
     @Headers('access_token') accessToken: string,
