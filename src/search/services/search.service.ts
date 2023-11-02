@@ -23,7 +23,7 @@ export class SearchService {
       .where(`MATCH(head) AGAINST (:searchQuery)`, {
         searchQuery: `${searchQuery}`,
       })
-      .orWhere(`MATCH(body) AGAINST (:searchQuery);`, {
+      .orWhere(`MATCH(body) AGAINST (:searchQuery)`, {
         searchQuery: `${searchQuery}`,
       })
       .getMany();
@@ -65,8 +65,8 @@ export class SearchService {
     return userRepository
       .createQueryBuilder()
       .select()
-      .where(`MATCH(name) AGAINST (:searchQuery);`, {
-        searchQuery: `${searchQuery}`,
+      .where(`MATCH(name) AGAINST (:searchQuery)`, {
+        searchQuery,
       })
       .getMany();
   }
