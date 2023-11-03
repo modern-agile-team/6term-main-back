@@ -1,33 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { BoardResponseDTO } from 'src/boards/dto/boards.response.dto';
-import { Board } from 'src/boards/entities/board.entity';
 import { BoardsLikeRepository } from 'src/boards/repository/boards-like.repository';
-import { User } from 'src/users/entities/user.entity';
-import { EntityManager } from 'typeorm';
+import { SearchRepository } from '../repositories/search.repository';
 
 @Injectable()
 export class SearchService {
   constructor(
-    private entityManager: EntityManager,
+    private searchRepository: SearchRepository,
     private boardLikesRepository: BoardsLikeRepository,
   ) {}
   async searchBoardsByHeadOrBody(searchQuery: string) {
-    const boardRepository = this.entityManager.getRepository(Board);
-
-    const returnedBoards = await boardRepository
-      .createQueryBuilder('board')
-      .select()
-      .leftJoinAndSelect('board.user', 'user')
-      .leftJoinAndSelect('user.userImage', 'userImage')
-      .leftJoinAndSelect('board.boardImages', 'boardImages')
-      .where(`MATCH(head) AGAINST (:searchQuery)`, {
-        searchQuery,
-      })
-      .orWhere(`MATCH(body) AGAINST (:searchQuery)`, {
-        searchQuery: `${searchQuery}`,
-      })
-      .getMany();
-    console.log(typeof returnedBoards);
+    const returnedBoards =
+      await this.searchRepository.searchBoardsByHeadOrBody(searchQuery);
 
     const boardResponse: BoardResponseDTO[] = await Promise.all(
       returnedBoards.map(async (board) => {
@@ -60,14 +44,6 @@ export class SearchService {
   }
 
   async searchUsersByName(searchQuery: string) {
-    const userRepository = this.entityManager.getRepository(User);
-
-    return userRepository
-      .createQueryBuilder()
-      .select()
-      .where(`MATCH(name) AGAINST (:searchQuery)`, {
-        searchQuery,
-      })
-      .getMany();
+    return this.searchRepository.searchUsersByName(searchQuery);
   }
 }
