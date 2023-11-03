@@ -5,9 +5,14 @@ import { SearchService } from '../services/search.service';
 export class SearchController {
   constructor(private searchService: SearchService) {}
 
-  @Get('boards')
-  async searchBoardsByHeadOrBody(@Query('searchQuery') searchQuery: string) {
-    return this.searchService.searchBoardsByHeadOrBody(searchQuery);
+  @Get('boards/head')
+  async searchBoardsByHead(@Query('searchQuery') searchQuery: string) {
+    return this.searchService.searchBoardsByHead(searchQuery);
+  }
+
+  @Get('boards/body')
+  async searchBoardsByBody(@Query('searchQuery') searchQuery: string) {
+    return this.searchService.searchBoardsByBody(searchQuery);
   }
 
   @Get('users')

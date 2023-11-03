@@ -6,7 +6,7 @@ import { EntityManager } from 'typeorm';
 @Injectable()
 export class SearchRepository {
   constructor(private entityManager: EntityManager) {}
-  async searchBoardsByHeadOrBody(searchQuery: string) {
+  async searchBoardsByHead(searchQuery: string) {
     const boardRepository = this.entityManager.getRepository(Board);
 
     return boardRepository
@@ -18,7 +18,19 @@ export class SearchRepository {
       .where(`MATCH(head) AGAINST (:searchQuery)`, {
         searchQuery,
       })
-      .orWhere(`MATCH(body) AGAINST (:searchQuery)`, {
+      .getMany();
+  }
+
+  async searchBoardsByBody(searchQuery: string) {
+    const boardRepository = this.entityManager.getRepository(Board);
+
+    return boardRepository
+      .createQueryBuilder('board')
+      .select()
+      .leftJoinAndSelect('board.user', 'user')
+      .leftJoinAndSelect('user.userImage', 'userImage')
+      .leftJoinAndSelect('board.boardImages', 'boardImages')
+      .where(`MATCH(body) AGAINST (:searchQuery)`, {
         searchQuery,
       })
       .getMany();
