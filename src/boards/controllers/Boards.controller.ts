@@ -97,7 +97,7 @@ export class BoardsController {
   async editBoardImages(
     @Headers('access_token') accessToken: string,
     @Query('boardId') boardId: number,
-    @Query('deleteImageUrl') deleteImageUrl: string,
+    @Query('deleteImageUrl') deleteImageUrl: string[],
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
