@@ -25,6 +25,7 @@ import { ApiGetOneBoard } from '../swagger-decorators/get-one-board-decorators';
 import { ApiUpdateBoard } from '../swagger-decorators/patch-board-decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiDeleteBoard } from '../swagger-decorators/delete-board-decorators';
+import { ApiUpdateBoardImage } from '../swagger-decorators/patch-board-images-decorators';
 
 @Controller('boards')
 @ApiTags('board API')
@@ -93,6 +94,7 @@ export class BoardsController {
   }
 
   @Patch('/images')
+  @ApiUpdateBoardImage()
   @UseInterceptors(FilesInterceptor('files', 3))
   async editBoardImages(
     @Headers('access_token') accessToken: string,
