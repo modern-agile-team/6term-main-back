@@ -4,23 +4,19 @@ import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UserRepository {
-  constructor(
-    private readonly entityManager: EntityManager,
-  ) {}
+  constructor(private readonly entityManager: EntityManager) {}
 
-  async getUserName(userId: number): Promise<string> {
+  async getUserInfo(userId: number): Promise<User> {
     const user = await this.entityManager.findOne(User, {
       where: { id: userId },
-      select: ["name"],
     });
-  
+
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
-  
-    return user.name;
+
+    return user;
   }
-  
 
   async findUser(email: string, provider: string): Promise<User | undefined> {
     return this.entityManager.findOne(User, { where: { email, provider } });
@@ -37,7 +33,9 @@ export class UserRepository {
   }
 
   async updateUserName(userId: number, name: string): Promise<User> {
-    const user = await this.entityManager.findOne(User, { where: { id:userId } });
+    const user = await this.entityManager.findOne(User, {
+      where: { id: userId },
+    });
 
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
