@@ -1,46 +1,39 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiGetChats() {
   return applyDecorators(
     ApiOperation({
       summary: '해당 채팅룸 채팅 전체 조회',
-      description: 'Param - room-id',
+      description: 'Param - room-id, Headers - access_token',
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 채팅방 채팅 조회',
+      description:
+        '성공적으로 채팅방 채팅 조회 및 읽지 않았던 채팅들 isSeen: true로 변경',
       content: {
         JSON: {
           example: [
             {
-              _id: '65338bc82d17fd935414495b',
-              chatroom_id: '653383a4468680bc4e9f8491',
-              sender: 12345642,
-              receiver: 123456427,
-              content: 'testtset',
-              createdAt: '2023-10-21T08:28:56.916Z',
-              updatedAt: '2023-10-21T08:28:56.916Z',
+              _id: '654a1b3a88ad1cdd55124710',
+              chatroom_id: '653383a4468680bc4e9f8492',
+              sender: 70,
+              receiver: 69,
+              content: '으아아아이 테스트테스트으아으아으앙',
+              isSeen: true,
+              createdAt: '2023-11-07T11:10:50.817Z',
+              updatedAt: '2023-11-07T11:11:13.830Z',
               __v: 0,
             },
             {
-              _id: '65338bec2d17fd9354144961',
-              chatroom_id: '653383a4468680bc4e9f8491',
-              sender: 12345642,
-              receiver: 123456427,
-              content: 'testtset12',
-              createdAt: '2023-10-21T08:29:32.578Z',
-              updatedAt: '2023-10-21T08:29:32.578Z',
-              __v: 0,
-            },
-            {
-              _id: '65338bf12d17fd9354144967',
-              chatroom_id: '653383a4468680bc4e9f8491',
-              sender: 12345642,
-              receiver: 123456427,
-              content: 'testtset123',
-              createdAt: '2023-10-21T08:29:37.481Z',
-              updatedAt: '2023-10-21T08:29:37.481Z',
+              _id: '654a1d106770906a7a5d6274',
+              chatroom_id: '653383a4468680bc4e9f8492',
+              sender: 70,
+              receiver: 69,
+              content: '으아아아삼 테스트테스트으아으아으앙',
+              isSeen: true,
+              createdAt: '2023-11-07T11:18:40.425Z',
+              updatedAt: '2023-11-07T11:18:52.075Z',
               __v: 0,
             },
           ],
@@ -62,16 +55,24 @@ export function ApiGetChats() {
     }),
     ApiResponse({
       status: 404,
-      description: '채팅 조회 실패.',
+      description: '채팅 조회 실패',
       content: {
         JSON: {
           example: {
-            message: '해당 채팅룸이 없거나 채팅이 존재하지 않습니다.',
+            message: '해당 유저가 속한 채팅방이 없습니다.',
             error: 'Not Found',
             statusCode: 404,
           },
         },
       },
     }),
+    ApiHeaders([
+      {
+        name: 'access_token',
+        description: '액세스 토큰',
+        required: true,
+        example: '여기에 액세스 토큰',
+      },
+    ]),
   );
 }
