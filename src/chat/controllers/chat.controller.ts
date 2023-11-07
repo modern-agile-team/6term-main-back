@@ -13,7 +13,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ChatService } from '../services/chat.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ReceivedUserDto } from '../dto/received-user.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -23,12 +23,14 @@ import { ApiGetChatRooms } from '../swagger-decorators/get-chat-rooms.decorator'
 import { ApiGetOneChatRoom } from '../swagger-decorators/get-one-chat-room.decorator';
 import { ApiDeleteChatRoom } from '../swagger-decorators/delete-chat-room.decorator';
 import { ApiGetChats } from '../swagger-decorators/get-chats.decorator';
-import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notification.decorator';
+import { ApiGetChatNotificationSse } from '../swagger-decorators/get-chat-notification-Sse.decorator';
 // import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
 import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
+import { ApiGetChatNotifications } from '../swagger-decorators/get-chat-notifications.decorator';
+import { ApiCreateChatImage } from '../swagger-decorators/create-chat-image.decorators';
 
 @ApiTags('CHAT')
 @UseGuards(JwtAccessTokenGuard)
@@ -40,7 +42,7 @@ export class ChatController {
     private tokenService: TokenService,
   ) {}
 
-  @ApiGetChatNotification()
+  @ApiGetChatNotificationSse()
   @Sse('listener')
   notificationListener() {
     return this.chatService.notificationListener();
@@ -88,7 +90,7 @@ export class ChatController {
     return this.chatService.getChats(userId, roomId);
   }
 
-  @ApiOperation({ summary: '특정 채팅방 채팅 이미지 생성' })
+  @ApiCreateChatImage()
   @Post(':roomId/chat/image')
   @UseInterceptors(FileInterceptor('file'))
   async createChatImage(
@@ -105,6 +107,7 @@ export class ChatController {
     );
   }
 
+  @ApiGetChatNotifications()
   @Get('chat/notice')
   async getChatNotifications(
     @GetUserId() userId: number,

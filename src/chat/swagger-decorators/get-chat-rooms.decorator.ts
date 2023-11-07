@@ -35,19 +35,6 @@ export function ApiGetChatRooms() {
         },
       },
     }),
-    ApiResponse({
-      status: 404,
-      description: '채팅룸 조회 실패.',
-      content: {
-        JSON: {
-          example: {
-            message: '해당 유저가 속한 채팅방이 없습니다.',
-            error: 'Not Found',
-            statusCode: 404,
-          },
-        },
-      },
-    }),
     ApiHeaders([
       {
         name: 'access_token',
