@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BoardResponseDTO } from 'src/boards/dto/boards.response.dto';
 import { BoardsLikeRepository } from 'src/boards/repository/boards-like.repository';
 import { SearchRepository } from '../repositories/search.repository';
@@ -10,10 +10,12 @@ export class SearchService {
     private boardLikesRepository: BoardsLikeRepository,
   ) {}
   async searchBoardsByHead(searchQuery: string, page: number, limit: number) {
-    const skip = (page - 1) * limit;
     const take = limit;
+    const skip = page <= 0 ? (page = 0) : (page - 1) * take;
     const [returnedBoards, total] =
       await this.searchRepository.searchBoardsByHead(searchQuery, skip, take);
+
+    const last_page = Math.ceil(total / take);
 
     const boardResponse: BoardResponseDTO[] = await Promise.all(
       returnedBoards.map(async (board) => {
@@ -41,8 +43,18 @@ export class SearchService {
         };
       }),
     );
-
-    return { data: boardResponse, total: total };
+    if (last_page >= page) {
+      return {
+        data: boardResponse,
+        meta: {
+          total,
+          page: page <= 0 ? (page = 1) : page,
+          last_page: last_page,
+        },
+      };
+    } else {
+      throw new NotFoundException('해당 페이지는 존재하지 않습니다');
+    }
   }
 
   async searchBoardsByBody(searchQuery: string) {
