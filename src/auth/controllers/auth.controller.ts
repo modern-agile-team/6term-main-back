@@ -80,10 +80,7 @@ export class AuthController {
   @ApiNewAccessToken()
   @UseGuards(JwtRefreshTokenGuard)
   @Get('new-access-token')
-  async newAccessToken(
-    @GetUserId() userId: number,
-    @Res() res,
-  ) {
+  async newAccessToken(@GetUserId() userId: number, @Res() res) {
     const newAccessToken = await this.tokenService.createAccessToken(userId);
     return res.json({ accessToken: newAccessToken });
   }
@@ -145,6 +142,6 @@ export class AuthController {
   @UseGuards(JwtAccessTokenGuard)
   @Get('status')
   async status() {
-    return { success : true };
+    return { success: true };
   }
 }
