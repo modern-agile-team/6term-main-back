@@ -23,12 +23,14 @@ export class FriendsRepository {
   }
 
   async getFriendsResPending(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: {
-        respondentId: userId,
-        status: Status.PENDING,
-      },
-    });
+    return await this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.PENDING })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('user.userImage', 'userImage')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .getMany();
   }
 
   async getFriends(userId: number): Promise<Friend[]> {

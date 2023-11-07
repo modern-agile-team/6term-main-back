@@ -22,41 +22,37 @@ import { ApiDeleteRejectPermanentCancel } from '../swagger-decorators/delete-rej
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 
+@UseGuards(JwtAccessTokenGuard)
 @Controller('friends')
 @ApiTags('friends API')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
   @ApiGetFriendsReqPending()
-  @UseGuards(JwtAccessTokenGuard)
   @Get('requests/pending')
   async getFriendsReqPending(@GetUserId() userId: number) {
     return await this.friendsService.getFriendsReqPending(userId);
   }
 
   @ApiGetFriendsResPending()
-  @UseGuards(JwtAccessTokenGuard)
   @Get('responses/pending')
   async getFriendsResPending(@GetUserId() userId: number) {
     return await this.friendsService.getFriendsResPending(userId);
   }
 
   @ApiGetFriends()
-  @UseGuards(JwtAccessTokenGuard)
   @Get()
   async getFriends(@GetUserId() userId: number) {
     return await this.friendsService.getFriends(userId);
   }
 
   @ApiGetRejectPermanent()
-  @UseGuards(JwtAccessTokenGuard)
   @Get('responses/reject/permanent')
   async getRejectPermanent(@GetUserId() userId: number) {
     return await this.friendsService.getRejectPermanent(userId);
   }
 
   @ApiFriendRequest()
-  @UseGuards(JwtAccessTokenGuard)
   @Post('requests/:friend_id')
   async friendRequest(
     @GetUserId() userId: number,
@@ -66,7 +62,6 @@ export class FriendsController {
   }
 
   @ApiFriendResponseAccept()
-  @UseGuards(JwtAccessTokenGuard)
   @Patch('responses/accept/:friend_id')
   async friendResponseAccept(
     @GetUserId() userId: number,
@@ -76,7 +71,6 @@ export class FriendsController {
   }
 
   @ApiFriendResponseReject()
-  @UseGuards(JwtAccessTokenGuard)
   @Patch('responses/reject/:friend_id')
   async friendResponseReject(
     @GetUserId() userId: number,
@@ -86,7 +80,6 @@ export class FriendsController {
   }
 
   @ApiDeleteRejectPermanentCancel()
-  @UseGuards(JwtAccessTokenGuard)
   @Delete('responses/reject/permanent/:friend_id')
   async friendResponseRejectPermanentCancel(
     @GetUserId() userId: number,
@@ -99,7 +92,6 @@ export class FriendsController {
   }
 
   @ApiFriendResponseRejectPermanent()
-  @UseGuards(JwtAccessTokenGuard)
   @Patch('responses/reject/permanent/:friend_id')
   async friendResponseRejectPermanent(
     @GetUserId() userId: number,
@@ -112,7 +104,6 @@ export class FriendsController {
   }
 
   @ApiDeleteFriend()
-  @UseGuards(JwtAccessTokenGuard)
   @Delete(':friend_id')
   async deleteFriend(
     @GetUserId() userId: number,
