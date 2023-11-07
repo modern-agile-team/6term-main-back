@@ -110,12 +110,12 @@ export class ChatController {
     return this.chatService.getChatNotifications(userId);
   }
 
-  @ApiGetChatUnreadCounts()
-  @Get(':roomId/chat/unreads')
-  async getUnreadCounts(
-    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-    @Query('after', ParseIntPipe) after: number,
-  ) {
-    return this.chatService.getUnreadCounts(roomId, after);
-  }
+  // @ApiGetChatUnreadCounts()
+  // @Get(':roomId/chat/unreads')
+  // async getUnreadCounts(
+  //   @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+  //   @Query('after', ParseIntPipe) after: number,
+  // ) {
+  //   return this.chatService.getUnreadCounts(roomId, after);
+  // }
 }

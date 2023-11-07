@@ -118,9 +118,9 @@ export class ChatRepository {
     return Object.values(groupedNotifications);
   }
 
-  async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
-    return this.chatModel.count({
-      $and: [{ chatroom_id: roomId }, { createdAt: { $gt: new Date(after) } }],
-    });
-  }
+  // async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
+  //   return this.chatModel.count({
+  //     $and: [{ chatroom_id: roomId }, { createdAt: { $gt: new Date(after) } }],
+  //   });
+  // }
 }
