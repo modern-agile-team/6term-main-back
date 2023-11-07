@@ -1,11 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-export function ApiSearchBoardsByHead() {
+export function ApiSearchBoardsByBody() {
   return applyDecorators(
     ApiOperation({
       summary: '게시글 검색 API',
-      description: `Query String으로 입력된 값을 토대로 게시글의 제목에 일치하는 값을 조회합니다. 
+      description: `Query String으로 입력된 값을 토대로 게시글의 내용에 일치하는 값을 조회합니다. 
       ex)'흑돼지고기' 검색 - '흑돼', '돼지', '지고', '고기'로 검색 (정확성 순으로 정렬됨)`,
     }),
     ApiResponse({
@@ -427,13 +427,5 @@ export function ApiSearchBoardsByHead() {
         },
       },
     }),
-    ApiHeaders([
-      {
-        name: 'access_token',
-        description: '액세스 토큰',
-        required: true,
-        example: '여기에 액세스 토큰',
-      },
-    ]),
   );
 }
