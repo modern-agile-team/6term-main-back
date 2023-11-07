@@ -17,4 +17,42 @@ export class CommentsRepository {
     comment.boardId = boardId;
     return await this.entityManager.save(Comment, comment);
   }
+
+  async findCommentsByBoardId(boardId: number): Promise<Comment[]> {
+    const query = this.entityManager
+      .createQueryBuilder(Comment, 'comment')
+      .innerJoinAndSelect('comment.user', 'user')
+      .innerJoinAndSelect('user.userImage', 'userImage')
+      .where('comment.boardId = :boardId', { boardId });
+
+    return query.getMany();
+  }
+
+  async findOneComment(id: number): Promise<Comment> {
+    return await this.entityManager.findOne(Comment, {
+      relations: ['user', 'user.userImage'],
+      where: { id },
+    });
+  }
+
+  async updateComment(
+    id: number,
+    commentData: Partial<CreateCommentDto>,
+  ): Promise<Comment> {
+    const existingComment = await this.entityManager.findOne(Comment, {
+      relations: ['user', 'user.userImage'],
+      where: { id },
+    });
+    for (const key in commentData) {
+      if (commentData.hasOwnProperty(key)) {
+        existingComment[key] = commentData[key];
+      }
+    }
+    await this.entityManager.save(Comment, existingComment);
+    return existingComment;
+  }
+
+  async deleteComment(comment: Comment): Promise<void> {
+    await this.entityManager.remove(Comment, comment);
+  }
 }
