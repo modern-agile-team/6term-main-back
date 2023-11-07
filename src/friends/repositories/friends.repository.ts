@@ -1,18 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, EntityManager, LessThan, MoreThanOrEqual } from 'typeorm';
+import {
+  DeleteResult,
+  EntityManager,
+  LessThan,
+  MoreThanOrEqual,
+} from 'typeorm';
 import { Friend, Status } from '../entities/friends.entity';
 
 @Injectable()
 export class FriendsRepository {
   constructor(private readonly entityManager: EntityManager) {}
 
-  async getFriendsReqPending(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: {
-        requesterId: userId,
-        status: Status.PENDING,
-      },
-    });
+  async getFriendsReqPending(userId: number) {
+    return await this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.requesterId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.PENDING })
+      .leftJoin('friend.respondent', 'user') // Friend 엔티티의 respondent 관계를 사용하여 'user' 엔티티와 조인
+      .leftJoin('user.userImage', 'userImage') // User 엔티티의 userImage 관계를 사용하여 'userImage' 엔티티와 조인
+      .addSelect(['user.name', 'userImage.imageUrl']) // 결과에 포함할 열(column)을 선택 (사용자 이름과 사용자 이미지 URL)
+      .getMany();
   }
 
   async getFriendsResPending(userId: number): Promise<Friend[]> {
@@ -73,7 +80,10 @@ export class FriendsRepository {
     });
   }
 
-  async friendResponseAccept(userId: number, friendId: number): Promise<Friend> {
+  async friendResponseAccept(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -85,12 +95,15 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     friend.status = Status.ACCEPT;
     return await this.entityManager.save(friend);
   }
 
-  async friendResponseReject(userId: number, friendId: number): Promise<Friend> {
+  async friendResponseReject(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -102,12 +115,15 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     friend.status = Status.REJECT;
     return await this.entityManager.save(friend);
   }
 
-  async friendResponseRejectPermanentCancel(userId: number, friendId: number): Promise<DeleteResult> {
+  async friendResponseRejectPermanentCancel(
+    userId: number,
+    friendId: number,
+  ): Promise<DeleteResult> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -119,11 +135,14 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     return await this.entityManager.delete(Friend, friend);
   }
 
-  async friendResponseRejectPermanent(userId: number, friendId: number): Promise<Friend> {
+  async friendResponseRejectPermanent(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -158,11 +177,14 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     return await this.entityManager.delete(Friend, friend);
   }
 
-  async checkRejectPermanent(userId: number, friendId: number): Promise<Friend> {
+  async checkRejectPermanent(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const check = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: userId,
@@ -170,27 +192,27 @@ export class FriendsRepository {
         status: Status.PERMANENT,
       },
     });
-    
+
     return check;
   }
 
   async cleanupRejectedFriends() {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-  // 'REJECT' 상태이고 24시간 이상 지난 로우들을 찾아서 삭제
-  const friendsToDelete = await this.entityManager.find(Friend, {
-    where: {
-      status: Status.REJECT,
-      createdAt: LessThan(twentyFourHoursAgo),
-    },
-  });
-  
-  if (friendsToDelete.length === 0) {
-    return null;
-  }
+    // 'REJECT' 상태이고 24시간 이상 지난 로우들을 찾아서 삭제
+    const friendsToDelete = await this.entityManager.find(Friend, {
+      where: {
+        status: Status.REJECT,
+        createdAt: LessThan(twentyFourHoursAgo),
+      },
+    });
 
-  await this.entityManager.remove(friendsToDelete);
+    if (friendsToDelete.length === 0) {
+      return null;
+    }
 
-  return friendsToDelete.length;
+    await this.entityManager.remove(friendsToDelete);
+
+    return friendsToDelete.length;
   }
 }

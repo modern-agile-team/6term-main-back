@@ -40,6 +40,10 @@ export class Friend {
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status!: Status;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 }
