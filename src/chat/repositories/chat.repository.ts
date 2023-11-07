@@ -4,7 +4,6 @@ import { ChatRoom } from '../schemas/chat-room.schemas';
 import { Chat } from '../schemas/chat.schemas';
 import { ChatImage } from '../schemas/chat-image.schemas';
 import mongoose from 'mongoose';
-import { count } from 'console';
 
 @Injectable()
 export class ChatRepository {

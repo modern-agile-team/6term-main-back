@@ -4,9 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
-  Query,
   Sse,
   UploadedFile,
   UseGuards,
@@ -26,7 +24,7 @@ import { ApiGetOneChatRoom } from '../swagger-decorators/get-one-chat-room.decor
 import { ApiDeleteChatRoom } from '../swagger-decorators/delete-chat-room.decorator';
 import { ApiGetChats } from '../swagger-decorators/get-chats.decorator';
 import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notification.decorator';
-import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
+// import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
 import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
