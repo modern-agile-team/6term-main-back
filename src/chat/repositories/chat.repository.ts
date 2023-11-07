@@ -61,7 +61,11 @@ export class ChatRepository {
   async updateChatIsSeen(receiverId: number, roomId: mongoose.Types.ObjectId) {
     await this.chatModel.updateMany(
       {
-        $and: [{ receiver: receiverId }, { chatroom_id: roomId }],
+        $and: [
+          { receiver: receiverId },
+          { chatroom_id: roomId },
+          { isSeen: false },
+        ],
       },
       { $set: { isSeen: true } },
     );
