@@ -220,7 +220,26 @@ export class ChatService {
       throw new NotFoundException('해당 유저를 찾지 못했습니다.');
     }
 
-    return this.chatRepository.getChatNotifications(userId);
+    const returnedNotifications =
+      await this.chatRepository.getChatNotifications(userId);
+
+    const groupedNotifications = {};
+
+    returnedNotifications.forEach((notification) => {
+      const chatroomId = notification.chatroom_id.toString();
+      if (!groupedNotifications[chatroomId]) {
+        const newNotification = {
+          ...notification.toObject(),
+          count: 1,
+          content: notification.content.substring(0, 10),
+        };
+        groupedNotifications[chatroomId] = newNotification;
+      } else {
+        groupedNotifications[chatroomId]['count'] += 1;
+      }
+    });
+
+    return Object.values(groupedNotifications);
   }
 
   // async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {

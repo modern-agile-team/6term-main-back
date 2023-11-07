@@ -98,6 +98,16 @@ export class ChatRepository {
       })
       .sort({ createdAt: -1 });
 
+    return Object.values(notifications);
+  }
+
+  async UpdateChatNotifications(userId: number) {
+    const notifications = await this.chatModel
+      .find({
+        $and: [{ receiver: userId }, { isSeen: false }],
+      })
+      .sort({ createdAt: -1 });
+
     const groupedNotifications = {};
 
     notifications.forEach((notification) => {
