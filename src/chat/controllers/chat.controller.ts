@@ -3,13 +3,13 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Param,
   ParseIntPipe,
   Post,
   Query,
   Sse,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -19,8 +19,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ReceivedUserDto } from '../dto/received-user.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Users } from 'src/common/decorators/user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { ParseObjectIdPipe } from '../parse-object-id.pipe';
 import { ApiCreateChatRoom } from '../swagger-decorators/create-chat-room.decorator';
 import { ApiGetChatRooms } from '../swagger-decorators/get-chat-rooms.decorator';
@@ -30,10 +28,13 @@ import { ApiGetChats } from '../swagger-decorators/get-chats.decorator';
 import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notification.decorator';
 import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
 import { TokenService } from 'src/auth/services/token.service';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 
 @ApiTags('CHAT')
-@Controller('chat-room')
+@UseGuards(JwtAccessTokenGuard)
 @UsePipes(ValidationPipe)
+@Controller('chat-room')
 export class ChatController {
   constructor(
     private chatService: ChatService,
@@ -48,32 +49,35 @@ export class ChatController {
 
   @ApiGetChatRooms()
   @Get()
-  async getChatRooms(@Users() user: User) {
-    return this.chatService.getChatRooms(user.id);
+  async getChatRooms(@GetUserId() userId: number) {
+    return this.chatService.getChatRooms(userId);
   }
 
   @ApiGetOneChatRoom()
   @Get(':roomId')
   async getOneChatRoom(
-    @Users() user: User,
+    @GetUserId() userId: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.getOneChatRoom(user.id, roomId);
+    return this.chatService.getOneChatRoom(userId, roomId);
   }
 
   @ApiCreateChatRoom()
   @Post()
-  async createChatRoom(@Users() user: User, @Body() body: ReceivedUserDto) {
-    return this.chatService.createChatRoom(user.id, body.receiverId);
+  async createChatRoom(
+    @GetUserId() userId: number,
+    @Body() body: ReceivedUserDto,
+  ) {
+    return this.chatService.createChatRoom(userId, body.receiverId);
   }
 
   @ApiDeleteChatRoom()
   @Delete(':roomId')
   async deleteChatRoom(
-    @Users() user: User,
+    @GetUserId() userId: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.deleteChatRoom(user.id, roomId);
+    return this.chatService.deleteChatRoom(userId, roomId);
   }
 
   @ApiGetChats()
@@ -89,11 +93,10 @@ export class ChatController {
   @UseInterceptors(FileInterceptor('file'))
   async createChatImage(
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-    @Headers('access_token') accessToken: string,
+    @GetUserId() senderId: number,
     @Body() body: ReceivedUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const senderId = await this.tokenService.decodeToken(accessToken);
     return this.chatService.createChatImage(
       roomId,
       senderId,

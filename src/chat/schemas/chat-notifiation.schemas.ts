@@ -25,6 +25,9 @@ export class ChatNotification {
   @IsBoolean()
   @Prop({ required: true, default: false })
   isSeen: boolean;
+
+  @Prop({ type: Date, default: null })
+  deleted_at: Date | null;
 }
 
 export const ChatNotificationSchema =
