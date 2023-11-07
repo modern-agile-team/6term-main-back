@@ -10,11 +10,12 @@ export class UserService {
   ) {}
 
   async getMyInfo(userId: number) {
-    const { name, email, gender, admin, provider } =
+    const { id, name, email, gender, admin, provider } =
       await this.userRepository.getUserInfo(userId);
     const userImage = (await this.userImageRepository.checkUserImage(userId))
       .imageUrl;
     return {
+      id,
       name,
       email,
       gender,
