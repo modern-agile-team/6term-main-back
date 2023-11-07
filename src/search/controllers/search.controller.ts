@@ -9,8 +9,12 @@ export class SearchController {
 
   @ApiSearchBoardsByHead()
   @Get('boards/head')
-  async searchBoardsByHead(@Query('searchQuery') searchQuery: string) {
-    return this.searchService.searchBoardsByHead(searchQuery);
+  async searchBoardsByHead(
+    @Query('searchQuery') searchQuery: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 30,
+  ) {
+    return this.searchService.searchBoardsByHead(searchQuery, page, limit);
   }
 
   @ApiSearchBoardsByBody()

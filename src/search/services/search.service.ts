@@ -9,9 +9,11 @@ export class SearchService {
     private searchRepository: SearchRepository,
     private boardLikesRepository: BoardsLikeRepository,
   ) {}
-  async searchBoardsByHead(searchQuery: string) {
-    const returnedBoards =
-      await this.searchRepository.searchBoardsByHead(searchQuery);
+  async searchBoardsByHead(searchQuery: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const take = limit;
+    const [returnedBoards, total] =
+      await this.searchRepository.searchBoardsByHead(searchQuery, skip, take);
 
     const boardResponse: BoardResponseDTO[] = await Promise.all(
       returnedBoards.map(async (board) => {
@@ -40,7 +42,7 @@ export class SearchService {
       }),
     );
 
-    return { data: boardResponse, total: boardResponse.length };
+    return { data: boardResponse, total: total };
   }
 
   async searchBoardsByBody(searchQuery: string) {
