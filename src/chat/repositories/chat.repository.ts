@@ -53,7 +53,18 @@ export class ChatRepository {
   }
 
   async getChats(roomId: mongoose.Types.ObjectId) {
-    return this.chatModel.find({ chatroom_id: roomId });
+    return this.chatModel.find({
+      chatroom_id: roomId,
+    });
+  }
+
+  async updateChatIsSeen(receiverId: number, roomId: mongoose.Types.ObjectId) {
+    await this.chatModel.updateMany(
+      {
+        $and: [{ receiver: receiverId }, { chatroom_id: roomId }],
+      },
+      { $set: { isSeen: true } },
+    );
   }
 
   async createChat(
@@ -99,32 +110,6 @@ export class ChatRepository {
       .sort({ createdAt: -1 });
 
     return notifications;
-  }
-
-  async UpdateChatNotifications(userId: number) {
-    const notifications = await this.chatModel
-      .find({
-        $and: [{ receiver: userId }, { isSeen: false }],
-      })
-      .sort({ createdAt: -1 });
-
-    const groupedNotifications = {};
-
-    notifications.forEach((notification) => {
-      const chatroomId = notification.chatroom_id.toString();
-      if (!groupedNotifications[chatroomId]) {
-        const newNotification = {
-          ...notification.toObject(),
-          count: 1,
-          content: notification.content.substring(0, 10),
-        };
-        groupedNotifications[chatroomId] = newNotification;
-      } else {
-        groupedNotifications[chatroomId]['count'] += 1;
-      }
-    });
-
-    return Object.values(groupedNotifications);
   }
 
   // async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {

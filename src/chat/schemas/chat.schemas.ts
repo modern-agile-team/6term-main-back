@@ -5,7 +5,7 @@ import { IsBoolean, IsMongoId, IsNumber, IsString } from 'class-validator';
 
 const options: SchemaOptions = {
   collection: 'Chat',
-  timestamps: { createdAt: true, updatedAt: false },
+  timestamps: true,
 };
 
 @Schema(options)

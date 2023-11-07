@@ -112,13 +112,13 @@ export class ChatService {
     return this.chatRepository.deleteChatRoom(roomId);
   }
 
-  async getChats(roomId: mongoose.Types.ObjectId) {
+  async getChats(userId: number, roomId: mongoose.Types.ObjectId) {
+    await this.getOneChatRoom(userId, roomId);
     const returnedChat = await this.chatRepository.getChats(roomId);
 
-    if (!returnedChat.length) {
-      throw new NotFoundException(
-        '해당 채팅룸이 없거나 채팅이 존재하지 않습니다.',
-      );
+    if (returnedChat.length) {
+      this.chatRepository.updateChatIsSeen(userId, roomId);
+      return returnedChat;
     }
 
     return returnedChat;
@@ -209,8 +209,6 @@ export class ChatService {
 
     return isChatAndUsers;
   }
-
-  async updateChatNotifications() {}
 
   async getChatNotifications(
     userId: number,

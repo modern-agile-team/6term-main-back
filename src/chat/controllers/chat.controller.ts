@@ -82,9 +82,10 @@ export class ChatController {
   @ApiGetChats()
   @Get(':roomId/chat')
   async getChats(
+    @GetUserId() userId: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.getChats(roomId);
+    return this.chatService.getChats(userId, roomId);
   }
 
   @ApiOperation({ summary: '특정 채팅방 채팅 이미지 생성' })
