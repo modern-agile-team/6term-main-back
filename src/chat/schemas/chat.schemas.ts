@@ -5,6 +5,7 @@ import { IsBoolean, IsMongoId, IsNumber, IsString } from 'class-validator';
 
 const options: SchemaOptions = {
   collection: 'Chat',
+  timestamps: true,
 };
 
 @Schema(options)
@@ -28,9 +29,6 @@ export class Chat {
   @IsBoolean()
   @Prop({ required: true, default: false })
   isSeen: boolean;
-
-  @Prop({ default: Date.now }) // 현재 시간을 기본값으로 설정
-  createdAt: Date;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

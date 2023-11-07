@@ -28,6 +28,7 @@ import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notificat
 import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
 
 @ApiTags('CHAT')
 @UseGuards(JwtAccessTokenGuard)
@@ -104,7 +105,9 @@ export class ChatController {
   }
 
   @Get('chat/notice')
-  async getChatNotifications(@GetUserId() userId: number) {
+  async getChatNotifications(
+    @GetUserId() userId: number,
+  ): Promise<GetNotificationsResponseDto[]> {
     return this.chatService.getChatNotifications(userId);
   }
 

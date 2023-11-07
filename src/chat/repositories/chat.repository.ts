@@ -98,7 +98,7 @@ export class ChatRepository {
       })
       .sort({ createdAt: -1 });
 
-    return Object.values(notifications);
+    return notifications;
   }
 
   async UpdateChatNotifications(userId: number) {
