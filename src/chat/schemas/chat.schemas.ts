@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { ChatRoom } from './chat-room.schemas';
-import { IsMongoId, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsMongoId, IsNumber, IsString } from 'class-validator';
 
 const options: SchemaOptions = {
   collection: 'Chat',
-  timestamps: true,
 };
 
 @Schema(options)
@@ -25,6 +24,13 @@ export class Chat {
   @IsString()
   @Prop({ required: true })
   content: string;
+
+  @IsBoolean()
+  @Prop({ required: true, default: false })
+  isSeen: boolean;
+
+  @Prop({ default: Date.now }) // 현재 시간을 기본값으로 설정
+  createdAt: Date;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

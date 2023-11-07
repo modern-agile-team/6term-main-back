@@ -4,6 +4,7 @@ import { ChatRoom } from '../schemas/chat-room.schemas';
 import { Chat } from '../schemas/chat.schemas';
 import { ChatImage } from '../schemas/chat-image.schemas';
 import mongoose from 'mongoose';
+import { count } from 'console';
 
 @Injectable()
 export class ChatRepository {
@@ -89,6 +90,32 @@ export class ChatRepository {
     });
 
     return returnedChat;
+  }
+
+  async getChatNotifications(userId: number) {
+    const notifications = await this.chatModel
+      .find({
+        $and: [{ receiver: userId }, { isSeen: false }],
+      })
+      .sort({ createdAt: -1 });
+
+    const groupedNotifications = {};
+
+    notifications.forEach((notification) => {
+      const chatroomId = notification.chatroom_id.toString();
+      if (!groupedNotifications[chatroomId]) {
+        const newNotification = {
+          ...notification.toObject(),
+          count: 1,
+          content: notification.content.substring(0, 10),
+        };
+        groupedNotifications[chatroomId] = newNotification;
+      } else {
+        groupedNotifications[chatroomId]['count'] += 1;
+      }
+    });
+
+    return Object.values(groupedNotifications);
   }
 
   async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {

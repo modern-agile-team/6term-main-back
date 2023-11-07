@@ -105,6 +105,11 @@ export class ChatController {
     );
   }
 
+  @Get('chat/notice')
+  async getChatNotifications(@GetUserId() userId: number) {
+    return this.chatService.getChatNotifications(userId);
+  }
+
   @ApiGetChatUnreadCounts()
   @Get(':roomId/chat/unreads')
   async getUnreadCounts(

@@ -5,10 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChatRoom, ChatRoomSchema } from './schemas/chat-room.schemas';
 import { Chat, ChatSchema } from './schemas/chat.schemas';
 import { ChatImage, ChatImageSchema } from './schemas/chat-image.schemas';
-import {
-  ChatNotification,
-  ChatNotificationSchema,
-} from './schemas/chat-notifiation.schemas';
 import { S3Module } from 'src/common/s3/s3.module';
 import { ChatRepository } from './repositories/chat.repository';
 import { NotificationService } from './services/notification.service';
@@ -21,7 +17,6 @@ import { AuthModule } from 'src/auth/auth.module';
       { name: ChatRoom.name, schema: ChatRoomSchema },
       { name: Chat.name, schema: ChatSchema },
       { name: ChatImage.name, schema: ChatImageSchema },
-      { name: ChatNotification.name, schema: ChatNotificationSchema },
     ]),
     S3Module,
     AuthModule,
