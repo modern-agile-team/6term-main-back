@@ -13,8 +13,6 @@ export class GetNotificationsResponseDto {
 
   createdAt: Date;
 
-  updatedAt: Date;
-
   isSeen: false;
 
   count: number;
