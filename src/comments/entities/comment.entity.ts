@@ -18,11 +18,17 @@ export class Comment {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  userId: User;
+  user: User;
+
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @ManyToOne(() => Board)
   @JoinColumn({ name: 'board_id' })
-  boardId: Board;
+  board: Board;
+
+  @Column({ name: 'board_id' })
+  boardId: number;
 
   @Column()
   content: string;
