@@ -12,7 +12,7 @@ export class FriendsRepository {
   constructor(private readonly entityManager: EntityManager) {}
 
   async getFriendsReqPending(userId: number) {
-    return await this.entityManager
+    return this.entityManager
       .createQueryBuilder(Friend, 'friend')
       .where('friend.requesterId = :userId', { userId })
       .andWhere('friend.status = :status', { status: Status.PENDING })
@@ -23,7 +23,7 @@ export class FriendsRepository {
   }
 
   async getFriendsResPending(userId: number): Promise<Friend[]> {
-    return await this.entityManager
+    return this.entityManager
       .createQueryBuilder(Friend, 'friend')
       .where('friend.respondentId = :userId', { userId })
       .andWhere('friend.status = :status', { status: Status.PENDING })
@@ -34,7 +34,7 @@ export class FriendsRepository {
   }
 
   async getFriends(userId: number): Promise<Friend[]> {
-    return await this.entityManager
+    return this.entityManager
       .createQueryBuilder(Friend, 'friend')
       .where('friend.requesterId = :userId', { userId })
       .andWhere('friend.status = :status', { status: Status.ACCEPT })
@@ -50,7 +50,7 @@ export class FriendsRepository {
   }
 
   async getRejectPermanent(userId: number): Promise<Friend[]> {
-    return await this.entityManager
+    return this.entityManager
       .createQueryBuilder(Friend, 'friend')
       .where('friend.respondentId = :userId', { userId })
       .andWhere('friend.status = :status', { status: Status.PERMANENT })
