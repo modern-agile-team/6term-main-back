@@ -24,7 +24,6 @@ export class CommentsRepository {
       .innerJoinAndSelect('comment.user', 'user')
       .innerJoinAndSelect('user.userImage', 'userImage')
       .where('comment.boardId = :boardId', { boardId });
-
     return query.getMany();
   }
 

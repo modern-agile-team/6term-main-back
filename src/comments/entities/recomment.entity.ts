@@ -12,17 +12,23 @@ import {
 @Entity({
   name: 'recomment',
 })
-export class Recomment {
+export class ReComment {
   @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  userId: User;
+  user: User;
+
+  @Column({ name: 'user_id' })
+  userId: number;
 
   @ManyToOne(() => Comment)
   @JoinColumn({ name: 'comment_id' })
-  commentId: Comment;
+  comment: Comment;
+
+  @Column({ name: 'comment_id' })
+  commentId: number;
 
   @Column()
   content: string;
