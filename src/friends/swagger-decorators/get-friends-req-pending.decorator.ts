@@ -15,22 +15,32 @@ export function ApiGetFriendsReqPending() {
         Array: {
           example: [
             {
-              id: 1,
-              requesterId: 63,
-              respondentId: 57,
+              id: 19,
+              requesterId: 62,
+              respondentId: 1,
               status: '대기 상태',
+              createdAt: '2023-10-26T20:49:29.000Z',
+              respondent: {
+                name: 'test',
+                userImage: {
+                  imageUrl:
+                    'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
+                },
+              },
             },
             {
-              id: 3,
-              requesterId: 63,
-              respondentId: 62,
+              id: 24,
+              requesterId: 62,
+              respondentId: 69,
               status: '대기 상태',
-            },
-            {
-              id: 4,
-              requesterId: 63,
-              respondentId: 64,
-              status: '대기 상태',
+              createdAt: '2023-11-06T21:28:29.000Z',
+              respondent: {
+                name: '정비호',
+                userImage: {
+                  imageUrl:
+                    'http://k.kakaocdn.net/dn/1tpME/btszHHkqoEv/p5gB2vOKMnD2jZas0NdWIk/img_640x640.jpg',
+                },
+              },
             },
           ],
         },

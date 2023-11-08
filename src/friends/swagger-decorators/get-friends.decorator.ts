@@ -15,22 +15,25 @@ export function ApiGetFriends() {
         Array: {
           example: [
             {
-              id: 3,
-              requesterId: 63,
-              respondentId: 62,
-              status: '친구 수락',
-            },
-            {
-              id: 4,
-              requesterId: 63,
-              respondentId: 64,
-              status: '친구 수락',
-            },
-            {
-              id: 18,
-              requesterId: 63,
+              id: 19,
+              requesterId: 62,
               respondentId: 1,
               status: '친구 수락',
+              createdAt: '2023-10-26T20:49:29.000Z',
+              requester: {
+                name: '박준혁',
+                userImage: {
+                  imageUrl:
+                    'http://k.kakaocdn.net/dn/bgfjbT/btrNZpdv3sK/AMb1oWdaF6WxMEXkuKRkR0/img_640x640.jpg',
+                },
+              },
+              respondent: {
+                name: 'test',
+                userImage: {
+                  imageUrl:
+                    'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
+                },
+              },
             },
           ],
         },

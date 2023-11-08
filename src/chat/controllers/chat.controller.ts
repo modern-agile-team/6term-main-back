@@ -3,44 +3,46 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Param,
-  ParseIntPipe,
   Post,
-  Query,
   Sse,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ChatService } from '../services/chat.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ReceivedUserDto } from '../dto/received-user.dto';
 import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Users } from 'src/common/decorators/user.decorator';
-import { User } from 'src/users/entities/user.entity';
 import { ParseObjectIdPipe } from '../parse-object-id.pipe';
 import { ApiCreateChatRoom } from '../swagger-decorators/create-chat-room.decorator';
 import { ApiGetChatRooms } from '../swagger-decorators/get-chat-rooms.decorator';
 import { ApiGetOneChatRoom } from '../swagger-decorators/get-one-chat-room.decorator';
 import { ApiDeleteChatRoom } from '../swagger-decorators/delete-chat-room.decorator';
 import { ApiGetChats } from '../swagger-decorators/get-chats.decorator';
-import { ApiGetChatNotification } from '../swagger-decorators/get-chat-notification.decorator';
-import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
+import { ApiGetChatNotificationSse } from '../swagger-decorators/get-chat-notification-Sse.decorator';
+// import { ApiGetChatUnreadCounts } from '../swagger-decorators/get-chat-unread-counts.decorator';
 import { TokenService } from 'src/auth/services/token.service';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
+import { ApiGetChatNotifications } from '../swagger-decorators/get-chat-notifications.decorator';
+import { ApiCreateChatImage } from '../swagger-decorators/create-chat-image.decorators';
 
 @ApiTags('CHAT')
-@Controller('chat-room')
+@UseGuards(JwtAccessTokenGuard)
 @UsePipes(ValidationPipe)
+@Controller('chat-room')
 export class ChatController {
   constructor(
     private chatService: ChatService,
     private tokenService: TokenService,
   ) {}
 
-  @ApiGetChatNotification()
+  @ApiGetChatNotificationSse()
   @Sse('listener')
   notificationListener() {
     return this.chatService.notificationListener();
@@ -48,52 +50,55 @@ export class ChatController {
 
   @ApiGetChatRooms()
   @Get()
-  async getChatRooms(@Users() user: User) {
-    return this.chatService.getChatRooms(user.id);
+  async getChatRooms(@GetUserId() userId: number) {
+    return this.chatService.getChatRooms(userId);
   }
 
   @ApiGetOneChatRoom()
   @Get(':roomId')
   async getOneChatRoom(
-    @Users() user: User,
+    @GetUserId() userId: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.getOneChatRoom(user.id, roomId);
+    return this.chatService.getOneChatRoom(userId, roomId);
   }
 
   @ApiCreateChatRoom()
   @Post()
-  async createChatRoom(@Users() user: User, @Body() body: ReceivedUserDto) {
-    return this.chatService.createChatRoom(user.id, body.receiverId);
+  async createChatRoom(
+    @GetUserId() userId: number,
+    @Body() body: ReceivedUserDto,
+  ) {
+    return this.chatService.createChatRoom(userId, body.receiverId);
   }
 
   @ApiDeleteChatRoom()
   @Delete(':roomId')
   async deleteChatRoom(
-    @Users() user: User,
+    @GetUserId() userId: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.deleteChatRoom(user.id, roomId);
+    return this.chatService.deleteChatRoom(userId, roomId);
   }
 
   @ApiGetChats()
   @Get(':roomId/chat')
   async getChats(
+    @GetUserId() userId: number,
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
   ) {
-    return this.chatService.getChats(roomId);
+    return this.chatService.getChats(userId, roomId);
   }
 
-  @ApiOperation({ summary: '특정 채팅방 채팅 이미지 생성' })
+  @ApiCreateChatImage()
   @Post(':roomId/chat/image')
   @UseInterceptors(FileInterceptor('file'))
   async createChatImage(
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-    @Headers('access_token') accessToken: string,
+    @GetUserId() senderId: number,
     @Body() body: ReceivedUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const senderId = await this.tokenService.decodeToken(accessToken);
     return this.chatService.createChatImage(
       roomId,
       senderId,
@@ -102,12 +107,20 @@ export class ChatController {
     );
   }
 
-  @ApiGetChatUnreadCounts()
-  @Get(':roomId/chat/unreads')
-  async getUnreadCounts(
-    @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
-    @Query('after', ParseIntPipe) after: number,
-  ) {
-    return this.chatService.getUnreadCounts(roomId, after);
+  @ApiGetChatNotifications()
+  @Get('chat/notice')
+  async getChatNotifications(
+    @GetUserId() userId: number,
+  ): Promise<GetNotificationsResponseDto[]> {
+    return this.chatService.getChatNotifications(userId);
   }
+
+  // @ApiGetChatUnreadCounts()
+  // @Get(':roomId/chat/unreads')
+  // async getUnreadCounts(
+  //   @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
+  //   @Query('after', ParseIntPipe) after: number,
+  // ) {
+  //   return this.chatService.getUnreadCounts(roomId, after);
+  // }
 }
