@@ -30,7 +30,7 @@ export class NoticeRepository {
     return this.entityManager.save(BoardNotification, boardNotice);
   }
 
-  async createCommentNoticeFromRecomment(
+  async createCommentNoticeFromReComment(
     boardId: number,
     senderId: number,
     receiverId: number,
