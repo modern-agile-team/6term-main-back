@@ -283,11 +283,11 @@ export function ApiSearchBoardsByBody() {
     }),
     ApiResponse({
       status: 404,
-      description: '알람 조회 실패.',
+      description: '페이지 조회 실패.',
       content: {
         JSON: {
           example: {
-            message: '해당 유저를 찾지 못했습니다.',
+            message: '해당 페이지는 존재하지 않습니다.',
             error: 'Not Found',
             statusCode: 404,
           },
