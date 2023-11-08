@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { ChatRoom } from './chat-room.schemas';
-import { IsMongoId, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsMongoId, IsNumber, IsString } from 'class-validator';
 
 const options: SchemaOptions = {
   collection: 'Chat',
@@ -25,6 +25,10 @@ export class Chat {
   @IsString()
   @Prop({ required: true })
   content: string;
+
+  @IsBoolean()
+  @Prop({ required: true, default: false })
+  isSeen: boolean;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

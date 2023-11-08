@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Subject, map } from 'rxjs';
-import { ChatNotification } from '../schemas/chat-notifiation.schemas';
 import mongoose from 'mongoose';
+import { Chat } from '../schemas/chat.schemas';
 
 @Injectable()
 export class NotificationService {
@@ -10,8 +10,8 @@ export class NotificationService {
   private readonly subject = new Subject();
 
   constructor(
-    @InjectModel(ChatNotification.name)
-    private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
+    @InjectModel(Chat.name)
+    private readonly chatnModel: mongoose.Model<Chat>,
   ) {}
 
   notificationListener() {
@@ -29,7 +29,7 @@ export class NotificationService {
 
   async createNotification(createNotificationsDto: number) {
     try {
-      const notification = await new this.chatNotificationModel({
+      const notification = await new this.chatnModel({
         // description: createNotificationsDto.description,
         // title: createNotificationsDto.title,
         isSeen: false,
