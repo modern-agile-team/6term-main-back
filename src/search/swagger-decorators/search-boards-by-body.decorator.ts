@@ -276,7 +276,11 @@ export function ApiSearchBoardsByBody() {
                 boardImages: [],
               },
             ],
-            total: 13,
+            meta: {
+              total: 13,
+              page: 1,
+              last_page: 1,
+            },
           },
         },
       },

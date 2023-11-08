@@ -136,7 +136,24 @@ export function ApiSearchBoardsByHead() {
                 boardImages: [],
               },
             ],
-            total: 6,
+            meta: {
+              total: 13,
+              page: 1,
+              last_page: 1,
+            },
+          },
+        },
+      },
+    }),
+    ApiResponse({
+      status: 404,
+      description: '페이지 조회 실패.',
+      content: {
+        JSON: {
+          example: {
+            message: '해당 페이지는 존재하지 않습니다.',
+            error: 'Not Found',
+            statusCode: 404,
           },
         },
       },
