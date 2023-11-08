@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BoardLike } from './board-like.entity';
+import { BoardNotification } from 'src/common/notice/entities/board-notice.entity';
 
 @Entity({
   name: 'board',
@@ -36,6 +37,15 @@ export class Board {
     onDelete: 'CASCADE',
   })
   boardLike: BoardLike;
+
+  @OneToMany(
+    () => BoardNotification,
+    (BoardNotification) => BoardNotification.board,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  boardNotification: BoardNotification;
 
   @Index({ fulltext: true })
   @Column('varchar')
