@@ -12,7 +12,7 @@ import {
 @Entity({
   name: 'recomment',
 })
-export class Recomment {
+export class ReComment {
   @PrimaryGeneratedColumn()
   id: number;
 

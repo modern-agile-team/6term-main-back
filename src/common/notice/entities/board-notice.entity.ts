@@ -24,7 +24,7 @@ export class BoardNotification {
   @Column({ name: 'board_id' })
   boardId: number;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, (board) => board.boardNotification)
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
