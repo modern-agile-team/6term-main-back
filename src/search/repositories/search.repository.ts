@@ -15,7 +15,7 @@ export class SearchRepository {
       .leftJoinAndSelect('board.user', 'user')
       .leftJoinAndSelect('user.userImage', 'userImage')
       .leftJoinAndSelect('board.boardImages', 'boardImages')
-      .where(`MATCH(head) AGAINST (:searchQuery)`, {
+      .where(`MATCH(head) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
       .skip(skip)
@@ -32,7 +32,7 @@ export class SearchRepository {
       .leftJoinAndSelect('board.user', 'user')
       .leftJoinAndSelect('user.userImage', 'userImage')
       .leftJoinAndSelect('board.boardImages', 'boardImages')
-      .where(`MATCH(body) AGAINST (:searchQuery)`, {
+      .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
       .skip(skip)
