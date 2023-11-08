@@ -16,9 +16,9 @@ export class FriendsRepository {
       .createQueryBuilder(Friend, 'friend')
       .where('friend.requesterId = :userId', { userId })
       .andWhere('friend.status = :status', { status: Status.PENDING })
-      .leftJoin('friend.respondent', 'user') // Friend 엔티티의 respondent 관계를 사용하여 'user' 엔티티와 조인
-      .leftJoin('user.userImage', 'userImage') // User 엔티티의 userImage 관계를 사용하여 'userImage' 엔티티와 조인
-      .addSelect(['user.name', 'userImage.imageUrl']) // 결과에 포함할 열(column)을 선택 (사용자 이름과 사용자 이미지 URL)
+      .leftJoin('friend.respondent', 'user')
+      .leftJoin('user.userImage', 'userImage')
+      .addSelect(['user.name', 'userImage.imageUrl'])
       .getMany();
   }
 
@@ -34,27 +34,30 @@ export class FriendsRepository {
   }
 
   async getFriends(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: [
-        {
-          requesterId: userId,
-          status: Status.ACCEPT,
-        },
-        {
-          respondentId: userId,
-          status: Status.ACCEPT,
-        },
-      ],
-    });
+    return await this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.requesterId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.ACCEPT })
+      .orWhere('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.ACCEPT })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('friend.respondent', 'user2')
+      .leftJoin('user.userImage', 'userImage')
+      .leftJoin('user2.userImage', 'userImage2')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .addSelect(['user2.name', 'userImage2.imageUrl'])
+      .getMany();
   }
 
   async getRejectPermanent(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: {
-        respondentId: userId,
-        status: Status.PERMANENT,
-      },
-    });
+    return await this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.PERMANENT })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('user.userImage', 'userImage')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .getMany();
   }
 
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
