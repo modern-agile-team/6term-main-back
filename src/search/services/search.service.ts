@@ -50,7 +50,7 @@ export class SearchService {
         meta: {
           total,
           page: page <= 0 ? (page = 1) : page,
-          last_page: last_page,
+          last_page,
         },
       };
     } else {
@@ -97,9 +97,9 @@ export class SearchService {
       return {
         data: boardResponse,
         meta: {
-          total: total,
+          total,
           page: page <= 0 ? (page = 1) : page,
-          last_page: last_page,
+          last_page,
         },
       };
     } else {
