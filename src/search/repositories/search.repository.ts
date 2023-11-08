@@ -23,7 +23,7 @@ export class SearchRepository {
       .getManyAndCount();
   }
 
-  async searchBoardsByBody(searchQuery: string) {
+  async searchBoardsByBody(searchQuery: string, skip: number, take: number) {
     const boardRepository = this.entityManager.getRepository(Board);
 
     return boardRepository
@@ -35,7 +35,9 @@ export class SearchRepository {
       .where(`MATCH(body) AGAINST (:searchQuery)`, {
         searchQuery,
       })
-      .getMany();
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
   }
 
   async searchUsersByName(searchQuery: string) {

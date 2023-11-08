@@ -12,6 +12,7 @@ export class SearchService {
   async searchBoardsByHead(searchQuery: string, page: number, limit: number) {
     const take = limit;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
+
     const [returnedBoards, total] =
       await this.searchRepository.searchBoardsByHead(searchQuery, skip, take);
 
@@ -57,9 +58,14 @@ export class SearchService {
     }
   }
 
-  async searchBoardsByBody(searchQuery: string) {
-    const returnedBoards =
-      await this.searchRepository.searchBoardsByBody(searchQuery);
+  async searchBoardsByBody(searchQuery: string, page: number, limit: number) {
+    const take = limit;
+    const skip = page <= 0 ? (page = 0) : (page - 1) * take;
+
+    const [returnedBoards, total] =
+      await this.searchRepository.searchBoardsByBody(searchQuery, skip, take);
+
+    const last_page = Math.ceil(total / limit);
 
     const boardResponse: BoardResponseDTO[] = await Promise.all(
       returnedBoards.map(async (board) => {
@@ -87,8 +93,18 @@ export class SearchService {
         };
       }),
     );
-
-    return { data: boardResponse, total: boardResponse.length };
+    if (last_page >= page) {
+      return {
+        data: boardResponse,
+        meta: {
+          total: total,
+          page: page <= 0 ? (page = 1) : page,
+          last_page: last_page,
+        },
+      };
+    } else {
+      throw new NotFoundException('해당 페이지는 존재하지 않습니다.');
+    }
   }
 
   async searchUsersByName(searchQuery: string) {

@@ -27,8 +27,12 @@ export class SearchController {
 
   @ApiSearchBoardsByBody()
   @Get('boards/body')
-  async searchBoardsByBody(@Query('searchQuery') searchQuery: string) {
-    return this.searchService.searchBoardsByBody(searchQuery);
+  async searchBoardsByBody(
+    @Query('searchQuery') searchQuery: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+  ) {
+    return this.searchService.searchBoardsByBody(searchQuery, page, limit);
   }
 
   @Get('users')
