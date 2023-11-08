@@ -1,5 +1,5 @@
-import { applyDecorators } from "@nestjs/common";
-import { ApiHeaders, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { applyDecorators } from '@nestjs/common';
+import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiGetFriendsResPending() {
   return applyDecorators(
@@ -15,16 +15,32 @@ export function ApiGetFriendsResPending() {
         Array: {
           example: [
             {
-              id: 2,
-              requesterId: 62,
-              respondentId: 63,
+              id: 25,
+              requesterId: 65,
+              respondentId: 62,
               status: '대기 상태',
+              createdAt: '2023-11-06T23:37:41.000Z',
+              requester: {
+                name: '이승우',
+                userImage: {
+                  imageUrl:
+                    'https://phinf.pstatic.net/contact/20200919_86/1600520194140Tp4Bo_JPEG/d.jpg',
+                },
+              },
             },
             {
-              id: 5,
-              requesterId: 64,
-              respondentId: 63,
+              id: 26,
+              requesterId: 70,
+              respondentId: 62,
               status: '대기 상태',
+              createdAt: '2023-11-06T23:38:11.000Z',
+              requester: {
+                name: 'zeratul',
+                userImage: {
+                  imageUrl:
+                    'https://ssl.pstatic.net/static/pwe/address/img_profile.png',
+                },
+              },
             },
           ],
         },
