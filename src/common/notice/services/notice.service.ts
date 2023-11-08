@@ -32,12 +32,12 @@ export class NoticeService {
     );
   }
 
-  async createCommentNoticeFromRecomment(
+  async createCommentNoticeFromReComment(
     boardId: number,
     senderId: number,
     receiverId: number,
   ) {
-    return this.noticeRepository.createCommentNoticeFromRecomment(
+    return this.noticeRepository.createCommentNoticeFromReComment(
       boardId,
       senderId,
       receiverId,

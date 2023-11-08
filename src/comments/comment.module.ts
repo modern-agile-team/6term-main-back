@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Recomment } from './entities/recomment.entity';
+import { ReComment } from './entities/recomment.entity';
 import { Comment } from './entities/comment.entity';
 import { CommentsController } from './controllers/comments.controller';
 import { CommentsService } from './services/comments.services';
@@ -9,7 +9,7 @@ import { CommentsRepository } from './repository/comments.repository';
 import { TokenRepository } from 'src/auth/repositories/token.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment, Recomment])],
+  imports: [TypeOrmModule.forFeature([Comment, ReComment])],
   controllers: [CommentsController],
   providers: [
     CommentsService,
