@@ -13,7 +13,20 @@ export class SearchRepository {
     take: number,
   ) {
     const boardRepository = this.entityManager.getRepository(Board);
-
+    if (category === '전체') {
+      return boardRepository
+        .createQueryBuilder('board')
+        .select()
+        .leftJoinAndSelect('board.user', 'user')
+        .leftJoinAndSelect('user.userImage', 'userImage')
+        .leftJoinAndSelect('board.boardImages', 'boardImages')
+        .where(`MATCH(head) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
+          searchQuery,
+        })
+        .skip(skip)
+        .take(take)
+        .getManyAndCount();
+    }
     return boardRepository
       .createQueryBuilder('board')
       .select()
@@ -37,6 +50,20 @@ export class SearchRepository {
   ) {
     const boardRepository = this.entityManager.getRepository(Board);
 
+    if (category === '전체') {
+      return boardRepository
+        .createQueryBuilder('board')
+        .select()
+        .leftJoinAndSelect('board.user', 'user')
+        .leftJoinAndSelect('user.userImage', 'userImage')
+        .leftJoinAndSelect('board.boardImages', 'boardImages')
+        .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
+          searchQuery,
+        })
+        .skip(skip)
+        .take(take)
+        .getManyAndCount();
+    }
     return boardRepository
       .createQueryBuilder('board')
       .select()
