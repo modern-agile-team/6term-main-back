@@ -42,8 +42,8 @@ export class SearchService {
           createAt: board.createAt,
           updateAt: board.updateAt,
           userId: {
-            name: board.user.name,
-            userImage: board.user.userImage ? board.user.userImage : [],
+            name: board.user[0].name,
+            userImage: board.user[0].userImage ? board.user[0].userImage : [],
           },
           boardLike: like,
           boardImages: board.boardImages.map((image) => ({
@@ -100,8 +100,8 @@ export class SearchService {
           createAt: board.createAt,
           updateAt: board.updateAt,
           userId: {
-            name: board.user.name,
-            userImage: board.user.userImage ? board.user.userImage : [],
+            name: board.user[0].name,
+            userImage: board.user[0].userImage ? board.user[0].userImage : [],
           },
           boardLike: like,
           boardImages: board.boardImages.map((image) => ({

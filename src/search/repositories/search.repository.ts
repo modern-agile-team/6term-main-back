@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { BoardImage } from 'src/boards/entities/board-image.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
 import { EntityManager } from 'typeorm';
@@ -13,30 +14,74 @@ export class SearchRepository {
     take: number,
   ) {
     const boardRepository = this.entityManager.getRepository(Board);
+
     if (category === '전체') {
       return boardRepository
         .createQueryBuilder('board')
-        .select()
-        .leftJoinAndSelect('board.user', 'user')
-        .leftJoinAndSelect('user.userImage', 'userImage')
-        .leftJoinAndSelect('board.boardImages', 'boardImages')
         .where(`MATCH(head) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
           searchQuery,
         })
+        .leftJoinAndMapMany(
+          'board.user',
+          User,
+          'user',
+          'user.id = board.userId',
+        )
+        .leftJoinAndSelect('user.userImage', 'userImage')
+        .leftJoinAndMapMany(
+          'board.boardImages',
+          BoardImage,
+          'boardImages',
+          'boardImages.boardId = board.id',
+        )
+        .select([
+          'board.id',
+          'board.head',
+          'board.body',
+          'board.main_category',
+          'board.sub_category',
+          'board.createAt',
+          'board.updateAt',
+          'user.name',
+          'userImage.id',
+          'userImage.userId',
+          'userImage.imageUrl',
+          'boardImages.id',
+          'boardImages.imageUrl',
+        ])
         .skip(skip)
         .take(take)
         .getManyAndCount();
     }
     return boardRepository
       .createQueryBuilder('board')
-      .select()
-      .leftJoinAndSelect('board.user', 'user')
-      .leftJoinAndSelect('user.userImage', 'userImage')
-      .leftJoinAndSelect('board.boardImages', 'boardImages')
       .where(`MATCH(head) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
       .andWhere('board.main_category = :category', { category })
+      .leftJoinAndMapMany('board.user', User, 'user', 'user.id = board.userId')
+      .leftJoinAndSelect('user.userImage', 'userImage')
+      .leftJoinAndMapMany(
+        'board.boardImages',
+        BoardImage,
+        'boardImages',
+        'boardImages.boardId = board.id',
+      )
+      .select([
+        'board.id',
+        'board.head',
+        'board.body',
+        'board.main_category',
+        'board.sub_category',
+        'board.createAt',
+        'board.updateAt',
+        'user.name',
+        'userImage.id',
+        'userImage.userId',
+        'userImage.imageUrl',
+        'boardImages.id',
+        'boardImages.imageUrl',
+      ])
       .skip(skip)
       .take(take)
       .getManyAndCount();
@@ -53,27 +98,70 @@ export class SearchRepository {
     if (category === '전체') {
       return boardRepository
         .createQueryBuilder('board')
-        .select()
-        .leftJoinAndSelect('board.user', 'user')
-        .leftJoinAndSelect('user.userImage', 'userImage')
-        .leftJoinAndSelect('board.boardImages', 'boardImages')
         .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
           searchQuery,
         })
+        .leftJoinAndMapMany(
+          'board.user',
+          User,
+          'user',
+          'user.id = board.userId',
+        )
+        .leftJoinAndSelect('user.userImage', 'userImage')
+        .leftJoinAndMapMany(
+          'board.boardImages',
+          BoardImage,
+          'boardImages',
+          'boardImages.boardId = board.id',
+        )
+        .select([
+          'board.id',
+          'board.head',
+          'board.body',
+          'board.main_category',
+          'board.sub_category',
+          'board.createAt',
+          'board.updateAt',
+          'user.name',
+          'userImage.id',
+          'userImage.userId',
+          'userImage.imageUrl',
+          'boardImages.id',
+          'boardImages.imageUrl',
+        ])
         .skip(skip)
         .take(take)
         .getManyAndCount();
     }
     return boardRepository
       .createQueryBuilder('board')
-      .select()
-      .leftJoinAndSelect('board.user', 'user')
-      .leftJoinAndSelect('user.userImage', 'userImage')
-      .leftJoinAndSelect('board.boardImages', 'boardImages')
       .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
       .andWhere('board.main_category = :category', { category })
+      .leftJoinAndMapMany('board.user', User, 'user', 'user.id = board.userId')
+      .leftJoinAndSelect('user.userImage', 'userImage')
+      .leftJoinAndMapMany(
+        'board.boardImages',
+        BoardImage,
+        'boardImages',
+        'boardImages.boardId = board.id',
+      )
+      .select([
+        'board.id',
+        'board.head',
+        'board.body',
+        'board.main_category',
+        'board.sub_category',
+        'board.createAt',
+        'board.updateAt',
+        'user.name',
+        'userImage.id',
+        'userImage.userId',
+        'userImage.imageUrl',
+        'boardImages.id',
+        'boardImages.imageUrl',
+      ])
       .skip(skip)
       .take(take)
       .getManyAndCount();
