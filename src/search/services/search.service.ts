@@ -14,7 +14,7 @@ export class SearchService {
     searchQuery: string,
     page: number,
   ) {
-    const take = 30;
+    const take = 16;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
     const [returnedBoards, total] =
@@ -72,7 +72,7 @@ export class SearchService {
     searchQuery: string,
     page: number,
   ) {
-    const take = 30;
+    const take = 16;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
     const [returnedBoards, total] =
