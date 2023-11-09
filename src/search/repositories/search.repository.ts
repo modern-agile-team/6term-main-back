@@ -6,7 +6,12 @@ import { EntityManager } from 'typeorm';
 @Injectable()
 export class SearchRepository {
   constructor(private entityManager: EntityManager) {}
-  async searchBoardsByHead(searchQuery: string, skip: number, take: number) {
+  async searchBoardsByHead(
+    category: string,
+    searchQuery: string,
+    skip: number,
+    take: number,
+  ) {
     const boardRepository = this.entityManager.getRepository(Board);
 
     return boardRepository
@@ -18,12 +23,18 @@ export class SearchRepository {
       .where(`MATCH(head) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
+      .andWhere('board.main_category = :category', { category })
       .skip(skip)
       .take(take)
       .getManyAndCount();
   }
 
-  async searchBoardsByBody(searchQuery: string, skip: number, take: number) {
+  async searchBoardsByBody(
+    category: string,
+    searchQuery: string,
+    skip: number,
+    take: number,
+  ) {
     const boardRepository = this.entityManager.getRepository(Board);
 
     return boardRepository
@@ -35,6 +46,7 @@ export class SearchRepository {
       .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
+      .andWhere('board.main_category = :category', { category })
       .skip(skip)
       .take(take)
       .getManyAndCount();

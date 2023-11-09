@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   ParseIntPipe,
   Query,
   UsePipes,
@@ -9,30 +10,32 @@ import {
 import { SearchService } from '../services/search.service';
 import { ApiSearchBoardsByHead } from '../swagger-decorators/search-boards-by-head.decorator';
 import { ApiSearchBoardsByBody } from '../swagger-decorators/search-boards-by-body.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('SEARCH')
 @UsePipes(ValidationPipe)
 @Controller('search')
 export class SearchController {
   constructor(private searchService: SearchService) {}
 
   @ApiSearchBoardsByHead()
-  @Get('boards/head')
+  @Get('boards/:category/head')
   async searchBoardsByHead(
+    @Param('category') category: string,
     @Query('searchQuery') searchQuery: string,
     @Query('page', ParseIntPipe) page: number,
-    @Query('limit', ParseIntPipe) limit: number,
   ) {
-    return this.searchService.searchBoardsByHead(searchQuery, page, limit);
+    return this.searchService.searchBoardsByHead(category, searchQuery, page);
   }
 
   @ApiSearchBoardsByBody()
-  @Get('boards/body')
+  @Get('boards/:category/body')
   async searchBoardsByBody(
+    @Param('category') category: string,
     @Query('searchQuery') searchQuery: string,
     @Query('page', ParseIntPipe) page: number,
-    @Query('limit', ParseIntPipe) limit: number,
   ) {
-    return this.searchService.searchBoardsByBody(searchQuery, page, limit);
+    return this.searchService.searchBoardsByBody(category, searchQuery, page);
   }
 
   @Get('users')

@@ -5,12 +5,12 @@ export function ApiSearchBoardsByHead() {
   return applyDecorators(
     ApiOperation({
       summary: '게시글 검색 API',
-      description: `Query String으로 입력된 값을 토대로 게시글의 제목에 일치하는 값을 조회합니다. 
-      ex)'흑돼지고기' 검색 - '흑돼', '돼지', '지고', '고기'로 검색 (정확성 순으로 정렬됨)`,
+      description: `Query String의 내용과 Param으로 입력된 카테고리를 토대로 게시글의 제목에 일치하는 값을 조회합니다. 
+      ex)'흑돼지 고기' 검색 - '흑돼지', '고기' 라는 단어 단위로 검색. (정확성 순으로 정렬됨)`,
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 검색한 게시글(제목 기준) 조회',
+      description: '성공적으로 검색한 게시글(제목, 카테고리 기준) 조회',
       content: {
         JSON: {
           example: {
