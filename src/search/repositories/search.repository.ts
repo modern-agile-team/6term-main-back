@@ -167,6 +167,63 @@ export class SearchRepository {
       .getManyAndCount();
   }
 
+  async searchBoardsByUserName(
+    category: string,
+    searchQuery: string,
+    skip: number,
+    take: number,
+  ) {
+    const userRepository = this.entityManager.getRepository(User);
+
+    if (category === '전체') {
+      const returnedUsers = await userRepository
+        .createQueryBuilder('user')
+        .where(`MATCH(name) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
+          searchQuery,
+        })
+        .select(['user.id'])
+        .getMany();
+      console.log(returnedUsers);
+      returnedUsers.forEach((id) => {
+        this.entityManager.findOne(Board, { where: { userId: id } });
+      });
+
+      return [returnedUsers];
+    }
+    // return userRepository
+    //   .createQueryBuilder('board')
+    //   .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
+    //     searchQuery,
+    //   })
+    //   .andWhere('board.main_category = :category', { category })
+    //   .leftJoinAndMapMany('board.user', User, 'user', 'user.id = board.userId')
+    //   .leftJoinAndSelect('user.userImage', 'userImage')
+    //   .leftJoinAndMapMany(
+    //     'board.boardImages',
+    //     BoardImage,
+    //     'boardImages',
+    //     'boardImages.boardId = board.id',
+    //   )
+    //   .select([
+    //     'board.id',
+    //     'board.head',
+    //     'board.body',
+    //     'board.main_category',
+    //     'board.sub_category',
+    //     'board.createAt',
+    //     'board.updateAt',
+    //     'user.name',
+    //     'userImage.id',
+    //     'userImage.userId',
+    //     'userImage.imageUrl',
+    //     'boardImages.id',
+    //     'boardImages.imageUrl',
+    //   ])
+    //   .skip(skip)
+    //   .take(take)
+    //   .getManyAndCount();
+  }
+
   async searchUsersByName(searchQuery: string) {
     const userRepository = this.entityManager.getRepository(User);
 

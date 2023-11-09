@@ -50,6 +50,22 @@ export class SearchController {
     );
   }
 
+  // @ApiSearchBoardsByBody()
+  @Get('boards/:category/user')
+  async searchBoardsByUserName(
+    @Param('category') category: string,
+    @Query('searchQuery') searchQuery: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+  ) {
+    return this.searchService.searchBoardsByUserName(
+      category,
+      searchQuery,
+      page,
+      limit,
+    );
+  }
+
   @Get('users')
   async searchUsersByName(@Query('searchQuery') searchQuery: string) {
     return this.searchService.searchUsersByName(searchQuery);
