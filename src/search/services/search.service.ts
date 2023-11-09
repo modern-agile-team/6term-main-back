@@ -136,15 +136,14 @@ export class SearchService {
     const take = limit;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
-    const [returnedBoards, total] =
-      await this.searchRepository.searchBoardsByUserName(
-        category,
-        searchQuery,
-        skip,
-        take,
-      );
+    const [returnedBoards] = await this.searchRepository.searchBoardsByUserName(
+      category,
+      searchQuery,
+      skip,
+      take,
+    );
 
-    return [returnedBoards, total];
+    return [returnedBoards];
 
     // const last_page = Math.ceil(total / take);
 

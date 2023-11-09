@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BoardImage } from 'src/boards/entities/board-image.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
-import { EntityManager } from 'typeorm';
+import { Brackets, EntityManager } from 'typeorm';
 
 @Injectable()
 export class SearchRepository {
@@ -183,12 +183,113 @@ export class SearchRepository {
         })
         .select(['user.id'])
         .getMany();
-      console.log(returnedUsers);
-      returnedUsers.forEach((id) => {
-        this.entityManager.findOne(Board, { where: { userId: id } });
-      });
 
-      return [returnedUsers];
+      // const returnedBoards = {};
+      // returnedUsers.forEach(async (user, index) => {
+      //   let newBoards = {};
+
+      //   newBoards = await this.entityManager.find(Board, {
+      //     where: { userId: user.id },
+      //   });
+      //   returnedBoards[user.id] = { ...newBoards };
+      const returnedBoards = [];
+
+      for (const user of returnedUsers) {
+        let index = 0;
+        index++;
+        const parameterName = 'token' + index;
+        const [newBoards, total] = await this.entityManager
+          .createQueryBuilder(Board, 'board')
+          .leftJoinAndMapMany(
+            'board.user',
+            User,
+            'user',
+            'user.id = board.userId',
+          )
+          .leftJoinAndSelect('user.userImage', 'userImage')
+          .leftJoinAndMapMany(
+            'board.boardImages',
+            BoardImage,
+            'boardImages',
+            'boardImages.boardId = board.id',
+          )
+          .select([
+            'board.id',
+            'board.head',
+            'board.body',
+            'board.main_category',
+            'board.sub_category',
+            'board.createAt',
+            'board.updateAt',
+            'user.name',
+            'userImage.id',
+            'userImage.userId',
+            'userImage.imageUrl',
+            'boardImages.id',
+            'boardImages.imageUrl',
+          ])
+          .addSelect('SUBSTRING(board.body, 0, 30)', 'board.body')
+          .where(
+            new Brackets((qb) => {
+              qb.where('board.userId = :' + parameterName);
+            }),
+          )
+          .setParameter(parameterName, user.id)
+          .skip(skip)
+          .take(take)
+          .getManyAndCount();
+        // console.log(newBoards);
+
+        returnedBoards.push({ ...newBoards, total });
+      }
+
+      console.log(returnedBoards);
+      return returnedBoards;
+      // const parameterName = 'token' + index;
+      // returnedBoards[user.id] = await this.entityManager
+      //   .createQueryBuilder(Board, 'board')
+
+      //   // .setParameter(parameterName, user)
+      //   .leftJoinAndMapMany(
+      //     'board.user',
+      //     User,
+      //     'user',
+      //     'user.id = board.userId',
+      //   )
+      //   .leftJoinAndSelect('user.userImage', 'userImage')
+      //   .leftJoinAndMapMany(
+      //     'board.boardImages',
+      //     BoardImage,
+      //     'boardImages',
+      //     'boardImages.boardId = board.id',
+      //   )
+      //   .select([
+      //     'board.id',
+      //     'board.head',
+      //     'board.body',
+      //     'board.main_category',
+      //     'board.sub_category',
+      //     'board.createAt',
+      //     'board.updateAt',
+      //     'user.id',
+      //     'user.name',
+      //     'userImage.id',
+      //     'userImage.userId',
+      //     'userImage.imageUrl',
+      //     'boardImages.id',
+      //     'boardImages.imageUrl',
+      //   ])
+      //   .where('MATCH(userId) AGAINST (:usersId IN BOOLEAN MODE)', {
+      //     usersId: user.id,
+      //   })
+      //   .skip(skip)
+      //   .take(take)
+      //   .getManyAndCount();
+      // console.log(returnedBoards[0]);
+      //   console.log(returnedBoards);
+      // });
+      console.log(returnedBoards);
+      return [returnedBoards];
     }
     // return userRepository
     //   .createQueryBuilder('board')
