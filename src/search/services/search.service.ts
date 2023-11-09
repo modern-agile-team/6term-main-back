@@ -9,12 +9,22 @@ export class SearchService {
     private searchRepository: SearchRepository,
     private boardLikesRepository: BoardsLikeRepository,
   ) {}
-  async searchBoardsByHead(searchQuery: string, page: number, limit: number) {
+  async searchBoardsByHead(
+    category: string,
+    searchQuery: string,
+    page: number,
+    limit: number,
+  ) {
     const take = limit;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
     const [returnedBoards, total] =
-      await this.searchRepository.searchBoardsByHead(searchQuery, skip, take);
+      await this.searchRepository.searchBoardsByHead(
+        category,
+        searchQuery,
+        skip,
+        take,
+      );
 
     const last_page = Math.ceil(total / take);
 
@@ -33,8 +43,8 @@ export class SearchService {
           createAt: board.createAt,
           updateAt: board.updateAt,
           userId: {
-            name: board.user.name,
-            userImage: board.user.userImage ? board.user.userImage : [],
+            name: board.user[0].name,
+            userImage: board.user[0].userImage ? board.user[0].userImage : [],
           },
           boardLike: like,
           boardImages: board.boardImages.map((image) => ({
@@ -58,14 +68,24 @@ export class SearchService {
     }
   }
 
-  async searchBoardsByBody(searchQuery: string, page: number, limit: number) {
+  async searchBoardsByBody(
+    category: string,
+    searchQuery: string,
+    page: number,
+    limit: number,
+  ) {
     const take = limit;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
     const [returnedBoards, total] =
-      await this.searchRepository.searchBoardsByBody(searchQuery, skip, take);
+      await this.searchRepository.searchBoardsByBody(
+        category,
+        searchQuery,
+        skip,
+        take,
+      );
 
-    const last_page = Math.ceil(total / limit);
+    const last_page = Math.ceil(total / take);
 
     const boardResponse: BoardResponseDTO[] = await Promise.all(
       returnedBoards.map(async (board) => {
@@ -82,8 +102,8 @@ export class SearchService {
           createAt: board.createAt,
           updateAt: board.updateAt,
           userId: {
-            name: board.user.name,
-            userImage: board.user.userImage ? board.user.userImage : [],
+            name: board.user[0].name,
+            userImage: board.user[0].userImage ? board.user[0].userImage : [],
           },
           boardLike: like,
           boardImages: board.boardImages.map((image) => ({
