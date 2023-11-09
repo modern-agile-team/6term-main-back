@@ -13,8 +13,9 @@ export class SearchService {
     category: string,
     searchQuery: string,
     page: number,
+    limit: number,
   ) {
-    const take = 16;
+    const take = limit;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
     const [returnedBoards, total] =
@@ -71,8 +72,9 @@ export class SearchService {
     category: string,
     searchQuery: string,
     page: number,
+    limit: number,
   ) {
-    const take = 16;
+    const take = limit;
     const skip = page <= 0 ? (page = 0) : (page - 1) * take;
 
     const [returnedBoards, total] =

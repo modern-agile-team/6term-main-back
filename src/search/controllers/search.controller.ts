@@ -24,8 +24,14 @@ export class SearchController {
     @Param('category') category: string,
     @Query('searchQuery') searchQuery: string,
     @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
   ) {
-    return this.searchService.searchBoardsByHead(category, searchQuery, page);
+    return this.searchService.searchBoardsByHead(
+      category,
+      searchQuery,
+      page,
+      limit,
+    );
   }
 
   @ApiSearchBoardsByBody()
@@ -34,8 +40,14 @@ export class SearchController {
     @Param('category') category: string,
     @Query('searchQuery') searchQuery: string,
     @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
   ) {
-    return this.searchService.searchBoardsByBody(category, searchQuery, page);
+    return this.searchService.searchBoardsByBody(
+      category,
+      searchQuery,
+      page,
+      limit,
+    );
   }
 
   @Get('users')
