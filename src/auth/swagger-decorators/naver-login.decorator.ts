@@ -1,5 +1,10 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiHeader,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 export function ApiNaverLogin() {
   return applyDecorators(
@@ -9,12 +14,11 @@ export function ApiNaverLogin() {
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 로그인 된 경우',
+      description: '성공적으로 로그인 된 경우 (refresh_token은 쿠키로 전달됨)',
       content: {
         JSON: {
           example: {
             accessToken: '여기에 액세스 토큰',
-            refreshToken: '여기에 리프레시 토큰',
           },
         },
       },
