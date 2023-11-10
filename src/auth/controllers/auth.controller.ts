@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { S3Service } from 'src/common/s3/s3.service';
 import { TokenService } from '../services/token.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { ApiNaverLogin } from '../swagger-decorators/naver-login.decorator';
 import { ApiKakaoLogin } from '../swagger-decorators/kakao-login.decorator';
 import { ApiNewAccessToken } from '../swagger-decorators/new-access-token.decorator';
@@ -29,8 +29,8 @@ import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private tokenService: TokenService,
-    private s3Service: S3Service,
+    private readonly tokenService: TokenService,
+    private readonly s3Service: S3Service,
   ) {}
 
   @ApiNaverLogin()
@@ -52,7 +52,13 @@ export class AuthController {
       naverRefreshToken,
     );
 
-    return res.json({ accessToken, refreshToken });
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+    });
+
+    return res.json({ accessToken });
   }
 
   @ApiKakaoLogin()
@@ -74,16 +80,20 @@ export class AuthController {
       kakaoRefreshToken,
     );
 
-    return res.json({ accessToken, refreshToken });
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
+    });
+
+    return res.json({ accessToken });
   }
 
+  @ApiCookieAuth('refresh-token')
   @ApiNewAccessToken()
   @UseGuards(JwtRefreshTokenGuard)
   @Get('new-access-token')
-  async newAccessToken(
-    @GetUserId() userId: number,
-    @Res() res,
-  ) {
+  async newAccessToken(@GetUserId() userId: number, @Res() res) {
     const newAccessToken = await this.tokenService.createAccessToken(userId);
     return res.json({ accessToken: newAccessToken });
   }
@@ -145,6 +155,6 @@ export class AuthController {
   @UseGuards(JwtAccessTokenGuard)
   @Get('status')
   async status() {
-    return { success : true };
+    return { success: true };
   }
 }

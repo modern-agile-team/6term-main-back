@@ -1,5 +1,5 @@
-import { applyDecorators } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { applyDecorators } from '@nestjs/common';
+import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiGetRejectPermanent() {
   return applyDecorators(
@@ -15,22 +15,32 @@ export function ApiGetRejectPermanent() {
         Array: {
           example: [
             {
-              id: 1,
-              requesterId: 1,
-              respondentId: 63,
-              status: '친구 거절',
+              id: 26,
+              requesterId: 70,
+              respondentId: 62,
+              status: '영구 거절',
+              createdAt: '2023-11-06T23:38:11.000Z',
+              requester: {
+                name: 'zeratul',
+                userImage: {
+                  imageUrl:
+                    'https://ssl.pstatic.net/static/pwe/address/img_profile.png',
+                },
+              },
             },
             {
-              id: 2,
-              requesterId: 2,
-              respondentId: 63,
-              status: '친구 거절',
-            },
-            {
-              id: 3,
-              requesterId: 3,
-              respondentId: 63,
-              status: '친구 거절',
+              id: 28,
+              requesterId: 68,
+              respondentId: 62,
+              status: '영구 거절',
+              createdAt: '2023-11-07T16:32:26.000Z',
+              requester: {
+                name: '원동건',
+                userImage: {
+                  imageUrl:
+                    'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
+                },
+              },
             },
           ],
         },
@@ -72,5 +82,13 @@ export function ApiGetRejectPermanent() {
         },
       },
     }),
+    ApiHeaders([
+      {
+        name: 'access_token',
+        description: '액세스 토큰',
+        required: true,
+        example: '여기에 액세스 토큰',
+      },
+    ]),
   );
 }

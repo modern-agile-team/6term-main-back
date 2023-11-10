@@ -1,11 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiGetOneChatRoom() {
   return applyDecorators(
     ApiOperation({
       summary: '채팅룸 단일 조회',
-      description: 'Header - user-token, Param - board-id',
+      description: 'Header - access_token, Param - roomId',
     }),
     ApiResponse({
       status: 200,
@@ -50,5 +50,13 @@ export function ApiGetOneChatRoom() {
         },
       },
     }),
+    ApiHeaders([
+      {
+        name: 'access_token',
+        description: '액세스 토큰',
+        required: true,
+        example: '여기에 액세스 토큰',
+      },
+    ]),
   );
 }

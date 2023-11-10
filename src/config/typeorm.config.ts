@@ -34,6 +34,7 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
     ReComment,
     Friend,
     BoardNotification,
-  ],
-  synchronize: process.env.NODE_ENV === 'true',
+  ], 
+  synchronize: process.env.NODE_ENV === 'false',
+
 };

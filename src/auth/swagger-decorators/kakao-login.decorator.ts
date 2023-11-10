@@ -9,7 +9,7 @@ export function ApiKakaoLogin() {
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 로그인 된 경우',
+      description: '성공적으로 로그인 된 경우 (refresh_token은 쿠키로 전달됨)',
       content: {
         JSON: {
           example: {
