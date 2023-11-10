@@ -167,6 +167,97 @@ export class SearchRepository {
       .getManyAndCount();
   }
 
+  async findUserId(searchQuery: string) {
+    const returnedUsers = await this.entityManager
+      .createQueryBuilder(User, 'user')
+      .where(`MATCH(name) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
+        searchQuery,
+      })
+      .select(['user.id'])
+      .getMany();
+
+    if (returnedUsers.length) return returnedUsers;
+  }
+
+  async searchBoardsByUserName(
+    category: string,
+    returnedUsers: User[],
+    skip: number,
+    take: number,
+  ) {
+    if (category === '전체') {
+      return this.entityManager
+        .createQueryBuilder(Board, 'board')
+        .leftJoinAndMapMany(
+          'board.user',
+          User,
+          'user',
+          'user.id = board.userId',
+        )
+        .leftJoinAndSelect('user.userImage', 'userImage')
+        .leftJoinAndMapMany(
+          'board.boardImages',
+          BoardImage,
+          'boardImages',
+          'boardImages.boardId = board.id',
+        )
+        .select([
+          'board.id',
+          'board.head',
+          'board.body',
+          'board.main_category',
+          'board.sub_category',
+          'board.createAt',
+          'board.updateAt',
+          'user.name',
+          'userImage.id',
+          'userImage.userId',
+          'userImage.imageUrl',
+          'boardImages.id',
+          'boardImages.imageUrl',
+        ])
+        .where('board.userId IN (:...userId)', {
+          userId: returnedUsers.map((user) => user.id),
+        })
+        .skip(skip)
+        .take(take)
+        .getManyAndCount();
+    }
+
+    return this.entityManager
+      .createQueryBuilder(Board, 'board')
+      .leftJoinAndMapMany('board.user', User, 'user', 'user.id = board.userId')
+      .leftJoinAndSelect('user.userImage', 'userImage')
+      .leftJoinAndMapMany(
+        'board.boardImages',
+        BoardImage,
+        'boardImages',
+        'boardImages.boardId = board.id',
+      )
+      .select([
+        'board.id',
+        'board.head',
+        'board.body',
+        'board.main_category',
+        'board.sub_category',
+        'board.createAt',
+        'board.updateAt',
+        'user.name',
+        'userImage.id',
+        'userImage.userId',
+        'userImage.imageUrl',
+        'boardImages.id',
+        'boardImages.imageUrl',
+      ])
+      .where('board.userId IN (:...userId)', {
+        userId: returnedUsers.map((user) => user.id),
+      })
+      .andWhere('board.main_category = :category', { category })
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
+  }
+
   async searchUsersByName(searchQuery: string) {
     const userRepository = this.entityManager.getRepository(User);
 

@@ -30,9 +30,8 @@ export class Board {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-
   @OneToMany(() => BoardImage, (boardImage) => boardImage.board)
-  boardImages: BoardImage[];
+  boardImage: BoardImage[];
 
   @OneToMany(() => BoardLike, (boardLike) => boardLike.boardId)
   boardLike: BoardLike;

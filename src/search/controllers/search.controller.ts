@@ -8,15 +8,37 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { SearchService } from '../services/search.service';
-import { ApiSearchBoardsByHead } from '../swagger-decorators/search-boards-by-head.decorator';
-import { ApiSearchBoardsByBody } from '../swagger-decorators/search-boards-by-body.decorator';
+import { ApiSearchBoardsByHeadOrBodyOrUserName } from '../swagger-decorators/search-boards-by-head-or-body-or-user-name.decorator';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiSearchBoardsByBody } from '../swagger-decorators/search-boards-by-body.decorator';
+import { ApiSearchBoardsByHead } from '../swagger-decorators/search-boards-by-head.decorator';
+import { ApiSearchBoardsByUserName } from '../swagger-decorators/search-boards-by-user-name.decorator';
 
 @ApiTags('SEARCH')
 @UsePipes(ValidationPipe)
 @Controller('search')
 export class SearchController {
   constructor(private searchService: SearchService) {}
+
+  @ApiSearchBoardsByHeadOrBodyOrUserName()
+  @Get('boards/:category')
+  async searchBoardsByHeadOrUserOrName(
+    @Param('category') category: string,
+    @Query('head') head: string,
+    @Query('body') body: string,
+    @Query('userName') userName: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+  ) {
+    return this.searchService.searchBoardsByHeadOrBodyOrUserName(
+      head,
+      body,
+      userName,
+      category,
+      page,
+      limit,
+    );
+  }
 
   @ApiSearchBoardsByHead()
   @Get('boards/:category/head')
@@ -43,6 +65,22 @@ export class SearchController {
     @Query('limit', ParseIntPipe) limit: number,
   ) {
     return this.searchService.searchBoardsByBody(
+      category,
+      searchQuery,
+      page,
+      limit,
+    );
+  }
+
+  @ApiSearchBoardsByUserName()
+  @Get('boards/:category/userName')
+  async searchBoardsByUserName(
+    @Param('category') category: string,
+    @Query('searchQuery') searchQuery: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+  ) {
+    return this.searchService.searchBoardsByUserName(
       category,
       searchQuery,
       page,

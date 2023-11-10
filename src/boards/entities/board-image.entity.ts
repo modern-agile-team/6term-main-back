@@ -12,7 +12,7 @@ export class BoardImage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Board, (board) => board.boardImages, {
+  @ManyToOne(() => Board, (board) => board.boardImage, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'board_id' })
