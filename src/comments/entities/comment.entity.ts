@@ -18,19 +18,21 @@ export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column({ name: 'user_id' })
   userId: number;
 
-  @OneToMany(() => ReComment, (reComment) => reComment.comment, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => ReComment, (reComment) => reComment.comment)
   reComment: ReComment[];
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
