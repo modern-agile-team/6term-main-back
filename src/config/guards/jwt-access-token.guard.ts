@@ -1,11 +1,9 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
-import { TokenService } from "src/auth/services/token.service";
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { TokenService } from 'src/auth/services/token.service';
 
 @Injectable()
 export class JwtAccessTokenGuard {
-  constructor(
-    private tokenService: TokenService,
-  ) {}
+  constructor(private tokenService: TokenService) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();

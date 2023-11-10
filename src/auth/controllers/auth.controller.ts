@@ -53,8 +53,6 @@ export class AuthController {
     );
 
     res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
     });
 
@@ -81,8 +79,6 @@ export class AuthController {
     );
 
     res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
     });
 

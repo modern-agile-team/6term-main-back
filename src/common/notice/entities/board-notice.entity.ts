@@ -42,9 +42,7 @@ export class BoardNotification {
   @Column({ name: 'receiver_id' })
   receiverId: number;
 
-  @ManyToOne(() => User, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'receiver_id' })
   receiver: User;
 
