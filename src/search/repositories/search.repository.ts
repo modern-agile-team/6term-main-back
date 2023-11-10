@@ -175,154 +175,85 @@ export class SearchRepository {
   ) {
     const userRepository = this.entityManager.getRepository(User);
 
+    const returnedUsers = await userRepository
+      .createQueryBuilder('user')
+      .where(`MATCH(name) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
+        searchQuery,
+      })
+      .select(['user.id'])
+      .getMany();
+
     if (category === '전체') {
-      const returnedUsers = await userRepository
-        .createQueryBuilder('user')
-        .where(`MATCH(name) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
-          searchQuery,
+      return this.entityManager
+        .createQueryBuilder(Board, 'board')
+        .leftJoinAndMapMany(
+          'board.user',
+          User,
+          'user',
+          'user.id = board.userId',
+        )
+        .leftJoinAndSelect('user.userImage', 'userImage')
+        .leftJoinAndMapMany(
+          'board.boardImages',
+          BoardImage,
+          'boardImages',
+          'boardImages.boardId = board.id',
+        )
+        .select([
+          'board.id',
+          'board.head',
+          'board.body',
+          'board.main_category',
+          'board.sub_category',
+          'board.createAt',
+          'board.updateAt',
+          'user.name',
+          'userImage.id',
+          'userImage.userId',
+          'userImage.imageUrl',
+          'boardImages.id',
+          'boardImages.imageUrl',
+        ])
+        .where('board.userId IN (:...userId)', {
+          userId: returnedUsers.map((user) => user.id),
         })
-        .select(['user.id'])
-        .getMany();
-
-      // const returnedBoards = {};
-      // returnedUsers.forEach(async (user, index) => {
-      //   let newBoards = {};
-
-      //   newBoards = await this.entityManager.find(Board, {
-      //     where: { userId: user.id },
-      //   });
-      //   returnedBoards[user.id] = { ...newBoards };
-      const returnedBoards = [];
-
-      for (const user of returnedUsers) {
-        let index = 0;
-        index++;
-        const parameterName = 'token' + index;
-        const [newBoards, total] = await this.entityManager
-          .createQueryBuilder(Board, 'board')
-          .leftJoinAndMapMany(
-            'board.user',
-            User,
-            'user',
-            'user.id = board.userId',
-          )
-          .leftJoinAndSelect('user.userImage', 'userImage')
-          .leftJoinAndMapMany(
-            'board.boardImages',
-            BoardImage,
-            'boardImages',
-            'boardImages.boardId = board.id',
-          )
-          .select([
-            'board.id',
-            'board.head',
-            'board.body',
-            'board.main_category',
-            'board.sub_category',
-            'board.createAt',
-            'board.updateAt',
-            'user.name',
-            'userImage.id',
-            'userImage.userId',
-            'userImage.imageUrl',
-            'boardImages.id',
-            'boardImages.imageUrl',
-          ])
-          .addSelect('SUBSTRING(board.body, 0, 30)', 'board.body')
-          .where(
-            new Brackets((qb) => {
-              qb.where('board.userId = :' + parameterName);
-            }),
-          )
-          .setParameter(parameterName, user.id)
-          .skip(skip)
-          .take(take)
-          .getManyAndCount();
-        // console.log(newBoards);
-
-        returnedBoards.push({ ...newBoards, total });
-      }
-
-      console.log(returnedBoards);
-      return returnedBoards;
-      // const parameterName = 'token' + index;
-      // returnedBoards[user.id] = await this.entityManager
-      //   .createQueryBuilder(Board, 'board')
-
-      //   // .setParameter(parameterName, user)
-      //   .leftJoinAndMapMany(
-      //     'board.user',
-      //     User,
-      //     'user',
-      //     'user.id = board.userId',
-      //   )
-      //   .leftJoinAndSelect('user.userImage', 'userImage')
-      //   .leftJoinAndMapMany(
-      //     'board.boardImages',
-      //     BoardImage,
-      //     'boardImages',
-      //     'boardImages.boardId = board.id',
-      //   )
-      //   .select([
-      //     'board.id',
-      //     'board.head',
-      //     'board.body',
-      //     'board.main_category',
-      //     'board.sub_category',
-      //     'board.createAt',
-      //     'board.updateAt',
-      //     'user.id',
-      //     'user.name',
-      //     'userImage.id',
-      //     'userImage.userId',
-      //     'userImage.imageUrl',
-      //     'boardImages.id',
-      //     'boardImages.imageUrl',
-      //   ])
-      //   .where('MATCH(userId) AGAINST (:usersId IN BOOLEAN MODE)', {
-      //     usersId: user.id,
-      //   })
-      //   .skip(skip)
-      //   .take(take)
-      //   .getManyAndCount();
-      // console.log(returnedBoards[0]);
-      //   console.log(returnedBoards);
-      // });
-      console.log(returnedBoards);
-      return [returnedBoards];
+        .skip(skip)
+        .take(take)
+        .getManyAndCount();
     }
-    // return userRepository
-    //   .createQueryBuilder('board')
-    //   .where(`MATCH(body) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
-    //     searchQuery,
-    //   })
-    //   .andWhere('board.main_category = :category', { category })
-    //   .leftJoinAndMapMany('board.user', User, 'user', 'user.id = board.userId')
-    //   .leftJoinAndSelect('user.userImage', 'userImage')
-    //   .leftJoinAndMapMany(
-    //     'board.boardImages',
-    //     BoardImage,
-    //     'boardImages',
-    //     'boardImages.boardId = board.id',
-    //   )
-    //   .select([
-    //     'board.id',
-    //     'board.head',
-    //     'board.body',
-    //     'board.main_category',
-    //     'board.sub_category',
-    //     'board.createAt',
-    //     'board.updateAt',
-    //     'user.name',
-    //     'userImage.id',
-    //     'userImage.userId',
-    //     'userImage.imageUrl',
-    //     'boardImages.id',
-    //     'boardImages.imageUrl',
-    //   ])
-    //   .skip(skip)
-    //   .take(take)
-    //   .getManyAndCount();
+
+    return this.entityManager
+      .createQueryBuilder(Board, 'board')
+      .leftJoinAndMapMany('board.user', User, 'user', 'user.id = board.userId')
+      .leftJoinAndSelect('user.userImage', 'userImage')
+      .leftJoinAndMapMany(
+        'board.boardImages',
+        BoardImage,
+        'boardImages',
+        'boardImages.boardId = board.id',
+      )
+      .select([
+        'board.id',
+        'board.head',
+        'board.body',
+        'board.main_category',
+        'board.sub_category',
+        'board.createAt',
+        'board.updateAt',
+        'user.name',
+        'userImage.id',
+        'userImage.userId',
+        'userImage.imageUrl',
+        'boardImages.id',
+        'boardImages.imageUrl',
+      ])
+      .where('board.userId IN (:...userId)', {
+        userId: returnedUsers.map((user) => user.id),
+      })
+      .andWhere('board.main_category = :category', { category })
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
   }
 
   async searchUsersByName(searchQuery: string) {
