@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-export function ApiGetChatNotification() {
+export function ApiGetChatNotificationSse() {
   return applyDecorators(
     ApiOperation({
       summary: '채팅 실시간 SSE 알람(미사용 예정)',

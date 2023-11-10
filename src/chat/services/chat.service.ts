@@ -11,10 +11,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ChatRoom } from '../schemas/chat-room.schemas';
 import * as mongoose from 'mongoose';
 import { S3Service } from 'src/common/s3/s3.service';
-import { NotificationService } from './notification.service';
-import { ChatNotification } from '../schemas/chat-notifiation.schemas';
 import { Subject, catchError, map } from 'rxjs';
 import { Chat } from '../schemas/chat.schemas';
+import { User } from 'src/users/entities/user.entity';
+import { EntityManager } from 'typeorm';
+import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
 
 @Injectable()
 export class ChatService {
@@ -22,14 +23,12 @@ export class ChatService {
   private readonly subject = new Subject();
   constructor(
     private readonly s3Service: S3Service,
-    private readonly notificationService: NotificationService,
     private readonly chatRepository: ChatRepository,
+    private readonly entityManager: EntityManager,
     @InjectModel(ChatRoom.name)
     private readonly chatRoomModel: mongoose.Model<ChatRoom>,
     @InjectModel(Chat.name)
     private readonly chatModel: mongoose.Model<Chat>,
-    @InjectModel(ChatNotification.name)
-    private readonly chatNotificationModel: mongoose.Model<ChatNotification>,
   ) {}
 
   notificationListener() {
@@ -46,13 +45,7 @@ export class ChatService {
     );
   }
   async getChatRooms(myId: number) {
-    const chatRoom = await this.chatRepository.getChatRooms(myId);
-
-    if (!chatRoom.length) {
-      throw new NotFoundException('해당 유저가 속한 채팅방이 없습니다.');
-    }
-
-    return chatRoom;
+    return this.chatRepository.getChatRooms(myId);
   }
 
   async getOneChatRoom(myId: number, roomId: mongoose.Types.ObjectId) {
@@ -113,13 +106,13 @@ export class ChatService {
     return this.chatRepository.deleteChatRoom(roomId);
   }
 
-  async getChats(roomId: mongoose.Types.ObjectId) {
+  async getChats(userId: number, roomId: mongoose.Types.ObjectId) {
+    await this.getOneChatRoom(userId, roomId);
     const returnedChat = await this.chatRepository.getChats(roomId);
 
-    if (!returnedChat.length) {
-      throw new NotFoundException(
-        '해당 채팅룸이 없거나 채팅이 존재하지 않습니다.',
-      );
+    if (returnedChat.length) {
+      this.chatRepository.updateChatIsSeen(userId, roomId);
+      return returnedChat;
     }
 
     return returnedChat;
@@ -156,14 +149,7 @@ export class ChatService {
       receiver: returnedChat.receiver,
     };
 
-    const notification = await new this.chatNotificationModel({
-      chat_id: returnedChat.id,
-      sender: returnedChat.sender,
-      receiver: returnedChat.receiver,
-    }).save();
-
-    // send notification
-    if (notification) this.subject.next(notification);
+    if (returnedChat) this.subject.next(returnedChat);
 
     return chat;
   }
@@ -218,11 +204,44 @@ export class ChatService {
     return isChatAndUsers;
   }
 
-  async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
-    const returnedRoom = await this.chatRoomModel.findOne({ _id: roomId });
-    if (!returnedRoom) {
-      throw new NotFoundException('해당 채팅 룸을 찾지 못했습니다.');
+  async getChatNotifications(
+    userId: number,
+  ): Promise<GetNotificationsResponseDto[]> {
+    const isUser = await this.entityManager.findOne(User, {
+      where: { id: userId },
+    });
+
+    if (!isUser) {
+      throw new NotFoundException('해당 유저를 찾지 못했습니다.');
     }
-    return this.chatRepository.getUnreadCounts(roomId, after);
+
+    const returnedNotifications =
+      await this.chatRepository.getChatNotifications(userId);
+
+    const groupedNotifications = {};
+
+    returnedNotifications.forEach((notification) => {
+      const chatroomId = notification.chatroom_id.toString();
+      if (!groupedNotifications[chatroomId]) {
+        const newNotification = {
+          ...notification.toObject(),
+          count: 1,
+          content: notification.content.substring(0, 10),
+        };
+        groupedNotifications[chatroomId] = newNotification;
+      } else {
+        groupedNotifications[chatroomId]['count'] += 1;
+      }
+    });
+
+    return Object.values(groupedNotifications);
   }
+
+  // async getUnreadCounts(roomId: mongoose.Types.ObjectId, after: number) {
+  //   const returnedRoom = await this.chatRoomModel.findOne({ _id: roomId });
+  //   if (!returnedRoom) {
+  //     throw new NotFoundException('해당 채팅 룸을 찾지 못했습니다.');
+  //   }
+  //   return this.chatRepository.getUnreadCounts(roomId, after);
+  // }
 }

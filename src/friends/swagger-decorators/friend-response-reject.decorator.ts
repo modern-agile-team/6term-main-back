@@ -1,5 +1,5 @@
-import { applyDecorators } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { applyDecorators } from '@nestjs/common';
+import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiFriendResponseReject() {
   return applyDecorators(
@@ -37,7 +37,10 @@ export function ApiFriendResponseReject() {
       description: '친구 요청을 찾을 수 없는 경우',
       content: {
         JSON: {
-          example: { statusCode: 404, message: '친구 요청을 찾을 수 없습니다.' },
+          example: {
+            statusCode: 404,
+            message: '친구 요청을 찾을 수 없습니다.',
+          },
         },
       },
     }),
@@ -55,9 +58,20 @@ export function ApiFriendResponseReject() {
       description: '친구 요청 거절에 실패한 경우',
       content: {
         JSON: {
-          example: { statusCode: 500, message: '친구 요청 거절에 실패했습니다.' },
+          example: {
+            statusCode: 500,
+            message: '친구 요청 거절에 실패했습니다.',
+          },
         },
       },
     }),
-  )
+    ApiHeaders([
+      {
+        name: 'access_token',
+        description: '액세스 토큰',
+        required: true,
+        example: '여기에 액세스 토큰',
+      },
+    ]),
+  );
 }
