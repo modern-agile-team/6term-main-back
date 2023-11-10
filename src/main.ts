@@ -10,7 +10,11 @@ async function bootstrap() {
   const logger = new Logger();
   app.useGlobalPipes(new ValidationPipe());
   // app.useGlobalFilters(new HttpExceptionFilter());
-  app.enableCors();
+  app.enableCors({
+    origin: true, // 또는 특정 도메인을 설정
+    methods: 'GET ,HEAD, PUT, PATCH, POST, DELETE',
+    credentials: true, // 이 옵션을 true로 설정하여 쿠키 전송을 허용
+  });
   app.use(cookieParser());
   setupSwagger(app);
   const asyncApiOptions = new AsyncApiDocumentBuilder()
