@@ -22,9 +22,12 @@ export class CommentsRepository {
     const query = this.entityManager
       .createQueryBuilder(Comment, 'comment')
       .innerJoinAndSelect('comment.user', 'user')
-      .innerJoinAndSelect('user.userImage', 'userImage')
-      .where('comment.boardId = :boardId', { boardId });
-
+      .leftJoinAndSelect('comment.reComment', 'reComment')
+      .leftJoinAndSelect('reComment.user', 'reCommentUser')
+      .leftJoinAndSelect('reCommentUser.userImage', 'reCommentUserImage')
+      .leftJoinAndSelect('user.userImage', 'userImage')
+      .where('comment.boardId = :boardId', { boardId })
+      .groupBy('comment.id');
     return query.getMany();
   }
 

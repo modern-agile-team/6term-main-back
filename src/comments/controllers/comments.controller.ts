@@ -14,16 +14,22 @@ import { CommentsService } from '../services/comments.services';
 import { TokenService } from 'src/auth/services/token.service';
 import { CreateCommentDto } from '../dto/create-comment-dto';
 import { ApiAddComment } from '../swagger-decoratros/add-comment-decorators';
-import { ApiGetAllComment } from '../swagger-decoratros/get-all-comment-decoratros';
+import { ApiGetAllComment } from '../swagger-decoratros/get-all-comment-decorators';
 import { commentResponseDTO } from '../dto/get-all-comment-dto';
-import { ApiUpdateComment } from '../swagger-decoratros/patch-comment-decoratros';
+import { ApiUpdateComment } from '../swagger-decoratros/patch-comment-decorators';
 import { ApiDeleteComment } from '../swagger-decoratros/delete-comment-decorator';
+import { ReCommentsService } from '../services/recomments.services';
+import { CreateReCommentDto } from '../dto/create-recomment-dto';
+import { ReComment } from '../entities/recomment.entity';
+import { ApiAddReComment } from '../swagger-decoratros/add-recomment-decorators';
+import { ApiUpdateReComment } from '../swagger-decoratros/patch-recomment-decorator';
 
 @Controller('comments')
 @ApiTags('Comment API')
 export class CommentsController {
   constructor(
     private readonly commentsService: CommentsService,
+    private readonly recommentsService: ReCommentsService,
     private tokenService: TokenService,
   ) {}
 
@@ -36,6 +42,21 @@ export class CommentsController {
   ): Promise<Comment> {
     const userId = await this.tokenService.decodeToken(accessToken);
     return await this.commentsService.create(createCommentDto, userId, boardId);
+  }
+
+  @Post('/Re')
+  @ApiAddReComment()
+  async createReComment(
+    @Headers('access_token') accessToken: string,
+    @Query('commentId') commentId: number,
+    @Body() createReCommentDto: CreateReCommentDto,
+  ): Promise<ReComment> {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    return await this.recommentsService.create(
+      createReCommentDto,
+      userId,
+      commentId,
+    );
   }
 
   @Get('')
@@ -57,6 +78,15 @@ export class CommentsController {
     return this.commentsService.updateComment(commentId, commentData);
   }
 
+  @Patch('/Re')
+  @ApiUpdateReComment()
+  async updateReComment(
+    @Query('reCommentId') reCommentId: number,
+    @Body() recommentData: Partial<ReComment>,
+  ): Promise<ReComment> {
+    return this.recommentsService.updateReComment(reCommentId, recommentData);
+  }
+
   @Delete('')
   @ApiDeleteComment()
   async deleteComment(
@@ -65,5 +95,15 @@ export class CommentsController {
   ) {
     const userId = await this.tokenService.decodeToken(accessToken);
     await this.commentsService.deleteComment(commentId, userId);
+  }
+
+  @Delete('/Re')
+  @ApiDeleteComment()
+  async deleteReComment(
+    @Query('reCommentId') reCommentId: number,
+    @Headers('access_token') accessToken: string,
+  ) {
+    const userId = await this.tokenService.decodeToken(accessToken);
+    await this.recommentsService.deleteReComment(reCommentId, userId);
   }
 }

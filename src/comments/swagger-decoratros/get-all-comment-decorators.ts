@@ -31,6 +31,7 @@ export function ApiGetAllComment() {
                     'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
                 },
               },
+              reComment: ['없는 경우 빈 배열'],
             },
             {
               id: 2,
@@ -45,6 +46,7 @@ export function ApiGetAllComment() {
                     'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
                 },
               },
+              reComment: ['없는 경우 빈 배열'],
             },
             {
               id: 3,
@@ -59,6 +61,7 @@ export function ApiGetAllComment() {
                     'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
                 },
               },
+              reComment: ['없는 경우 빈 배열'],
             },
             {
               id: 4,
@@ -73,6 +76,7 @@ export function ApiGetAllComment() {
                     'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
                 },
               },
+              reComment: ['없는 경우 빈 배열'],
             },
             {
               id: 5,
@@ -87,6 +91,7 @@ export function ApiGetAllComment() {
                     'http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg',
                 },
               },
+              reComment: ['없는 경우 빈 배열'],
             },
           ],
         },
