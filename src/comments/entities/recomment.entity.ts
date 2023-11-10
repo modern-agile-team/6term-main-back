@@ -23,7 +23,7 @@ export class ReComment {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => Comment)
+  @ManyToOne(() => Comment, (comment) => comment.reComment)
   @JoinColumn({ name: 'comment_id' })
   comment: Comment;
 

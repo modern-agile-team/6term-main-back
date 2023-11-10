@@ -1,11 +1,13 @@
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
+import { ReComment } from './recomment.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -22,6 +24,11 @@ export class Comment {
 
   @Column({ name: 'user_id' })
   userId: number;
+
+  @OneToMany(() => ReComment, (reComment) => reComment.comment, {
+    onDelete: 'CASCADE',
+  })
+  reComment: ReComment[];
 
   @ManyToOne(() => Board)
   @JoinColumn({ name: 'board_id' })

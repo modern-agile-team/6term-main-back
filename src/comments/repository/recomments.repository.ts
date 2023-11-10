@@ -18,6 +18,15 @@ export class ReCommentsRepository {
     return await this.entityManager.save(ReComment, reComment);
   }
 
+  async findReCommentByCommentId(commentId: number): Promise<ReComment[]> {
+    const query = this.entityManager
+      .createQueryBuilder(ReComment, 'reComment')
+      .innerJoinAndSelect('reComment.user', 'user')
+      .innerJoinAndSelect('user.userImage', 'userImage')
+      .where('reComment.commentId = :commentId', { commentId });
+    return query.getMany();
+  }
+
   async findOneReComment(id: number): Promise<ReComment> {
     return this.entityManager.findOne(ReComment, {
       relations: ['user', 'user.userImage'],
