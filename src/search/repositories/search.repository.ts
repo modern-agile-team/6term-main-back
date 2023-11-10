@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BoardImage } from 'src/boards/entities/board-image.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Brackets, EntityManager } from 'typeorm';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class SearchRepository {
@@ -173,10 +173,8 @@ export class SearchRepository {
     skip: number,
     take: number,
   ) {
-    const userRepository = this.entityManager.getRepository(User);
-
-    const returnedUsers = await userRepository
-      .createQueryBuilder('user')
+    const returnedUsers = await this.entityManager
+      .createQueryBuilder(User, 'user')
       .where(`MATCH(name) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
         searchQuery,
       })
