@@ -8,7 +8,7 @@ export function ApiSearchBoardsByHeadOrBodyOrUserName() {
       description: `Query String의 내용과 Param으로 입력된 카테고리를 토대로 게시글의 제목/본문/유저이름에 일치하는 값을 조회합니다(카테고리에 "전체" 입력 시 전체 게시판 검색). 
       ex)'흑돼지 고기' 검색 - '흑돼지', '고기' 라는 단어 단위로 검색. (정확성 순으로 정렬됨)
       제목 검색 시 head, 본문 검색시 body, 작성자 검색시 userName
-      ex) http://localhost:3000/search/board/전체?head=흑돼지&page=1&limit=16`,
+      ex) http://localhost:3000/search/boards/전체?head=흑돼지&page=1&limit=16`,
     }),
     ApiResponse({
       status: 200,

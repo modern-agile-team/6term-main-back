@@ -24,21 +24,27 @@ export class BoardNotification {
   @Column({ name: 'board_id' })
   boardId: number;
 
-  @ManyToOne(() => Board, (board) => board.boardNotification)
+  @ManyToOne(() => Board, (board) => board.boardNotification, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
   @Column({ name: 'sender_id' })
   senderId: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'sender_id' })
   sender: User;
 
   @Column({ name: 'receiver_id' })
   receiverId: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'receiver_id' })
   receiver: User;
 

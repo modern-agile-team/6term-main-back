@@ -167,12 +167,7 @@ export class SearchRepository {
       .getManyAndCount();
   }
 
-  async searchBoardsByUserName(
-    category: string,
-    searchQuery: string,
-    skip: number,
-    take: number,
-  ) {
+  async findUserId(searchQuery: string) {
     const returnedUsers = await this.entityManager
       .createQueryBuilder(User, 'user')
       .where(`MATCH(name) AGAINST (:searchQuery IN BOOLEAN MODE)`, {
@@ -181,6 +176,15 @@ export class SearchRepository {
       .select(['user.id'])
       .getMany();
 
+    if (returnedUsers.length) return returnedUsers;
+  }
+
+  async searchBoardsByUserName(
+    category: string,
+    returnedUsers: User[],
+    skip: number,
+    take: number,
+  ) {
     if (category === '전체') {
       return this.entityManager
         .createQueryBuilder(Board, 'board')
