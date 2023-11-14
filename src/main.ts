@@ -6,7 +6,7 @@ import { AsyncApiDocumentBuilder, AsyncApiModule } from 'nestjs-asyncapi';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
   const logger = new Logger();
   app.useGlobalPipes(new ValidationPipe());
   // app.useGlobalFilters(new HttpExceptionFilter());
