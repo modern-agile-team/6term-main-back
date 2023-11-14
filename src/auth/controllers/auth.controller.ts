@@ -81,13 +81,14 @@ export class AuthController {
       kakaoRefreshToken,
     );
 
-    res.cookie('refresh_token', refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'None',
       domain: 'localhost',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
     });
 
+    console.log(accessToken);
     return res.json({ accessToken });
   }
 
