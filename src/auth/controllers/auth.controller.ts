@@ -64,7 +64,7 @@ export class AuthController {
 
   @ApiKakaoLogin()
   @Get('kakao/login')
-  async kakaoLogin(@Query() { code }, @Res() res) {
+  async kakaoLogin(@Query() { code }, @Res({ passthrough: true }) res) {
     if (!code) {
       throw new BadRequestException('인가코드가 없습니다.');
     }
