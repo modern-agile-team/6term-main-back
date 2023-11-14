@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   // app.useGlobalFilters(new HttpExceptionFilter());
   app.enableCors({
-    origin: true, // 또는 특정 도메인을 설정
+    origin: '*', // 허용할 도메인
     methods: 'GET ,HEAD, PUT, PATCH, POST, DELETE',
     credentials: true, // 이 옵션을 true로 설정하여 쿠키 전송을 허용
   });
