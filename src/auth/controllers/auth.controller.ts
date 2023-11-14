@@ -73,7 +73,7 @@ export class AuthController {
       await this.authService.kakaoLogin(code);
     const accessToken = await this.tokenService.createAccessToken(userId);
     const refreshToken = await this.tokenService.createRefreshToken(userId);
-
+    console.log(refreshToken);
     await this.tokenService.saveTokens(
       userId,
       refreshToken,
@@ -88,8 +88,10 @@ export class AuthController {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
     });
 
+    console.log(res);
     console.log(accessToken);
-    return res.json({ accessToken });
+    console.log(refreshToken);
+    return res.json({ accessToken, refreshToken });
   }
 
   @ApiCookieAuth('refresh-token')
