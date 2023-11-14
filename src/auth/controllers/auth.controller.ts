@@ -54,7 +54,7 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      sameSite: 'None',
+      sameSite: 'Lax',
       domain: 'localhost',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
     });
@@ -64,7 +64,7 @@ export class AuthController {
 
   @ApiKakaoLogin()
   @Get('kakao/login')
-  async kakaoLogin(@Query() { code }, @Res({ passthrough: true }) res) {
+  async kakaoLogin(@Query() { code }, @Res() res) {
     if (!code) {
       throw new BadRequestException('인가코드가 없습니다.');
     }
@@ -73,7 +73,7 @@ export class AuthController {
       await this.authService.kakaoLogin(code);
     const accessToken = await this.tokenService.createAccessToken(userId);
     const refreshToken = await this.tokenService.createRefreshToken(userId);
-    console.log(refreshToken);
+
     await this.tokenService.saveTokens(
       userId,
       refreshToken,
@@ -81,17 +81,14 @@ export class AuthController {
       kakaoRefreshToken,
     );
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie('refresh_Token', refreshToken, {
       httpOnly: true,
-      sameSite: 'None',
+      sameSite: 'Lax',
       domain: 'localhost',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
     });
 
-    console.log(res);
-    console.log(accessToken);
-    console.log(refreshToken);
-    return res.json({ accessToken, refreshToken });
+    return res.json({ accessToken });
   }
 
   @ApiCookieAuth('refresh-token')
