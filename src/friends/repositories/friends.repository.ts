@@ -159,7 +159,7 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    friend.status = Status.REJECT;
+    friend.status = Status.PERMANENT;
     return await this.entityManager.save(Friend, friend);
   }
 
