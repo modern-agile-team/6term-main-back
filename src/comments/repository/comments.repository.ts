@@ -26,8 +26,7 @@ export class CommentsRepository {
       .leftJoinAndSelect('reComment.user', 'reCommentUser')
       .leftJoinAndSelect('reCommentUser.userImage', 'reCommentUserImage')
       .leftJoinAndSelect('user.userImage', 'userImage')
-      .where('comment.boardId = :boardId', { boardId })
-      .groupBy('comment.id');
+      .where('comment.boardId = :boardId', { boardId });
     return query.getMany();
   }
 
