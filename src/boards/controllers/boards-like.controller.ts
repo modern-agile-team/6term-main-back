@@ -8,7 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
-  Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { BoardsLikeService } from '../services/boards-like.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +16,8 @@ import { ApiAddBoardLike } from '../swagger-decorators/add-board-like.decorator'
 import { ApiGetBoardLikeCount } from '../swagger-decorators/get-board-like-count.decorator';
 import { ApiDeleteBoardLike } from '../swagger-decorators/delete-board-like.decorator';
 import { TokenService } from 'src/auth/services/token.service';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 
 @ApiTags('BOARDS-LIKE')
 @UsePipes(ValidationPipe)
@@ -28,23 +30,22 @@ export class BoardsLikeController {
 
   @ApiAddBoardLike()
   @Post('like/:boardId')
+  @UseGuards(JwtAccessTokenGuard)
   async addBoardLike(
-    @Headers('access_token') accessToken: string,
+    @GetUserId() userId: number,
     @Param('boardId', ParseIntPipe) boardId: number,
   ) {
-    const userId = await this.tokenService.decodeToken(accessToken);
     return this.boardsLikeService.addBoardLike(boardId, userId);
   }
 
   @ApiGetBoardLikeCount()
   @Get('like')
+  @UseGuards(JwtAccessTokenGuard)
   async getBoardsLike(
-    @Headers('access_token') accessToken: string,
+    @GetUserId() userId: number,
     @Query('boardId', ParseIntPipe) boardId: number,
   ) {
     try {
-      const userId = await this.tokenService.decodeToken(accessToken);
-
       return this.boardsLikeService.getBoardLikesAndIsLike(boardId, userId);
     } catch (error) {
       if (
@@ -65,12 +66,12 @@ export class BoardsLikeController {
 
   @ApiDeleteBoardLike()
   @Delete('like/:boardId')
+  @UseGuards(JwtAccessTokenGuard)
   async deleteBoardLike(
-    @Headers('access_token') accessToken: string,
+    @GetUserId() userId: number,
     @Param('boardId', ParseIntPipe)
     boardId: number,
   ) {
-    const userId = await this.tokenService.decodeToken(accessToken);
     return this.boardsLikeService.deleteBoardLike(boardId, userId);
   }
 }
