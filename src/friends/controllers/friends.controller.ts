@@ -21,6 +21,7 @@ import { ApiGetRejectPermanent } from '../swagger-decorators/get-reject-permanen
 import { ApiDeleteRejectPermanentCancel } from '../swagger-decorators/delete-reject-permanent-cancel.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { ApiDeleteRequest } from '../swagger-decorators/delete-request.decorator';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('friends')
@@ -89,6 +90,15 @@ export class FriendsController {
       userId,
       friendId,
     );
+  }
+
+  @ApiDeleteRequest()
+  @Delete('requests/cancel/:friend_id')
+  async friendRequestCancel(
+    @GetUserId() userId: number,
+    @Param('friend_id') friendId: number,
+  ) {
+    return await this.friendsService.friendRequestCancel(userId, friendId);
   }
 
   @ApiDeleteRejectPermanentCancel()

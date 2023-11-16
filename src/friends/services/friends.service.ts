@@ -126,6 +126,32 @@ export class FriendsService {
     }
   }
 
+  async friendRequestCancel(userId: number, friendId: number) {
+    try {
+      const cancel = await this.friendsRepository.friendRequestCancel(
+        userId,
+        friendId,
+      );
+      if (!cancel) {
+        throw new HttpException(
+          '친구 요청을 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { message: '친구 요청을 취소했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '친구 요청 취소에 실패했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   async friendResponseReject(userId: number, friendId: number) {
     try {
       const reject = await this.friendsRepository.friendResponseReject(
