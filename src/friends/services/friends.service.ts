@@ -19,6 +19,10 @@ export class FriendsService {
     return await this.friendsRepository.getFriends(userId);
   }
 
+  async getBlock(userId: number) {
+    return await this.friendsRepository.getBlock(userId);
+  }
+
   async getRejectPermanent(userId: number) {
     return await this.friendsRepository.getRejectPermanent(userId);
   }
@@ -32,6 +36,17 @@ export class FriendsService {
       if (checkRejectPermanent) {
         throw new HttpException(
           '상대방이 친구 요청을 영구적으로 거절했습니다.',
+          HttpStatus.GONE,
+        );
+      }
+
+      const checkBlock = await this.friendsRepository.checkBlock(
+        userId,
+        friendId,
+      );
+      if (checkBlock) {
+        throw new HttpException(
+          '상대방이 친구를 차단했습니다.',
           HttpStatus.GONE,
         );
       }
@@ -126,6 +141,55 @@ export class FriendsService {
     }
   }
 
+  async friendBlock(userId: number, friendId: number) {
+    try {
+      const block = await this.friendsRepository.friendBlock(userId, friendId);
+      if (!block) {
+        throw new HttpException(
+          '친구를 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { message: '친구를 차단했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '친구 차단에 실패했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  async friendRequestCancel(userId: number, friendId: number) {
+    try {
+      const cancel = await this.friendsRepository.friendRequestCancel(
+        userId,
+        friendId,
+      );
+      if (!cancel) {
+        throw new HttpException(
+          '친구 요청을 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { message: '친구 요청을 취소했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '친구 요청 취소에 실패했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   async friendResponseReject(userId: number, friendId: number) {
     try {
       const reject = await this.friendsRepository.friendResponseReject(
@@ -172,6 +236,32 @@ export class FriendsService {
         console.log(error);
         throw new HttpException(
           '친구 요청 영구 거절 취소에 실패했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  async friendBlockCancel(userId: number, friendId: number) {
+    try {
+      const blockCancel = await this.friendsRepository.friendBlockCancel(
+        userId,
+        friendId,
+      );
+      if (!blockCancel) {
+        throw new HttpException(
+          '친구 차단을 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { message: '친구 차단을 취소했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '친구 차단 취소에 실패했습니다.',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
@@ -243,6 +333,25 @@ export class FriendsService {
       console.log(error);
       throw new HttpException(
         '영구 거절 체크에 실패했습니다.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async checkBlock(userId: number, friendId: number) {
+    try {
+      const checkBlock = await this.friendsRepository.checkBlock(
+        userId,
+        friendId,
+      );
+      if (!checkBlock) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        '차단 체크에 실패했습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

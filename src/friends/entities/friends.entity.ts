@@ -12,6 +12,7 @@ export enum Status {
   ACCEPT = '친구 수락',
   REJECT = '친구 거절',
   PERMANENT = '영구 거절',
+  BLOCK = '차단',
 }
 
 @Entity({ name: 'friend' })

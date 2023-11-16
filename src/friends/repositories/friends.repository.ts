@@ -49,6 +49,22 @@ export class FriendsRepository {
       .getMany();
   }
 
+  async getBlock(userId: number): Promise<Friend[]> {
+    return this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.requesterId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.BLOCK })
+      .orWhere('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.BLOCK })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('friend.respondent', 'user2')
+      .leftJoin('user.userImage', 'userImage')
+      .leftJoin('user2.userImage', 'userImage2')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .addSelect(['user2.name', 'userImage2.imageUrl'])
+      .getMany();
+  }
+
   async getRejectPermanent(userId: number): Promise<Friend[]> {
     return this.entityManager
       .createQueryBuilder(Friend, 'friend')
@@ -105,6 +121,49 @@ export class FriendsRepository {
     return await this.entityManager.save(friend);
   }
 
+  async friendBlock(userId: number, friendId: number): Promise<Friend> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.ACCEPT,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.ACCEPT,
+        },
+      ],
+    });
+
+    if (!friend) {
+      return null;
+    }
+
+    friend.status = Status.BLOCK;
+    return await this.entityManager.save(friend);
+  }
+
+  async friendRequestCancel(
+    userId: number,
+    friendId: number,
+  ): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: {
+        requesterId: userId,
+        respondentId: friendId,
+        status: Status.PENDING,
+      },
+    });
+
+    if (!friend) {
+      return null;
+    }
+
+    return await this.entityManager.delete(Friend, friend);
+  }
+
   async friendResponseReject(
     userId: number,
     friendId: number,
@@ -135,6 +194,32 @@ export class FriendsRepository {
         respondentId: userId,
         status: Status.PERMANENT,
       },
+    });
+
+    if (!friend) {
+      return null;
+    }
+
+    return await this.entityManager.delete(Friend, friend);
+  }
+
+  async friendBlockCancel(
+    userId: number,
+    friendId: number,
+  ): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.BLOCK,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.BLOCK,
+        },
+      ],
     });
 
     if (!friend) {
@@ -196,6 +281,25 @@ export class FriendsRepository {
         respondentId: friendId,
         status: Status.PERMANENT,
       },
+    });
+
+    return check;
+  }
+
+  async checkBlock(userId: number, friendId: number): Promise<Friend> {
+    const check = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.BLOCK,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.BLOCK,
+        },
+      ],
     });
 
     return check;

@@ -21,6 +21,10 @@ import { ApiGetRejectPermanent } from '../swagger-decorators/get-reject-permanen
 import { ApiDeleteRejectPermanentCancel } from '../swagger-decorators/delete-reject-permanent-cancel.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { ApiDeleteRequest } from '../swagger-decorators/delete-request.decorator';
+import { ApiFriendBlock } from '../swagger-decorators/friend-block.decorator';
+import { ApiDeleteBlock } from '../swagger-decorators/delete-block.decorator';
+import { ApiGetFriendsBlock } from '../swagger-decorators/get-friends-block.decorator';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('friends')
@@ -44,6 +48,12 @@ export class FriendsController {
   @Get()
   async getFriends(@GetUserId() userId: number) {
     return await this.friendsService.getFriends(userId);
+  }
+
+  @ApiGetFriendsBlock()
+  @Get('block')
+  async getBlock(@GetUserId() userId: number) {
+    return await this.friendsService.getBlock(userId);
   }
 
   @ApiGetRejectPermanent()
@@ -79,16 +89,13 @@ export class FriendsController {
     return await this.friendsService.friendResponseReject(userId, friendId);
   }
 
-  @ApiDeleteRejectPermanentCancel()
-  @Delete('responses/reject/permanent/:friend_id')
-  async friendResponseRejectPermanentCancel(
+  @ApiFriendBlock()
+  @Patch('block/:friend_id')
+  async friendBlock(
     @GetUserId() userId: number,
     @Param('friend_id') friendId: number,
   ) {
-    return await this.friendsService.friendResponseRejectPermanentCancel(
-      userId,
-      friendId,
-    );
+    return await this.friendsService.friendBlock(userId, friendId);
   }
 
   @ApiFriendResponseRejectPermanent()
@@ -98,6 +105,36 @@ export class FriendsController {
     @Param('friend_id') friendId: number,
   ) {
     return await this.friendsService.friendResponseRejectPermanent(
+      userId,
+      friendId,
+    );
+  }
+
+  @ApiDeleteRequest()
+  @Delete('requests/cancel/:friend_id')
+  async friendRequestCancel(
+    @GetUserId() userId: number,
+    @Param('friend_id') friendId: number,
+  ) {
+    return await this.friendsService.friendRequestCancel(userId, friendId);
+  }
+
+  @ApiDeleteBlock()
+  @Delete('block/cancel/:friend_id')
+  async friendBlockCancel(
+    @GetUserId() userId: number,
+    @Param('friend_id') friendId: number,
+  ) {
+    return await this.friendsService.friendBlockCancel(userId, friendId);
+  }
+
+  @ApiDeleteRejectPermanentCancel()
+  @Delete('responses/reject/permanent/:friend_id')
+  async friendResponseRejectPermanentCancel(
+    @GetUserId() userId: number,
+    @Param('friend_id') friendId: number,
+  ) {
+    return await this.friendsService.friendResponseRejectPermanentCancel(
       userId,
       friendId,
     );
