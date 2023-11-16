@@ -19,6 +19,10 @@ export class FriendsService {
     return await this.friendsRepository.getFriends(userId);
   }
 
+  async getBlock(userId: number) {
+    return await this.friendsRepository.getBlock(userId);
+  }
+
   async getRejectPermanent(userId: number) {
     return await this.friendsRepository.getRejectPermanent(userId);
   }

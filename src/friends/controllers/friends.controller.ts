@@ -24,6 +24,7 @@ import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { ApiDeleteRequest } from '../swagger-decorators/delete-request.decorator';
 import { ApiFriendBlock } from '../swagger-decorators/friend-block.decorator';
 import { ApiDeleteBlock } from '../swagger-decorators/delete-block.decorator';
+import { ApiGetFriendsBlock } from '../swagger-decorators/get-friends-block.decorator';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('friends')
@@ -47,6 +48,12 @@ export class FriendsController {
   @Get()
   async getFriends(@GetUserId() userId: number) {
     return await this.friendsService.getFriends(userId);
+  }
+
+  @ApiGetFriendsBlock()
+  @Get('block')
+  async getBlock(@GetUserId() userId: number) {
+    return await this.friendsService.getBlock(userId);
   }
 
   @ApiGetRejectPermanent()

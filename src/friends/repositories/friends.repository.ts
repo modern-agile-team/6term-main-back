@@ -49,6 +49,22 @@ export class FriendsRepository {
       .getMany();
   }
 
+  async getBlock(userId: number): Promise<Friend[]> {
+    return this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.requesterId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.BLOCK })
+      .orWhere('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.BLOCK })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('friend.respondent', 'user2')
+      .leftJoin('user.userImage', 'userImage')
+      .leftJoin('user2.userImage', 'userImage2')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .addSelect(['user2.name', 'userImage2.imageUrl'])
+      .getMany();
+  }
+
   async getRejectPermanent(userId: number): Promise<Friend[]> {
     return this.entityManager
       .createQueryBuilder(Friend, 'friend')
