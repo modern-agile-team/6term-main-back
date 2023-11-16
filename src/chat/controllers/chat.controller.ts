@@ -33,7 +33,6 @@ import { ApiGetChatNotifications } from '../swagger-decorators/get-chat-notifica
 import { ApiCreateChatImage } from '../swagger-decorators/create-chat-image.decorators';
 
 @ApiTags('CHAT')
-@UseGuards(JwtAccessTokenGuard)
 @UsePipes(ValidationPipe)
 @Controller('chat-room')
 export class ChatController {
@@ -48,12 +47,14 @@ export class ChatController {
     return this.chatService.notificationListener();
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiGetChatRooms()
   @Get()
   async getChatRooms(@GetUserId() userId: number) {
     return this.chatService.getChatRooms(userId);
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiGetOneChatRoom()
   @Get(':roomId')
   async getOneChatRoom(
@@ -63,6 +64,7 @@ export class ChatController {
     return this.chatService.getOneChatRoom(userId, roomId);
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiCreateChatRoom()
   @Post()
   async createChatRoom(
@@ -72,6 +74,7 @@ export class ChatController {
     return this.chatService.createChatRoom(userId, body.receiverId);
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiDeleteChatRoom()
   @Delete(':roomId')
   async deleteChatRoom(
@@ -81,6 +84,7 @@ export class ChatController {
     return this.chatService.deleteChatRoom(userId, roomId);
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiGetChats()
   @Get(':roomId/chat')
   async getChats(
@@ -90,6 +94,7 @@ export class ChatController {
     return this.chatService.getChats(userId, roomId);
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiCreateChatImage()
   @Post(':roomId/chat/image')
   @UseInterceptors(FileInterceptor('file'))
@@ -107,6 +112,7 @@ export class ChatController {
     );
   }
 
+  @UseGuards(JwtAccessTokenGuard)
   @ApiGetChatNotifications()
   @Get('chat/notice')
   async getChatNotifications(
