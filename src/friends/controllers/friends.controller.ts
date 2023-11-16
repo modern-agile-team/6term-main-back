@@ -79,18 +79,6 @@ export class FriendsController {
     return await this.friendsService.friendResponseReject(userId, friendId);
   }
 
-  @ApiDeleteRejectPermanentCancel()
-  @Delete('responses/reject/permanent/:friend_id')
-  async friendResponseRejectPermanentCancel(
-    @GetUserId() userId: number,
-    @Param('friend_id') friendId: number,
-  ) {
-    return await this.friendsService.friendResponseRejectPermanentCancel(
-      userId,
-      friendId,
-    );
-  }
-
   @ApiFriendResponseRejectPermanent()
   @Patch('responses/reject/permanent/:friend_id')
   async friendResponseRejectPermanent(
@@ -98,6 +86,18 @@ export class FriendsController {
     @Param('friend_id') friendId: number,
   ) {
     return await this.friendsService.friendResponseRejectPermanent(
+      userId,
+      friendId,
+    );
+  }
+
+  @ApiDeleteRejectPermanentCancel()
+  @Delete('responses/reject/permanent/:friend_id')
+  async friendResponseRejectPermanentCancel(
+    @GetUserId() userId: number,
+    @Param('friend_id') friendId: number,
+  ) {
+    return await this.friendsService.friendResponseRejectPermanentCancel(
       userId,
       friendId,
     );
