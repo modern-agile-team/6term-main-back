@@ -244,6 +244,25 @@ export class FriendsRepository {
     return check;
   }
 
+  async checkBlock(userId: number, friendId: number): Promise<Friend> {
+    const check = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.BLOCK,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.BLOCK,
+        },
+      ],
+    });
+
+    return check;
+  }
+
   async cleanupRejectedFriends() {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 

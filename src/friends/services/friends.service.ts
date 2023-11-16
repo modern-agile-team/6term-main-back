@@ -36,6 +36,17 @@ export class FriendsService {
         );
       }
 
+      const checkBlock = await this.friendsRepository.checkBlock(
+        userId,
+        friendId,
+      );
+      if (checkBlock) {
+        throw new HttpException(
+          '상대방이 친구를 차단했습니다.',
+          HttpStatus.GONE,
+        );
+      }
+
       const checkRejectTime = await this.friendsRepository.checkRejectTime(
         userId,
         friendId,
@@ -292,6 +303,25 @@ export class FriendsService {
       console.log(error);
       throw new HttpException(
         '영구 거절 체크에 실패했습니다.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async checkBlock(userId: number, friendId: number) {
+    try {
+      const checkBlock = await this.friendsRepository.checkBlock(
+        userId,
+        friendId,
+      );
+      if (!checkBlock) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        '차단 체크에 실패했습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
