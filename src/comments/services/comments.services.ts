@@ -31,16 +31,26 @@ export class CommentsService {
     const comments =
       await this.CommentRepository.findCommentsByBoardId(boardId);
     if (!comments) {
-      throw new Error('댓글을 찾을 수 없습니다.');
+      return []; // 에러 말고 리턴으로 빈 배열
     }
     return comments.map((comment) => ({
       id: comment.id,
       content: comment.content,
       commentowner: comment.userId === userId,
-      userId: {
+      user: {
         name: comment.user.name,
         userImage: comment.user.userImage ? comment.user.userImage : [],
       },
+      reComment: (comment.reComment || []).map((reComment) => ({
+        //예외처리 , reComment가 없을경우 빈 배열
+        id: reComment.id,
+        content: reComment.content,
+        reCommentowner: reComment.userId === userId,
+        user: {
+          name: reComment.user.name,
+          userImage: reComment.user.userImage ? reComment.user.userImage : [],
+        },
+      })),
     }));
   }
 

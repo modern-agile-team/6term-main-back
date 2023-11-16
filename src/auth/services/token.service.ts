@@ -152,6 +152,7 @@ export class TokenService {
           HttpStatus.LENGTH_REQUIRED,
         );
       } else {
+        console.log(error);
         throw new HttpException(
           '토큰 검증에 실패했습니다.',
           HttpStatus.BAD_REQUEST,

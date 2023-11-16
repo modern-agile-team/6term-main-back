@@ -1,51 +1,63 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, EntityManager, LessThan, MoreThanOrEqual } from 'typeorm';
+import {
+  DeleteResult,
+  EntityManager,
+  LessThan,
+  MoreThanOrEqual,
+} from 'typeorm';
 import { Friend, Status } from '../entities/friends.entity';
 
 @Injectable()
 export class FriendsRepository {
   constructor(private readonly entityManager: EntityManager) {}
 
-  async getFriendsReqPending(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: {
-        requesterId: userId,
-        status: Status.PENDING,
-      },
-    });
+  async getFriendsReqPending(userId: number) {
+    return this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.requesterId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.PENDING })
+      .leftJoin('friend.respondent', 'user')
+      .leftJoin('user.userImage', 'userImage')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .getMany();
   }
 
   async getFriendsResPending(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: {
-        respondentId: userId,
-        status: Status.PENDING,
-      },
-    });
+    return this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.PENDING })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('user.userImage', 'userImage')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .getMany();
   }
 
   async getFriends(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: [
-        {
-          requesterId: userId,
-          status: Status.ACCEPT,
-        },
-        {
-          respondentId: userId,
-          status: Status.ACCEPT,
-        },
-      ],
-    });
+    return this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.requesterId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.ACCEPT })
+      .orWhere('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.ACCEPT })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('friend.respondent', 'user2')
+      .leftJoin('user.userImage', 'userImage')
+      .leftJoin('user2.userImage', 'userImage2')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .addSelect(['user2.name', 'userImage2.imageUrl'])
+      .getMany();
   }
 
   async getRejectPermanent(userId: number): Promise<Friend[]> {
-    return await this.entityManager.find(Friend, {
-      where: {
-        respondentId: userId,
-        status: Status.PERMANENT,
-      },
-    });
+    return this.entityManager
+      .createQueryBuilder(Friend, 'friend')
+      .where('friend.respondentId = :userId', { userId })
+      .andWhere('friend.status = :status', { status: Status.PERMANENT })
+      .leftJoin('friend.requester', 'user')
+      .leftJoin('user.userImage', 'userImage')
+      .addSelect(['user.name', 'userImage.imageUrl'])
+      .getMany();
   }
 
   async friendRequest(userId: number, friendId: number): Promise<Friend> {
@@ -73,7 +85,10 @@ export class FriendsRepository {
     });
   }
 
-  async friendResponseAccept(userId: number, friendId: number): Promise<Friend> {
+  async friendResponseAccept(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -85,12 +100,15 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     friend.status = Status.ACCEPT;
     return await this.entityManager.save(friend);
   }
 
-  async friendResponseReject(userId: number, friendId: number): Promise<Friend> {
+  async friendResponseReject(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -102,12 +120,15 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     friend.status = Status.REJECT;
     return await this.entityManager.save(friend);
   }
 
-  async friendResponseRejectPermanentCancel(userId: number, friendId: number): Promise<DeleteResult> {
+  async friendResponseRejectPermanentCancel(
+    userId: number,
+    friendId: number,
+  ): Promise<DeleteResult> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -119,11 +140,14 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     return await this.entityManager.delete(Friend, friend);
   }
 
-  async friendResponseRejectPermanent(userId: number, friendId: number): Promise<Friend> {
+  async friendResponseRejectPermanent(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const friend = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: friendId,
@@ -135,7 +159,7 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    friend.status = Status.REJECT;
+    friend.status = Status.PERMANENT;
     return await this.entityManager.save(Friend, friend);
   }
 
@@ -158,11 +182,14 @@ export class FriendsRepository {
     if (!friend) {
       return null;
     }
-    
+
     return await this.entityManager.delete(Friend, friend);
   }
 
-  async checkRejectPermanent(userId: number, friendId: number): Promise<Friend> {
+  async checkRejectPermanent(
+    userId: number,
+    friendId: number,
+  ): Promise<Friend> {
     const check = await this.entityManager.findOne(Friend, {
       where: {
         requesterId: userId,
@@ -170,27 +197,27 @@ export class FriendsRepository {
         status: Status.PERMANENT,
       },
     });
-    
+
     return check;
   }
 
   async cleanupRejectedFriends() {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-  // 'REJECT' 상태이고 24시간 이상 지난 로우들을 찾아서 삭제
-  const friendsToDelete = await this.entityManager.find(Friend, {
-    where: {
-      status: Status.REJECT,
-      createdAt: LessThan(twentyFourHoursAgo),
-    },
-  });
-  
-  if (friendsToDelete.length === 0) {
-    return null;
-  }
+    // 'REJECT' 상태이고 24시간 이상 지난 로우들을 찾아서 삭제
+    const friendsToDelete = await this.entityManager.find(Friend, {
+      where: {
+        status: Status.REJECT,
+        createdAt: LessThan(twentyFourHoursAgo),
+      },
+    });
 
-  await this.entityManager.remove(friendsToDelete);
+    if (friendsToDelete.length === 0) {
+      return null;
+    }
 
-  return friendsToDelete.length;
+    await this.entityManager.remove(friendsToDelete);
+
+    return friendsToDelete.length;
   }
 }

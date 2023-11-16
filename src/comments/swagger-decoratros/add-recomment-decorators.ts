@@ -1,17 +1,31 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiHeaders,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 
-export function ApiFriendResponseRejectPermanent() {
+export function ApiAddReComment() {
   return applyDecorators(
     ApiOperation({
-      summary: '친구 요청 영구 거절 API',
-      description: '친구 요청을 영구적으로 거절합니다.',
+      summary: '대댓글을 생성하는 API',
+      description: '대댓글을 생성하는 API',
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 친구 요청을 영구적으로 거절한 경우',
+      description: '성공적으로 대댓글을 생성한 경우',
       content: {
-        JSON: { example: { message: '친구 요청을 영구적으로 거절했습니다.' } },
+        JSON: {
+          example: {
+            content: '대댓글 1차시도',
+            userId: '작성한 userId가 넘어옵니다',
+            commentId: '작성한 보드의 commentId가 넘어옵니다',
+            id: '대댓글 고유 id',
+            createAt: '작성한 시간이 넘어옵니다',
+          },
+        },
       },
     }),
     ApiResponse({
@@ -34,13 +48,10 @@ export function ApiFriendResponseRejectPermanent() {
     }),
     ApiResponse({
       status: 404,
-      description: '친구 요청을 찾을 수 없는 경우',
+      description: 'DB에서 보드를 찾을 수 없는 경우',
       content: {
         JSON: {
-          example: {
-            statusCode: 404,
-            message: '친구 요청을 찾을 수 없습니다.',
-          },
+          example: { statusCode: 404, message: '보드를 찾을 수 없습니다.' },
         },
       },
     }),
@@ -55,12 +66,12 @@ export function ApiFriendResponseRejectPermanent() {
     }),
     ApiResponse({
       status: 500,
-      description: '친구 요청 영구 거절에 실패한 경우',
+      description: '대댓글을 생성하는 중 오류가 발생한 경우',
       content: {
         JSON: {
           example: {
             statusCode: 500,
-            message: '친구 요청 영구 거절에 실패했습니다.',
+            message: '대댓글을 생성하는 중 오류가 발생했습니다.',
           },
         },
       },
@@ -73,5 +84,20 @@ export function ApiFriendResponseRejectPermanent() {
         example: '여기에 액세스 토큰',
       },
     ]),
+    ApiParam({
+      name: 'commentId',
+      description: '대댓글을 추가할 댓글의 ID',
+    }),
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          content: { type: 'string' },
+        },
+        example: {
+          content: '추가할 대댓글 입력입니다.',
+        },
+      },
+    }),
   );
 }

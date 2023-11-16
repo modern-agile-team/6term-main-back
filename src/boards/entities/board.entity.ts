@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BoardLike } from './board-like.entity';
+import { BoardNotification } from 'src/common/notice/entities/board-notice.entity';
 
 @Entity({
   name: 'board',
@@ -23,19 +24,23 @@ export class Board {
   @Column({ name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.board)
+  @ManyToOne(() => User, (user) => user.board, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToMany(() => BoardImage, (boardImage) => boardImage.board, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => BoardImage, (boardImages) => boardImages.board)
   boardImages: BoardImage[];
 
-  @OneToMany(() => BoardLike, (boardLike) => boardLike.boardId, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => BoardLike, (boardLike) => boardLike.boardId)
   boardLike: BoardLike;
+
+  @OneToMany(
+    () => BoardNotification,
+    (BoardNotification) => BoardNotification.board,
+  )
+  boardNotification: BoardNotification;
 
   @Index({ fulltext: true })
   @Column('varchar')

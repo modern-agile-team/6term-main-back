@@ -12,17 +12,27 @@ import {
 @Entity({
   name: 'recomment',
 })
-export class Recomment {
+export class ReComment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
-  userId: User;
+  user: User;
 
-  @ManyToOne(() => Comment)
+  @Column({ name: 'user_id' })
+  userId: number;
+
+  @ManyToOne(() => Comment, (comment) => comment.reComment, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'comment_id' })
-  commentId: Comment;
+  comment: Comment;
+
+  @Column({ name: 'comment_id' })
+  commentId: number;
 
   @Column()
   content: string;

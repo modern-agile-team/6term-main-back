@@ -1,5 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 export function ApiNewAccessToken() {
   return applyDecorators(
@@ -49,13 +49,5 @@ export function ApiNewAccessToken() {
         },
       },
     }),
-    ApiHeaders([
-      {
-        name: 'refresh_token',
-        description: '리프레시 토큰',
-        required: true,
-        example: '여기에 리프레시 토큰',
-      },
-    ]),
   );
 }

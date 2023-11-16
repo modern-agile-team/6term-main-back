@@ -8,10 +8,9 @@ import { Board } from 'src/boards/entities/board.entity';
 // import { BoardRepository } from 'src/boards/repository/boards.repository';
 import { CommentLike } from 'src/comments/entities/comment-like.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
-import { Recomment } from 'src/comments/entities/recomment.entity';
+import { ReComment } from 'src/comments/entities/recomment.entity';
 import { Friend } from 'src/friends/entities/friends.entity';
 import { BoardNotification } from 'src/common/notice/entities/board-notice.entity';
-import { CommentNotification } from 'src/common/notice/entities/comment-notice.entity';
 import { UserImage } from 'src/users/entities/user-image.entity';
 import { User } from 'src/users/entities/user.entity';
 
@@ -34,11 +33,10 @@ export const TypeORMconfig: TypeOrmModuleOptions = {
     BoardLike,
     Comment,
     CommentLike,
-    Recomment,
+    ReComment,
     Friend,
     BoardNotification,
-    CommentNotification,
     // BoardRepository,
   ], // 여기에 엔티티들을 추가해야 합니다.
-  synchronize: process.env.NODE_ENV === 'false',
+  synchronize: process.env.NODE_ENV === 'true',
 };

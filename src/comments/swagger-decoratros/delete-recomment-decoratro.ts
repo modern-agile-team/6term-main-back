@@ -1,17 +1,24 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiHeaders,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 
-export function ApiFriendResponseAccept() {
+export function ApiDeleteReComment() {
   return applyDecorators(
     ApiOperation({
-      summary: '친구 요청 수락 API',
-      description: '친구 요청을 수락합니다.',
+      summary: '대댓글을 삭제하는 API',
+      description: '대댓글을 삭제하는 API',
     }),
     ApiResponse({
       status: 200,
-      description: '성공적으로 친구 요청을 수락한 경우',
+      description: '성공적으로 대댓글을 삭제한 경우',
       content: {
-        JSON: { example: { message: '친구 요청을 수락했습니다.' } },
+        JSON: {
+          example: {},
+        },
       },
     }),
     ApiResponse({
@@ -34,13 +41,10 @@ export function ApiFriendResponseAccept() {
     }),
     ApiResponse({
       status: 404,
-      description: '친구 요청을 찾을 수 없는 경우',
+      description: 'DB에서 댓글을 찾을 수 없는 경우',
       content: {
         JSON: {
-          example: {
-            statusCode: 404,
-            message: '친구 요청을 찾을 수 없습니다.',
-          },
+          example: { statusCode: 404, message: '댓글을 찾을 수 없습니다.' },
         },
       },
     }),
@@ -55,10 +59,13 @@ export function ApiFriendResponseAccept() {
     }),
     ApiResponse({
       status: 500,
-      description: '친구 요청에 실패한 경우',
+      description: '대댓글을 삭제하는 오류가 발생한 경우',
       content: {
         JSON: {
-          example: { statusCode: 500, message: '친구 요청에 실패했습니다.' },
+          example: {
+            statusCode: 500,
+            message: '대댓글을 삭제하는 중 오류가 발생했습니다.',
+          },
         },
       },
     }),
@@ -70,5 +77,9 @@ export function ApiFriendResponseAccept() {
         example: '여기에 액세스 토큰',
       },
     ]),
+    ApiParam({
+      name: 'reCommentId',
+      description: '삭제할 대댓글의 ID',
+    }),
   );
 }
