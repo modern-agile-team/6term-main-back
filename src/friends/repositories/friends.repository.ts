@@ -187,6 +187,32 @@ export class FriendsRepository {
     return await this.entityManager.delete(Friend, friend);
   }
 
+  async friendBlockCancel(
+    userId: number,
+    friendId: number,
+  ): Promise<DeleteResult> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.BLOCK,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.BLOCK,
+        },
+      ],
+    });
+
+    if (!friend) {
+      return null;
+    }
+
+    return await this.entityManager.delete(Friend, friend);
+  }
+
   async friendResponseRejectPermanent(
     userId: number,
     friendId: number,

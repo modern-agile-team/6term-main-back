@@ -23,6 +23,7 @@ import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { ApiDeleteRequest } from '../swagger-decorators/delete-request.decorator';
 import { ApiFriendBlock } from '../swagger-decorators/friend-block.decorator';
+import { ApiDeleteBlock } from '../swagger-decorators/delete-block.decorator';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('friends')
@@ -109,6 +110,15 @@ export class FriendsController {
     @Param('friend_id') friendId: number,
   ) {
     return await this.friendsService.friendRequestCancel(userId, friendId);
+  }
+
+  @ApiDeleteBlock()
+  @Delete('block/cancel/:friend_id')
+  async friendBlockCancel(
+    @GetUserId() userId: number,
+    @Param('friend_id') friendId: number,
+  ) {
+    return await this.friendsService.friendBlockCancel(userId, friendId);
   }
 
   @ApiDeleteRejectPermanentCancel()

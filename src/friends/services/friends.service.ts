@@ -238,6 +238,32 @@ export class FriendsService {
     }
   }
 
+  async friendBlockCancel(userId: number, friendId: number) {
+    try {
+      const blockCancel = await this.friendsRepository.friendBlockCancel(
+        userId,
+        friendId,
+      );
+      if (!blockCancel) {
+        throw new HttpException(
+          '친구 차단을 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { message: '친구 차단을 취소했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '친구 차단 취소에 실패했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   async friendResponseRejectPermanent(userId: number, friendId: number) {
     try {
       const rejectPermanent =
