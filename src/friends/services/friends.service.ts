@@ -126,6 +126,29 @@ export class FriendsService {
     }
   }
 
+  async friendBlock(userId: number, friendId: number) {
+    try {
+      const block = await this.friendsRepository.friendBlock(userId, friendId);
+      if (!block) {
+        throw new HttpException(
+          '친구를 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return { message: '친구를 차단했습니다.' };
+    } catch (error) {
+      if (error.getStatus() === HttpStatus.NOT_FOUND) {
+        throw error;
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '친구 차단에 실패했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   async friendRequestCancel(userId: number, friendId: number) {
     try {
       const cancel = await this.friendsRepository.friendRequestCancel(

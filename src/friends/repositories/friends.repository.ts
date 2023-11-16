@@ -105,6 +105,30 @@ export class FriendsRepository {
     return await this.entityManager.save(friend);
   }
 
+  async friendBlock(userId: number, friendId: number): Promise<Friend> {
+    const friend = await this.entityManager.findOne(Friend, {
+      where: [
+        {
+          requesterId: userId,
+          respondentId: friendId,
+          status: Status.ACCEPT,
+        },
+        {
+          requesterId: friendId,
+          respondentId: userId,
+          status: Status.ACCEPT,
+        },
+      ],
+    });
+
+    if (!friend) {
+      return null;
+    }
+
+    friend.status = Status.BLOCK;
+    return await this.entityManager.save(friend);
+  }
+
   async friendRequestCancel(
     userId: number,
     friendId: number,
