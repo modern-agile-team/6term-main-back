@@ -13,6 +13,11 @@ export class BoardOwnerGuard {
     const request = context.switchToHttp().getRequest();
     const accessToken = request.headers['access_token'];
     const boardId = request.query['boardId'];
+    if (!accessToken) {
+      request.unitowner = false;
+      request.user = false;
+      return true;
+    }
     const userId = await this.tokenService.decodeToken(accessToken);
     const board = await this.boardRepository.findBoardById(boardId);
     const unitowner = board.userId === userId;
