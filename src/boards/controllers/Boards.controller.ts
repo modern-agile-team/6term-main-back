@@ -96,7 +96,7 @@ export class BoardsController {
   }
 
   @Patch('/images')
-  @UseGuards()
+  @UseGuards(JwtAccessTokenGuard)
   @ApiUpdateBoardImage()
   @UseInterceptors(FilesInterceptor('files', 3))
   async editBoardImages(
