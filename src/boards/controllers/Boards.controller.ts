@@ -28,6 +28,8 @@ import { ApiDeleteBoard } from '../swagger-decorators/delete-board-decorators';
 import { ApiUpdateBoardImage } from '../swagger-decorators/patch-board-images-decorators';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { BoardOwnerGuard } from 'src/config/guards/board-Owner.guard';
+import { BoardOwner } from 'src/common/decorators/board-owner.decorator';
 
 @Controller('boards')
 @ApiTags('board API')
@@ -74,14 +76,15 @@ export class BoardsController {
   }
 
   @Get('/unit')
-  @UseGuards(JwtAccessTokenGuard)
+  @UseGuards(BoardOwnerGuard)
   @ApiGetOneBoard()
   async findOne(
     @Query('boardId') boardId: number,
+    @BoardOwner() unitOnwer: boolean,
     @GetUserId() userId: number,
   ): Promise<BoardResponseDTO> {
     ``;
-    return await this.boardsService.findOneBoard(boardId, userId);
+    return await this.boardsService.findOneBoard(boardId, userId, unitOnwer);
   }
 
   @Patch('')
@@ -94,7 +97,7 @@ export class BoardsController {
   }
 
   @Patch('/images')
-  @UseGuards(JwtAccessTokenGuard)
+  @UseGuards()
   @ApiUpdateBoardImage()
   @UseInterceptors(FilesInterceptor('files', 3))
   async editBoardImages(
