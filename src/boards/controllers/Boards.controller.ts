@@ -83,7 +83,6 @@ export class BoardsController {
     @BoardOwner() unitOnwer: boolean,
     @GetUserId() userId: number,
   ): Promise<BoardResponseDTO> {
-    ``;
     return await this.boardsService.findOneBoard(boardId, userId, unitOnwer);
   }
 
