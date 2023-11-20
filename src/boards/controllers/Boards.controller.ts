@@ -17,7 +17,6 @@ import { BoardImagesService } from '../services/BoardImage.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
-import { TokenService } from 'src/auth/services/token.service';
 import { ApiUploadBoardImages } from '../swagger-decorators/upload-baord-images-decorator';
 import { ApiAddBoard } from '../swagger-decorators/add-board-decorators';
 import { ApiGetPageBoards } from '../swagger-decorators/get-page-boards-decorators';
@@ -37,7 +36,6 @@ export class BoardsController {
   constructor(
     private readonly boardsService: BoardsService,
     private readonly boardImagesService: BoardImagesService,
-    private tokenService: TokenService,
   ) {}
 
   @Post('')
