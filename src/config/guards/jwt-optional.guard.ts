@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { TokenService } from 'src/auth/services/token.service';
 
 @Injectable()
-export class JwtBoardLikeGuard {
+export class JwtOptionalGuard {
   constructor(private tokenService: TokenService) {}
 
   async canActivate(context: ExecutionContext) {

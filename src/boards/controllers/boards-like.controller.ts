@@ -18,7 +18,7 @@ import { ApiDeleteBoardLike } from '../swagger-decorators/delete-board-like.deco
 import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
-import { JwtBoardLikeGuard } from 'src/config/guards/jwt-board-like.guard';
+import { JwtOptionalGuard } from 'src/config/guards/jwt-optional.guard';
 
 @ApiTags('BOARDS-LIKE')
 @UsePipes(ValidationPipe)
@@ -41,7 +41,7 @@ export class BoardsLikeController {
 
   @ApiGetBoardLikeCount()
   @Get('like')
-  @UseGuards(JwtBoardLikeGuard)
+  @UseGuards(JwtOptionalGuard)
   async getBoardsLike(
     @GetUserId() userId: number,
     @Query('boardId', ParseIntPipe) boardId: number,
