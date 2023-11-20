@@ -1,9 +1,9 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
-export const GetUserId = createParamDecorator(
+export const BoardOwner = createParamDecorator(
   (data, ctx: ExecutionContext): number => {
     const req = ctx.switchToHttp().getRequest();
 
-    return req.user.userId;
+    return req.unitowner;
   },
 );

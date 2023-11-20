@@ -17,7 +17,6 @@ import { BoardImagesService } from '../services/BoardImage.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
-import { TokenService } from 'src/auth/services/token.service';
 import { ApiUploadBoardImages } from '../swagger-decorators/upload-baord-images-decorator';
 import { ApiAddBoard } from '../swagger-decorators/add-board-decorators';
 import { ApiGetPageBoards } from '../swagger-decorators/get-page-boards-decorators';
@@ -28,6 +27,8 @@ import { ApiDeleteBoard } from '../swagger-decorators/delete-board-decorators';
 import { ApiUpdateBoardImage } from '../swagger-decorators/patch-board-images-decorators';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { BoardOwnerGuard } from 'src/config/guards/board-owner.guard';
+import { BoardOwner } from 'src/common/decorators/board-owner.decorator';
 
 @Controller('boards')
 @ApiTags('board API')
@@ -35,7 +36,6 @@ export class BoardsController {
   constructor(
     private readonly boardsService: BoardsService,
     private readonly boardImagesService: BoardImagesService,
-    private tokenService: TokenService,
   ) {}
 
   @Post('')
@@ -74,14 +74,14 @@ export class BoardsController {
   }
 
   @Get('/unit')
-  @UseGuards(JwtAccessTokenGuard)
+  @UseGuards(BoardOwnerGuard)
   @ApiGetOneBoard()
   async findOne(
     @Query('boardId') boardId: number,
+    @BoardOwner() unitOnwer: boolean,
     @GetUserId() userId: number,
   ): Promise<BoardResponseDTO> {
-    ``;
-    return await this.boardsService.findOneBoard(boardId, userId);
+    return await this.boardsService.findOneBoard(boardId, userId, unitOnwer);
   }
 
   @Patch('')
