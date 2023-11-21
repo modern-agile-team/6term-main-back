@@ -24,9 +24,7 @@ import { ApiAddReComment } from '../swagger-decoratros/add-recomment-decorators'
 import { ApiUpdateReComment } from '../swagger-decoratros/patch-recomment-decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
-import { CommentOwnerGuard } from 'src/config/guards/comment-owner.guard';
-import { CommentOwner } from 'src/common/decorators/comment-owner.decorator';
-import { ReCommentOwner } from 'src/common/decorators/recomment-owner.decorator';
+import { JwtOptionalGuard } from 'src/config/guards/jwt-optional.guard';
 
 @Controller('comments')
 @ApiTags('Comment API')
@@ -63,20 +61,13 @@ export class CommentsController {
   }
 
   @Get('')
-  @UseGuards(CommentOwnerGuard)
+  @UseGuards(JwtOptionalGuard)
   @ApiGetAllComment()
   async getComment(
     @GetUserId() userId: number,
     @Query('boardId') boardId: number,
-    @CommentOwner() commentOwner: boolean,
-    @ReCommentOwner() recommentOwner: boolean,
   ): Promise<commentResponseDTO[]> {
-    return this.commentsService.findAllComments(
-      boardId,
-      userId,
-      commentOwner,
-      recommentOwner,
-    );
+    return this.commentsService.findAllComments(boardId, userId);
   }
 
   @Patch('')
