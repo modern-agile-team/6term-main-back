@@ -31,9 +31,11 @@ import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
 import { ApiGetChatNotifications } from '../swagger-decorators/get-chat-notifications.decorator';
 import { ApiCreateChatImage } from '../swagger-decorators/create-chat-image.decorators';
+import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
 
 @ApiTags('CHAT')
 @UsePipes(ValidationPipe)
+@UseInterceptors(SuccessResponseInterceptor)
 @Controller('chat-room')
 export class ChatController {
   constructor(
