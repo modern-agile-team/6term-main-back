@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BoardsLikeService } from '../services/boards-like.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -19,9 +20,11 @@ import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { JwtOptionalGuard } from 'src/config/guards/jwt-optional.guard';
+import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
 
 @ApiTags('BOARDS-LIKE')
 @UsePipes(ValidationPipe)
+@UseInterceptors(SuccessResponseInterceptor)
 @Controller('boards')
 export class BoardsLikeController {
   constructor(
