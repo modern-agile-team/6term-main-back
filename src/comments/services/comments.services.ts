@@ -27,6 +27,8 @@ export class CommentsService {
   async findAllComments(
     boardId: number,
     userId: number,
+    commentOnwer: boolean,
+    recommentOwner: boolean,
   ): Promise<commentResponseDTO[]> {
     const comments =
       await this.CommentRepository.findCommentsByBoardId(boardId);
@@ -36,7 +38,7 @@ export class CommentsService {
     return comments.map((comment) => ({
       id: comment.id,
       content: comment.content,
-      commentowner: comment.userId === userId,
+      commentowner: commentOnwer,
       user: {
         name: comment.user.name,
         userImage: comment.user.userImage ? comment.user.userImage : [],
@@ -45,7 +47,7 @@ export class CommentsService {
         //예외처리 , reComment가 없을경우 빈 배열
         id: reComment.id,
         content: reComment.content,
-        reCommentowner: reComment.userId === userId,
+        reCommentowner: recommentOwner,
         user: {
           name: reComment.user.name,
           userImage: reComment.user.userImage ? reComment.user.userImage : [],
