@@ -15,15 +15,12 @@ import { AsyncApiSub } from 'nestjs-asyncapi';
 import {
   BadRequestException,
   UseFilters,
-  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { LoginChatRoomDto } from '../dto/login-chat-room.dto';
 import { WebSocketExceptionFilter } from '../exceptions/websocket-exception.filter';
 import mongoose from 'mongoose';
-import { WebSocketJwtAccessTokenGuard } from 'src/config/guards/web-socket-jwt-access-token.guard';
-
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 @UsePipes(ValidationPipe)
 @UseFilters(WebSocketExceptionFilter)
@@ -80,7 +77,6 @@ export class EventsGateway
       payload: PostChatDto,
     },
   })
-  @UseGuards(WebSocketJwtAccessTokenGuard)
   @SubscribeMessage('message')
   async handleMessage(
     @MessageBody() postChatDto: PostChatDto,
