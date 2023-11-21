@@ -44,6 +44,7 @@ export class S3Service {
 
       return { url: fileUrl, key: filename };
     } catch (error) {
+      console.error(error);
       throw new Error('S3 업로드 오류');
     }
   }

@@ -15,12 +15,14 @@ import { AsyncApiSub } from 'nestjs-asyncapi';
 import {
   BadRequestException,
   UseFilters,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { LoginChatRoomDto } from '../dto/login-chat-room.dto';
 import { WebSocketExceptionFilter } from '../exceptions/websocket-exception.filter';
 import mongoose from 'mongoose';
+import { WebSocketJwtAccessTokenGuard } from 'src/config/guards/web-socket-jwt-access-token.guard';
 
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 @UsePipes(ValidationPipe)
@@ -78,6 +80,7 @@ export class EventsGateway
       payload: PostChatDto,
     },
   })
+  @UseGuards(WebSocketJwtAccessTokenGuard)
   @SubscribeMessage('message')
   async handleMessage(
     @MessageBody() postChatDto: PostChatDto,
@@ -85,10 +88,12 @@ export class EventsGateway
   ) {
     if (postChatDto.hasOwnProperty('content')) {
       const returnedChat = await this.chatService.createChat(postChatDto);
-      socket.to(postChatDto.roomId.toString()).emit('message', returnedChat);
+      const data = returnedChat;
+      socket.to(postChatDto.roomId.toString()).emit('message', { data });
     } else {
       const returnedChat = await this.chatService.findChatImage(postChatDto);
-      socket.to(postChatDto.roomId.toString()).emit('message', returnedChat);
+      const data = returnedChat;
+      socket.to(postChatDto.roomId.toString()).emit('message', { data });
     }
   }
 

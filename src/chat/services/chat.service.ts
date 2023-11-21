@@ -139,7 +139,7 @@ export class ChatService {
       receiverId,
     );
 
-    const chat = {
+    const data = {
       content: returnedChat.content,
       sender: returnedChat.sender,
       receiver: returnedChat.receiver,
@@ -147,7 +147,7 @@ export class ChatService {
 
     if (returnedChat) this.subject.next(returnedChat);
 
-    return chat;
+    return data;
   }
 
   async createChatImage(
