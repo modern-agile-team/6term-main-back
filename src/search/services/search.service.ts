@@ -58,7 +58,7 @@ export class SearchService {
       );
       if (last_page >= page) {
         return {
-          data: boardResponse,
+          boardResponse,
           meta: {
             total,
             page: page <= 0 ? (page = 1) : page,
@@ -106,7 +106,7 @@ export class SearchService {
       );
       if (last_page >= page) {
         return {
-          data: boardResponse,
+          boardResponse,
           meta: {
             total,
             page: page <= 0 ? (page = 1) : page,
@@ -164,7 +164,7 @@ export class SearchService {
       );
       if (last_page >= page) {
         return {
-          data: boardResponse,
+          boardResponse,
           meta: {
             total,
             page: page <= 0 ? (page = 1) : page,
@@ -222,7 +222,7 @@ export class SearchService {
     );
     if (last_page >= page) {
       return {
-        data: boardResponse,
+        boardResponse,
         meta: {
           total,
           page: page <= 0 ? (page = 1) : page,
@@ -279,7 +279,7 @@ export class SearchService {
     );
     if (last_page >= page) {
       return {
-        data: boardResponse,
+        boardResponse,
         meta: {
           total,
           page: page <= 0 ? (page = 1) : page,
@@ -340,7 +340,7 @@ export class SearchService {
     );
     if (last_page >= page) {
       return {
-        data: boardResponse,
+        boardResponse,
         meta: {
           total,
           page: page <= 0 ? (page = 1) : page,

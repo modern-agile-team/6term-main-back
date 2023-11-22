@@ -4,6 +4,7 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -13,8 +14,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiSearchBoardsByBody } from '../swagger-decorators/search-boards-by-body.decorator';
 import { ApiSearchBoardsByHead } from '../swagger-decorators/search-boards-by-head.decorator';
 import { ApiSearchBoardsByUserName } from '../swagger-decorators/search-boards-by-user-name.decorator';
+import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
 
 @ApiTags('SEARCH')
+@UseInterceptors(SuccessResponseInterceptor)
 @UsePipes(ValidationPipe)
 @Controller('search')
 export class SearchController {
