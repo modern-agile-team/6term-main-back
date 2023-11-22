@@ -62,10 +62,9 @@ export class BoardsService {
   async findOneBoard(
     boardId: number,
     userId: number,
-    unitOnwer: boolean,
   ): Promise<oneBoardResponseDTO> {
     const board = await this.boardRepository.findBoardById(boardId);
-    const unitowner = unitOnwer;
+    const unitowner = board.userId === userId;
     if (!board) {
       throw new Error('게시물을 찾을 수 없습니다.');
     }

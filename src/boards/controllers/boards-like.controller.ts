@@ -9,25 +9,24 @@ import {
   ValidationPipe,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BoardsLikeService } from '../services/boards-like.service';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiAddBoardLike } from '../swagger-decorators/add-board-like.decorator';
 import { ApiGetBoardLikeCount } from '../swagger-decorators/get-board-like-count.decorator';
 import { ApiDeleteBoardLike } from '../swagger-decorators/delete-board-like.decorator';
-import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { JwtOptionalGuard } from 'src/config/guards/jwt-optional.guard';
+import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
 
 @ApiTags('BOARDS-LIKE')
 @UsePipes(ValidationPipe)
+@UseInterceptors(SuccessResponseInterceptor)
 @Controller('boards')
 export class BoardsLikeController {
-  constructor(
-    private tokenService: TokenService,
-    private boardsLikeService: BoardsLikeService,
-  ) {}
+  constructor(private boardsLikeService: BoardsLikeService) {}
 
   @ApiAddBoardLike()
   @Post('like/:boardId')
