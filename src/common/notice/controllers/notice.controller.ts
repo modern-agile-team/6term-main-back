@@ -2,10 +2,11 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Param,
   ParseIntPipe,
   Patch,
+  UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,9 +16,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiGetAllNotifications } from '../swagger-decorators/get-all-notifications.decorator';
 import { ApiUpdateUnSeenNotification } from '../swagger-decorators/update-un-seen-notification.decorator';
 import { ApiHardDeleteNotificatons } from '../swagger-decorators/hard-delete-notifications.decorator';
+import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
+import { GetNotificationsResponseFromBoardDto } from 'src/common/dto/get-notifications-response-from-board.dto';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 
 @ApiTags('BOARD-NOTICE')
 @UsePipes(ValidationPipe)
+@UseInterceptors(SuccessResponseInterceptor)
 @Controller('notice')
 export class NoticeController {
   constructor(
@@ -26,9 +32,11 @@ export class NoticeController {
   ) {}
 
   @ApiGetAllNotifications()
+  @UseGuards(JwtAccessTokenGuard)
   @Get()
-  async getAllNotifications(@Headers('access_token') accessToken: string) {
-    const userId = await this.tokenService.decodeToken(accessToken);
+  async getAllNotifications(
+    @GetUserId() userId: number,
+  ): Promise<GetNotificationsResponseFromBoardDto[]> {
     return this.noticeService.getAllNotifications(userId);
   }
 

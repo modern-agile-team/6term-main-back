@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { NoticeRepository } from '../repositories/notice.repository';
 import { EntityManager } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { GetNotificationsResponseFromBoardDto } from 'src/common/dto/get-notifications-response-from-board.dto';
 
 @Injectable()
 export class NoticeService {
@@ -10,7 +11,9 @@ export class NoticeService {
     private entityManager: EntityManager,
   ) {}
 
-  async getAllNotifications(userId: number) {
+  async getAllNotifications(
+    userId: number,
+  ): Promise<GetNotificationsResponseFromBoardDto[]> {
     const isUser = await this.entityManager.findOne(User, {
       where: { id: userId },
     });
@@ -24,7 +27,10 @@ export class NoticeService {
     boardId: number,
     senderId: number,
     receiverId: number,
-  ) {
+  ): Promise<void | GetNotificationsResponseFromBoardDto> {
+    if (senderId === receiverId) {
+      return;
+    }
     return this.noticeRepository.createBoardNoticeFromComment(
       boardId,
       senderId,
@@ -36,7 +42,10 @@ export class NoticeService {
     boardId: number,
     senderId: number,
     receiverId: number,
-  ) {
+  ): Promise<void | GetNotificationsResponseFromBoardDto> {
+    if (senderId === receiverId) {
+      return;
+    }
     return this.noticeRepository.createCommentNoticeFromReComment(
       boardId,
       senderId,
@@ -48,7 +57,10 @@ export class NoticeService {
     boardId: number,
     senderId: number,
     receiverId: number,
-  ) {
+  ): Promise<void | GetNotificationsResponseFromBoardDto> {
+    if (senderId === receiverId) {
+      return;
+    }
     return this.noticeRepository.createBoardNoticeFromLike(
       boardId,
       senderId,
