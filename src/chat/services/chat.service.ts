@@ -15,7 +15,7 @@ import { Subject, catchError, map } from 'rxjs';
 import { Chat } from '../schemas/chat.schemas';
 import { User } from 'src/users/entities/user.entity';
 import { EntityManager } from 'typeorm';
-import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
+import { GetNotificationsResponseFromChatDto } from '../dto/get-notifications-response-from-chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -202,7 +202,7 @@ export class ChatService {
 
   async getChatNotifications(
     userId: number,
-  ): Promise<GetNotificationsResponseDto[]> {
+  ): Promise<GetNotificationsResponseFromChatDto[]> {
     const isUser = await this.entityManager.findOne(User, {
       where: { id: userId },
     });
