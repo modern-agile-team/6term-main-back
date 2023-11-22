@@ -36,10 +36,10 @@ export class UserController {
       '유저의 액세스 토큰의 id와 조회하려는 유저의 id를 비교해서 owner 여부를 포함해서 알려줌',
   })
   @Get('my-info/:targetId')
-  async getMyInfoAndOwner(
+  async getMyInfoWithOwner(
     @GetUserId() userId: number,
     @Param('targetId', ParseIntPipe) targetId: number,
   ) {
-    return this.userService.checkMyInfoOwner(userId, targetId);
+    return this.userService.getMyInfoWithOwner(userId, targetId);
   }
 }
