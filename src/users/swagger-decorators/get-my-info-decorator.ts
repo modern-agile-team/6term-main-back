@@ -13,14 +13,13 @@ export function ApiGetMyInfo() {
       content: {
         JSON: {
           example: {
-            userId: 62,
-            name: '박준혁',
-            email: 'pjh_2004@naver.com',
+            userId: 1,
+            name: '홍길동',
+            email: 'abcd@naver.com',
             gender: 'M',
             admin: false,
             provider: 'kakao',
-            userImage:
-              'http://k.kakaocdn.net/dn/bgfjbT/btrNZpdv3sK/AMb1oWdaF6WxMEXkuKRkR0/img_640x640.jpg',
+            userImage: 'http://img.jpg',
           },
         },
       },
