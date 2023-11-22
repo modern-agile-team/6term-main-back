@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,9 +16,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiGetAllNotifications } from '../swagger-decorators/get-all-notifications.decorator';
 import { ApiUpdateUnSeenNotification } from '../swagger-decorators/update-un-seen-notification.decorator';
 import { ApiHardDeleteNotificatons } from '../swagger-decorators/hard-delete-notifications.decorator';
+import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
 
 @ApiTags('BOARD-NOTICE')
 @UsePipes(ValidationPipe)
+@UseInterceptors(SuccessResponseInterceptor)
 @Controller('notice')
 export class NoticeController {
   constructor(
