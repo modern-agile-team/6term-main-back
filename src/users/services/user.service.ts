@@ -24,4 +24,38 @@ export class UserService {
       userImage,
     };
   }
+
+  async checkMyInfoOwner(userId: number, targetId: number) {
+    if (userId === targetId) {
+      const { name, email, gender, admin, provider } =
+        await this.userRepository.getUserInfo(userId);
+      const userImage = (await this.userImageRepository.checkUserImage(userId))
+        .imageUrl;
+      return {
+        userId,
+        name,
+        email,
+        gender,
+        admin,
+        provider,
+        userImage,
+        owner: true,
+      };
+    }
+
+    const { name, email, gender, admin, provider } =
+      await this.userRepository.getUserInfo(targetId);
+    const userImage = (await this.userImageRepository.checkUserImage(targetId))
+      .imageUrl;
+    return {
+      userId,
+      name,
+      email,
+      gender,
+      admin,
+      provider,
+      userImage,
+      owner: false,
+    };
+  }
 }
