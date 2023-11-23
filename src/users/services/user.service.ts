@@ -27,11 +27,11 @@ export class UserService {
 
   async getMyInfoWithOwner(userId: number, targetId: number) {
     const { name, email, gender, admin, provider } =
-      await this.userRepository.getUserInfo(userId);
-    const userImage = (await this.userImageRepository.checkUserImage(userId))
+      await this.userRepository.getUserInfo(targetId);
+    const userImage = (await this.userImageRepository.checkUserImage(targetId))
       .imageUrl;
     return {
-      userId,
+      userId: targetId,
       name,
       email,
       gender,
