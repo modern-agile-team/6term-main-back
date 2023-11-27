@@ -26,7 +26,7 @@ export class UserController {
 
   @UseGuards(JwtAccessTokenGuard)
   @ApiGetMyInfoWithOwner()
-  @Get('my-info/:targetId')
+  @Get('info/:targetId')
   async getMyInfoWithOwner(
     @GetUserId() userId: number,
     @Param('targetId', ParseIntPipe) targetId: number,
