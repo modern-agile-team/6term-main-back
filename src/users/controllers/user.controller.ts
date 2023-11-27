@@ -27,7 +27,7 @@ export class UserController {
   }
 
   @ApiGetInfo()
-  @Get('info')
+  @Get('info-board')
   async getUserInfo(@Query('userId') userId: number) {
     return this.userService.getUserInfo(userId);
   }
