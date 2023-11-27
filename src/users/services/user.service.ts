@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserImageRepository } from '../repositories/user-image.repository';
+import { BoardRepository } from 'src/boards/repository/boards.repository';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userImageRepository: UserImageRepository,
+    private readonly boardRepository: BoardRepository,
   ) {}
 
   async getMyInfo(userId: number) {
@@ -29,6 +31,14 @@ export class UserService {
       provider,
       userImage,
     };
+  }
+
+  async getUserInfo(userId: number) {
+    const board = await this.boardRepository.findBoardByuserId(userId);
+    if (!board) {
+      return true;
+    }
+    return board;
   }
 
   async getMyInfoWithOwner(userId: number, targetId: number) {

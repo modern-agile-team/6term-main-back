@@ -36,6 +36,13 @@ export class BoardRepository {
     });
   }
 
+  async findBoardByuserId(userId: number): Promise<Board[]> {
+    return await this.entityManager.find(Board, {
+      relations: ['user', 'user.userImage', 'boardImages'],
+      where: { userId },
+    });
+  }
+
   async updateBoard(
     id: number,
     boardData: Partial<CreateBoardDto>,

@@ -122,6 +122,7 @@ export class AuthService {
       const kakaoToken = (
         await axios.post(kakaoTokenUrl, kakaoTokenBody, kakaoTokenHeader)
       ).data;
+
       const kakaoAccessToken = kakaoToken.access_token;
       const kakaoRefreshToken = kakaoToken.refresh_token;
 
@@ -193,6 +194,7 @@ export class AuthService {
           '카카오 로그인 중 오류가 발생했습니다.',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
+
       }
     }
   }
