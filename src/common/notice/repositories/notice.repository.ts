@@ -1,12 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager, LessThan } from 'typeorm';
 import { BoardNotification, Separator } from '../entities/board-notice.entity';
+import { GetNotificationsResponseFromBoardDto } from 'src/common/dto/get-notifications-response-from-board.dto';
 
 @Injectable()
 export class NoticeRepository {
   constructor(private entityManager: EntityManager) {}
 
-  async getAllNotifications(userId: number) {
+  async getAllNotifications(
+    userId: number,
+  ): Promise<GetNotificationsResponseFromBoardDto[]> {
     const notifications = await this.entityManager.find(BoardNotification, {
       skip: 1,
       take: 10,

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export class GetNotificationsResponseDto {
+export class GetNotificationsResponseFromChatDto {
   _id: mongoose.Types.ObjectId;
 
   chatroom_id: mongoose.Types.ObjectId;
