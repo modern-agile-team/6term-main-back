@@ -188,6 +188,13 @@ export class AuthService {
           '유효하지 않은 인가코드입니다.',
           HttpStatus.UNAUTHORIZED,
         );
+      } else {
+        console.log(error);
+        throw new HttpException(
+          '카카오 로그인 중 오류가 발생했습니다.',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+
       }
     }
   }
