@@ -122,6 +122,7 @@ export class AuthService {
       const kakaoToken = (
         await axios.post(kakaoTokenUrl, kakaoTokenBody, kakaoTokenHeader)
       ).data;
+
       const kakaoAccessToken = kakaoToken.access_token;
       const kakaoRefreshToken = kakaoToken.refresh_token;
 
@@ -267,16 +268,19 @@ export class AuthService {
       const naverUnlinkHeader = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       };
+
       const naverUnlinkBody = {
         client_id: process.env.NAVER_CLIENT_ID,
         client_secret: process.env.NAVER_CLIENT_SECRET,
         grant_type: 'delete',
         service_provider: 'NAVER',
+        access_token: accessToken,
       };
 
-      axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
+      await axios.post(naverUnlinkUrl, naverUnlinkBody, naverUnlinkHeader);
       return { message: '네이버 연동 해제가 완료되었습니다.' };
     } catch (error) {
       console.log(error);
