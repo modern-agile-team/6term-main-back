@@ -267,7 +267,6 @@ export class AuthService {
       const naverUnlinkUrl = 'https://nid.naver.com/oauth2.0/token';
       const naverUnlinkHeader = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       };
