@@ -52,14 +52,7 @@ export class AuthController {
       naverRefreshToken,
     );
 
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      sameSite: 'Lax',
-      domain: 'localhost',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-    });
-
-    return res.json({ accessToken });
+    return res.json({ accessToken, refreshToken });
   }
 
   @ApiKakaoLogin()
@@ -81,14 +74,7 @@ export class AuthController {
       kakaoRefreshToken,
     );
 
-    res.cookie('refresh_Token', refreshToken, {
-      httpOnly: true,
-      sameSite: 'Lax',
-      domain: 'localhost',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-    });
-
-    return res.json({ accessToken });
+    return res.json({ accessToken, refreshToken });
   }
 
   @ApiCookieAuth('refresh-token')
