@@ -184,10 +184,7 @@ export class AuthService {
       }
     } catch (error) {
       if (error.response.status == 400) {
-        throw new HttpException(
-          '유효하지 않은 인가코드입니다.',
-          HttpStatus.UNAUTHORIZED,
-        );
+        console.log(error);
       } else {
         console.log(error);
         throw new HttpException(
