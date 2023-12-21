@@ -1,11 +1,16 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiHeaders, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiHeaders,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 
-export function ApiGetMyInfo() {
+export function ApiGetMyInfoWithOwner() {
   return applyDecorators(
     ApiOperation({
-      summary: '내 정보 조회 API',
-      description: '내 정보 조회 API',
+      summary: '내 정보 조회 API(owner 여부와 함께)',
+      description: '내 정보 조회 API(owner 여부와 함께)',
     }),
     ApiResponse({
       status: 200,
@@ -20,6 +25,7 @@ export function ApiGetMyInfo() {
             admin: false,
             provider: 'kakao',
             userImage: 'http://img.jpg',
+            owner: false,
           },
         },
       },
@@ -45,5 +51,6 @@ export function ApiGetMyInfo() {
         example: '여기에 액세스 토큰',
       },
     ]),
+    ApiParam({ name: 'targetId', example: 1, required: true }),
   );
 }
