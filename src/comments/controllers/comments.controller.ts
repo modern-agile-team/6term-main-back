@@ -24,6 +24,7 @@ import { ApiAddReComment } from '../swagger-decoratros/add-recomment-decorators'
 import { ApiUpdateReComment } from '../swagger-decoratros/patch-recomment-decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { JwtOptionalGuard } from 'src/config/guards/jwt-optional.guard';
 
 @Controller('comments')
 @ApiTags('Comment API')
@@ -60,7 +61,7 @@ export class CommentsController {
   }
 
   @Get('')
-  @UseGuards(JwtAccessTokenGuard)
+  @UseGuards(JwtOptionalGuard)
   @ApiGetAllComment()
   async getComment(
     @GetUserId() userId: number,

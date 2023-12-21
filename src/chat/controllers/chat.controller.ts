@@ -28,7 +28,7 @@ import { ApiGetChatNotificationSse } from '../swagger-decorators/get-chat-notifi
 import { TokenService } from 'src/auth/services/token.service';
 import { GetUserId } from 'src/common/decorators/get-userId.decorator';
 import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
-import { GetNotificationsResponseDto } from '../dto/get-notifications-response.dto';
+import { GetNotificationsResponseFromChatDto } from '../dto/get-notifications-response-from-chat.dto';
 import { ApiGetChatNotifications } from '../swagger-decorators/get-chat-notifications.decorator';
 import { ApiCreateChatImage } from '../swagger-decorators/create-chat-image.decorators';
 import { SuccessResponseInterceptor } from 'src/common/interceptors/success-response.interceptor';
@@ -119,7 +119,7 @@ export class ChatController {
   @Get('chat/notice')
   async getChatNotifications(
     @GetUserId() userId: number,
-  ): Promise<GetNotificationsResponseDto[]> {
+  ): Promise<GetNotificationsResponseFromChatDto[]> {
     return this.chatService.getChatNotifications(userId);
   }
 
