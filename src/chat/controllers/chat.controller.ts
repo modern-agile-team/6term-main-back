@@ -103,7 +103,7 @@ export class ChatController {
   }
 
   @ApiGetChatUnreadCounts()
-  @Get(':roomId/chat/unreads')
+  @Get(':roomId/chat/unReads')
   async getUnreadCounts(
     @Param('roomId', ParseObjectIdPipe) roomId: mongoose.Types.ObjectId,
     @Query('after', ParseIntPipe) after: number,
