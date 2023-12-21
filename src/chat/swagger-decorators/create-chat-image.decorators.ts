@@ -7,7 +7,7 @@ export function ApiCreateChatImage() {
       summary:
         '특정 채팅방 이미지 생성. 채팅 이미지 전송 시, 여기서 생성한 이미지 url을 통해 socket으로 채팅 전송 요청',
       description:
-        'Headers - access_token, Param - roomId, Formdata - ReceivedUserDto, key: file, value: image.png',
+        'Headers - access_token, Param - roomId, FormData - ReceivedUserDto, key: file, value: image.png',
     }),
     ApiResponse({
       status: 201,
