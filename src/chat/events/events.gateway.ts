@@ -21,7 +21,6 @@ import {
 import { LoginChatRoomDto } from '../dto/login-chat-room.dto';
 import { WebSocketExceptionFilter } from '../exceptions/websocket-exception.filter';
 import mongoose from 'mongoose';
-
 @WebSocketGateway({ namespace: /\/ch-.+/, cors: true })
 @UsePipes(ValidationPipe)
 @UseFilters(WebSocketExceptionFilter)
@@ -85,10 +84,12 @@ export class EventsGateway
   ) {
     if (postChatDto.hasOwnProperty('content')) {
       const returnedChat = await this.chatService.createChat(postChatDto);
-      socket.to(postChatDto.roomId.toString()).emit('message', returnedChat);
+      const data = returnedChat;
+      socket.to(postChatDto.roomId.toString()).emit('message', { data });
     } else {
       const returnedChat = await this.chatService.findChatImage(postChatDto);
-      socket.to(postChatDto.roomId.toString()).emit('message', returnedChat);
+      const data = returnedChat;
+      socket.to(postChatDto.roomId.toString()).emit('message', { data });
     }
   }
 

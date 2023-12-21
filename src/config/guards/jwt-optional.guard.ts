@@ -2,18 +2,20 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { TokenService } from 'src/auth/services/token.service';
 
 @Injectable()
-export class JwtRefreshTokenGuard {
+export class JwtOptionalGuard {
   constructor(private tokenService: TokenService) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    const refreshToken = request.cookies['refresh_token'];
-
-    if (!refreshToken) {
-      return false;
+    const accessToken = request.headers['access_token'];
+    if (!accessToken) {
+      const userId = undefined;
+      request.user = { userId };
+      return true;
     }
 
-    const userId = await this.tokenService.decodeToken(refreshToken);
+    const userId = await this.tokenService.decodeToken(accessToken);
+
     request.user = { userId };
 
     return true;

@@ -32,16 +32,12 @@ export class ChatService {
   ) {}
 
   notificationListener() {
-    return (
-      this.subject
-        .asObservable()
-        .pipe(
-          map((notification: Notification) => JSON.stringify(notification)),
-        ),
+    return this.subject.asObservable().pipe(
+      map((notification: Notification) => JSON.stringify(notification)),
       catchError((err) => {
         this.logger.error('notificationListener : ' + err.message);
         throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      })
+      }),
     );
   }
   async getChatRooms(myId: number) {

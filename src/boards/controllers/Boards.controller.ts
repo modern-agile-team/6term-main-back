@@ -7,8 +7,8 @@ import {
   Delete,
   UseInterceptors,
   Query,
-  Headers,
   UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
 import { BoardsService } from '../services/Boards.service';
 import { Board } from '../entities/board.entity';
@@ -17,7 +17,6 @@ import { BoardImagesService } from '../services/BoardImage.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BoardResponseDTO } from '../dto/boards.response.dto';
 import { CreateBoardImageDto } from '../dto/create.board-image.dto';
-import { TokenService } from 'src/auth/services/token.service';
 import { ApiUploadBoardImages } from '../swagger-decorators/upload-baord-images-decorator';
 import { ApiAddBoard } from '../swagger-decorators/add-board-decorators';
 import { ApiGetPageBoards } from '../swagger-decorators/get-page-boards-decorators';
@@ -26,6 +25,10 @@ import { ApiUpdateBoard } from '../swagger-decorators/patch-board-decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiDeleteBoard } from '../swagger-decorators/delete-board-decorators';
 import { ApiUpdateBoardImage } from '../swagger-decorators/patch-board-images-decorators';
+import { JwtAccessTokenGuard } from 'src/config/guards/jwt-access-token.guard';
+import { GetUserId } from 'src/common/decorators/get-userId.decorator';
+import { BoardOwnerGuard } from 'src/config/guards/board-owner.guard';
+import { BoardOwner } from 'src/common/decorators/board-owner.decorator';
 
 @Controller('boards')
 @ApiTags('board API')
@@ -33,30 +36,27 @@ export class BoardsController {
   constructor(
     private readonly boardsService: BoardsService,
     private readonly boardImagesService: BoardImagesService,
-    private tokenService: TokenService,
   ) {}
 
   @Post('')
+  @UseGuards(JwtAccessTokenGuard)
   @ApiAddBoard()
   async create(
-    @Headers('access_token') accessToken: string,
+    @GetUserId() userId: number,
     @Body() createBoardDto: CreateBoardDto,
   ): Promise<Board> {
-    const userId = await this.tokenService.decodeToken(accessToken);
     return await this.boardsService.create(createBoardDto, userId);
   }
 
   @Post('/images')
+  @UseGuards(JwtAccessTokenGuard)
   @UseInterceptors(FilesInterceptor('files', 3))
   @ApiUploadBoardImages()
   async uploadImage(
-    @Headers('access_token') accesstoken: string,
+    @GetUserId() userId: number,
     @Query('boardId') boardId: number,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<CreateBoardImageDto[]> {
-    const userId = await this.tokenService.decodeToken(accesstoken);
-    console.log(files);
-
     return await this.boardImagesService.createBoardImages(
       boardId,
       files,
@@ -74,14 +74,14 @@ export class BoardsController {
   }
 
   @Get('/unit')
+  @UseGuards(BoardOwnerGuard)
   @ApiGetOneBoard()
   async findOne(
     @Query('boardId') boardId: number,
-    @Headers('access_token') accesstoken: string,
+    @BoardOwner() unitOnwer: boolean,
+    @GetUserId() userId: number,
   ): Promise<BoardResponseDTO> {
-    ``;
-    const userId = await this.tokenService.decodeToken(accesstoken);
-    return await this.boardsService.findOneBoard(boardId, userId);
+    return await this.boardsService.findOneBoard(boardId, userId, unitOnwer);
   }
 
   @Patch('')
@@ -94,15 +94,15 @@ export class BoardsController {
   }
 
   @Patch('/images')
+  @UseGuards(JwtAccessTokenGuard)
   @ApiUpdateBoardImage()
   @UseInterceptors(FilesInterceptor('files', 3))
   async editBoardImages(
-    @Headers('access_token') accessToken: string,
+    @GetUserId() userId: number,
     @Query('boardId') boardId: number,
     @Query('deleteImageUrl') deleteImageUrl: string[],
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    const userId = await this.tokenService.decodeToken(accessToken);
     return await this.boardImagesService.updateBoardImages(
       boardId,
       files,
@@ -112,12 +112,12 @@ export class BoardsController {
   }
 
   @Delete('')
+  @UseGuards(JwtAccessTokenGuard)
   @ApiDeleteBoard()
   async deleteBoard(
     @Query('boardId') boardId: number,
-    @Headers('access_token') accessToken: string,
+    @GetUserId() userId: number,
   ) {
-    const userId = await this.tokenService.decodeToken(accessToken);
     await this.boardsService.deleteBoard(boardId, userId);
   }
 }

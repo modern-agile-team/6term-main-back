@@ -16,14 +16,18 @@ export class ReComment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column({ name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => Comment)
+  @ManyToOne(() => Comment, (comment) => comment.reComment, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'comment_id' })
   comment: Comment;
 

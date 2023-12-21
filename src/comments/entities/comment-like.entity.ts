@@ -8,15 +8,21 @@ export class CommentLike {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   userId: User;
 
-  @ManyToOne(() => Comment)
+  @ManyToOne(() => Comment, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'comment_id' })
   commentId: Comment;
 
-  @ManyToOne(() => ReComment)
+  @ManyToOne(() => ReComment, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'recomment_id' })
   recommentId: ReComment;
 }
